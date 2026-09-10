@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Mijn jaarlijn havo 4</title>
+<style>
+:root{
+  --bg:#f5f4ef; --card:#ffffff; --ink:#1f2328; --muted:#5f6670; --line:#dcd9cf;
+  --acc:#1d5c63; --acc-soft:#e3efef; --acc-ink:#ffffff;
+  --warm:#b4532a; --warm-soft:#fbeee6; --ok:#2e7d4f; --ok-soft:#e5f3ea;
+  --lob:#6a4c9c; --lob-soft:#efe9f7;
+  --b1:#c9c4b5; --b2:#8fb3b6; --b3:#3f8b92; --b4:#1d5c63; --b5:#b4532a;
+  --radius:12px; --shadow:0 1px 2px rgba(0,0,0,.05),0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#15181b; --card:#1e2226; --ink:#e7e9ea; --muted:#a0a7ae; --line:#343a40;
+    --acc:#5fb3bb; --acc-soft:#1f3436; --acc-ink:#0d1f21;
+    --warm:#e38a61; --warm-soft:#3a2519; --ok:#6cc08e; --ok-soft:#1c3226;
+    --lob:#b8a1e0; --lob-soft:#2b2438;
+    --b1:#4a4f55; --b2:#3d6b6f; --b3:#4f9aa1; --b4:#7cc6cd; --b5:#e38a61;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--acc)}
+.wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:0 64px}
+header.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top-in{max-width:900px;margin:0 auto;padding:10px 16px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:-.01em}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.save{margin-left:auto;font-size:13px;color:var(--muted)}
+.save.err{color:var(--warm);font-weight:600}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 16px 12px;max-width:900px;margin:0 auto}
+nav.tabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 13px;font:inherit;font-size:14px;cursor:pointer}
+nav.tabs button[aria-current="page"]{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+h1{font-size:26px;line-height:1.2;margin:26px 0 6px;letter-spacing:-.015em}
+h2{font-size:19px;margin:0 0 4px}
+h3{font-size:16px;margin:18px 0 6px}
+.lead{color:var(--muted);margin:0 0 18px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.pill{font-size:13px;background:var(--acc-soft);color:var(--ink);border-radius:999px;padding:3px 10px}
+.pill.warm{background:var(--warm-soft)} .pill.lob{background:var(--lob-soft)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:0 0 14px;box-shadow:var(--shadow)}
+.card.soft{background:var(--acc-soft);border-color:transparent;box-shadow:none}
+.card.warn{background:var(--warm-soft);border-color:transparent;box-shadow:none}
+.card.lobc{background:var(--lob-soft);border-color:transparent;box-shadow:none}
+.card .sub{color:var(--muted);font-size:14px;margin:0 0 12px}
+.f{display:block;margin:0 0 14px}
+.lab{display:block;font-weight:600;margin-bottom:2px}
+.hint{display:block;color:var(--muted);font-size:14px;margin-bottom:6px}
+textarea,input[type=text],input[type=password],input[type=date],select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+textarea{resize:vertical;min-height:60px}
+textarea:focus,input:focus,select:focus,button:focus-visible,.opt input:focus-visible+span{outline:3px solid color-mix(in srgb,var(--acc) 45%,transparent);outline-offset:1px;border-color:var(--acc)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px}
+@media (max-width:620px){.grid2,.grid3{grid-template-columns:1fr}}
+.radios{display:grid;gap:8px;margin:4px 0 14px}
+.radios.cols4{grid-template-columns:repeat(4,1fr)}
+.radios.cols5{grid-template-columns:repeat(5,1fr)}
+.radios.cols3{grid-template-columns:repeat(3,1fr)}
+.radios.cols2{grid-template-columns:repeat(2,1fr)}
+@media (max-width:620px){.radios.cols4,.radios.cols5{grid-template-columns:1fr 1fr}.radios.cols3{grid-template-columns:1fr}}
+.radios.inline{display:flex;flex-wrap:wrap;gap:5px;margin:0}
+.opt{position:relative;display:block;cursor:pointer}
+.opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.opt>span{display:block;height:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--bg);font-size:14px;line-height:1.4}
+.opt>span b{display:block;font-size:14px}
+.opt>span small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.opt input:checked+span{border-color:var(--acc);background:var(--acc-soft);box-shadow:inset 0 0 0 1px var(--acc)}
+.radios.inline .opt>span{padding:5px 0;width:36px;text-align:center;border-radius:8px}
+.lvl{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--line);font-size:12px;font-weight:700;margin-bottom:4px}
+.opt input:checked+span .lvl{background:var(--acc);color:var(--acc-ink)}
+.check{display:flex;gap:8px;align-items:flex-start;margin:0 0 10px;cursor:pointer}
+.check input{width:18px;height:18px;margin-top:3px;accent-color:var(--acc);flex:0 0 auto}
+.tag{font-size:11px;font-weight:700;border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.tag.sterk{background:var(--ok-soft);color:var(--ok)} .tag.redelijk{background:var(--acc-soft);color:var(--acc)} .tag.zwak{background:var(--warm-soft);color:var(--warm)}
+.btn{font:inherit;font-size:15px;border-radius:9px;padding:9px 16px;border:1px solid var(--acc);background:var(--acc);color:var(--acc-ink);cursor:pointer;font-weight:600}
+.btn.ghost{background:transparent;color:var(--acc)}
+.btn.small{font-size:13px;padding:5px 10px}
+.btn.danger{border-color:var(--warm);color:var(--warm);background:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:space-between;margin-top:8px}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.steps button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:4px 8px;border-radius:6px;cursor:pointer}
+.steps button[aria-current="step"]{background:var(--ink);color:var(--bg)}
+.domain-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.domain-h .q{color:var(--muted);font-size:14px}
+.tbl-wrap{overflow-x:auto;margin:0 -4px}
+.vt{width:100%;border-collapse:collapse;font-size:14px}
+.vt td,.vt th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.vt th{font-weight:600;color:var(--muted);font-size:13px;white-space:nowrap}
+.vt input[type=text]{padding:5px 7px;font-size:14px}
+.vt input.cijfer{width:64px}
+.vt td.vak{font-weight:600;white-space:nowrap}
+.vt tr.off td:not(:first-child):not(:nth-child(2)){opacity:.35}
+.swot{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:620px){.swot{grid-template-columns:1fr}}
+.swot .q{border-radius:10px;padding:12px;border:1px solid var(--line)}
+.swot .q h3{margin:0 0 2px}
+.swot .q.s{background:var(--ok-soft);border-color:transparent}
+.swot .q.w{background:var(--warm-soft);border-color:transparent}
+.swot .q.k{background:var(--acc-soft);border-color:transparent}
+.swot input{margin-bottom:6px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
+.badge{font-size:13px;font-weight:700;border-radius:6px;padding:3px 8px;background:var(--line);color:var(--muted)}
+.badge.on{background:var(--ok);color:#fff}
+.zin{border-left:4px solid var(--acc);padding:8px 12px;background:var(--acc-soft);border-radius:0 8px 8px 0;margin:6px 0 4px;font-size:15px}
+.zin.leeg{color:var(--muted);border-color:var(--line);background:transparent}
+details{margin:0 0 12px}
+details summary{cursor:pointer;color:var(--acc);font-size:14px;font-weight:600}
+details .ex{font-size:14px;color:var(--muted);margin:6px 0 0;padding-left:12px;border-left:2px solid var(--line)}
+.alert{border-radius:10px;padding:10px 12px;background:var(--warm-soft);font-size:14px;margin:0 0 12px}
+.note{border-radius:10px;padding:10px 12px;background:var(--acc-soft);font-size:14px;margin:0 0 12px}
+.gap{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 12px}
+.gap td,.gap th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+.gap th{color:var(--muted);font-weight:600;font-size:13px}
+.flag{color:var(--warm);font-weight:600}
+.chart{display:grid;gap:16px}
+.chart .rowc{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:end}
+@media (max-width:620px){.chart .rowc{grid-template-columns:1fr}}
+.bars{display:flex;gap:6px;align-items:flex-end;height:78px;border-bottom:1px solid var(--line)}
+.bar{flex:1;max-width:56px;border-radius:5px 5px 0 0;position:relative;min-height:2px}
+.bar span{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:12px;color:var(--muted)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:10px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.per{margin:22px 0 8px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tl{display:grid;gap:8px}
+.tl .it{display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.tl .it.toets{border-left-color:var(--warm)} .tl .it.lob{border-left-color:var(--lob)}
+.tl .it.nu{box-shadow:0 0 0 2px var(--acc)}
+.tl .wk{font-size:12px;color:var(--muted);line-height:1.2}
+.tl .wk b{display:block;font-size:15px;color:var(--ink)}
+.tl .it small{display:block;color:var(--muted);font-size:13px}
+.tl .ev{display:grid;grid-template-columns:58px 1fr;gap:10px;padding:2px 12px 2px 17px;font-size:13px;color:var(--muted)}
+.status{font-size:12px;border-radius:999px;padding:2px 9px;background:var(--line);color:var(--muted);white-space:nowrap}
+.status.bezig{background:var(--acc-soft);color:var(--ink)} .status.klaar{background:var(--ok-soft);color:var(--ok)}
+.klaarbox{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.fb{border:1px dashed var(--line);border-radius:10px;padding:12px;margin:0 0 12px}
+.small{font-size:13px;color:var(--muted)}
+.muted{color:var(--muted)}
+.sr{position:absolute;left:-9999px}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:22px;flex-wrap:wrap}
+#print{display:none}
+.codebox{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:6px}
+.codebox b{display:block;font-size:26px;letter-spacing:.08em;font-family:ui-monospace,Menlo,monospace}
+.status.laat{background:var(--warm-soft);color:var(--warm)} .status.slot{background:var(--ink);color:var(--bg)}
+textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:30;max-width:90vw}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media print{
+  header.top,.wrap{display:none!important}
+  body{background:#fff;color:#000;font-size:10.5pt}
+  #print{display:block}
+  #print h1{font-size:17pt;margin:0 0 4pt}
+  #print h2{font-size:13pt;margin:14pt 0 4pt;border-bottom:1px solid #999;padding-bottom:2pt;break-after:avoid}
+  #print h3{font-size:11pt;margin:8pt 0 2pt;break-after:avoid}
+  #print .qa{margin:0 0 5pt;break-inside:avoid}
+  #print .qa b{display:block;font-size:9pt;color:#444}
+  #print .qa div{white-space:pre-wrap}
+  #print .pmeta{color:#444;font-size:10pt;margin-bottom:8pt}
+  #print .newpage{break-before:page}
+  #print .qa i.meta{display:block;font-style:normal;font-size:8pt;color:#666;margin-top:1pt}
+  #print table.strook{border:2px solid #1d5c63;margin-bottom:10pt}
+  #print table.strook th{background:#e3efef;width:17%}
+  #print .uitleg{font-size:8pt;color:#666;margin-top:12pt}
+  #print table{border-collapse:collapse;width:100%;font-size:9.5pt;margin:2pt 0 8pt}
+  #print td,#print th{border:1px solid #bbb;padding:3pt 5pt;text-align:left}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Mijn jaarlijn havo 4<small id="who">KSH Haarlemmermeer</small></div>
+    <div class="save" id="save" aria-live="polite">Nog niets opgeslagen</div>
+  </div>
+  <nav class="tabs" id="nav" aria-label="Onderdelen"></nav>
+</header>
+
+<main class="wrap" id="app"></main>
+<div id="print" aria-hidden="true"></div>
+<input type="file" id="importFile" accept="application/json,.json" class="sr" aria-hidden="true" tabindex="-1">
+
+<script>
+/* ============================================================
+   INSTELLINGEN VOOR DE MENTOR
+   Pas hieronder data en teksten aan. Verder hoef je niets te wijzigen.
+   Alle antwoorden blijven in de browser van de leerling (localStorage).
+   Er wordt niets naar een server gestuurd.
+   ============================================================ */
+const CONFIG = {
+  schooljaar: "2026-2027",
+  toolAdres: "https://weerthuis-cloud.github.io/H4-mentoraat/",   /* het vaste adres op GitHub Pages */
+  school: "KSH Haarlemmermeer",
+  inleveren: "Lever je PDF in via de opdracht in Teams of Magister, zoals je mentor aangeeft.",
+  toetsweken: {
+    A: { van: "2026-10-30", tot: "2026-11-06" },
+    B: { van: "2027-01-15", tot: "2027-01-22" },
+    C: { van: "2027-03-22", tot: "2027-03-31" },
+    D: { van: "2027-06-18", tot: "2027-06-25" }
+  },
+  /* spoor: ontwikkeling | toets | lob.  datum = uiterlijk klaar. */
+  momenten: [
+    { id:"actieplan", type:"actieplan", spoor:"ontwikkeling", titel:"Actieplan",               week:"37–39",   datum:"2026-09-25", mol:"MOL-gesprek 1 · 28 sep – 2 okt" },
+    { id:"twA_voor",  type:"toetsVoor", spoor:"toets", tw:"A", titel:"Toetsweekplan A",         week:"41 + 43", datum:"2026-10-23" },
+    { id:"twA_na",    type:"toetsNa",   spoor:"toets", tw:"A", titel:"Terugblik toetsweek A",   week:"46–47",   datum:"2026-11-20", checkin:"doelenA" },
+    { id:"lob1",      type:"lob1",      spoor:"lob",           titel:"LOB 1 · Wie ben ik?",     week:"48–49",   datum:"2026-12-04" },
+    { id:"twB_voor",  type:"toetsVoor", spoor:"toets", tw:"B", titel:"Toetsweekplan B",         week:"50–51 + 1", datum:"2027-01-08" },
+    { id:"twB_na",    type:"toetsNa",   spoor:"toets", tw:"B", titel:"Terugblik toetsweek B",   week:"4–5",     datum:"2027-02-05" },
+    { id:"spiegel",   type:"spiegel",   spoor:"ontwikkeling",  titel:"Spiegel",                 week:"4–5",     datum:"2027-02-05" },
+    { id:"tussen",    type:"tussen",    spoor:"ontwikkeling",  titel:"Tussenbalans",            week:"6",       datum:"2027-02-12", mol:"MOL-gesprek 2 · 15 – 18 feb" },
+    { id:"twC_voor",  type:"toetsVoor", spoor:"toets", tw:"C", titel:"Toetsweekplan C",         week:"9–11",    datum:"2027-03-19", checkin:"doelenB", overgang:true, mol:"MOL-gesprek 3 · 30 mrt – 2 apr" },
+    { id:"lob2",      type:"lob2",      spoor:"lob",           titel:"LOB 2 · Wat past bij mij?", week:"10–11", datum:"2027-03-19" },
+    { id:"twC_na",    type:"toetsNa",   spoor:"toets", tw:"C", titel:"Terugblik toetsweek C",   week:"14–16",   datum:"2027-04-16" },
+    { id:"lob3",      type:"lob3",      spoor:"lob",           titel:"LOB 3 · Mijn richting",   week:"19–22",   datum:"2027-06-04" },
+    { id:"twD_voor",  type:"toetsVoor", spoor:"toets", tw:"D", titel:"Toetsweekplan D",         week:"23–24",   datum:"2027-06-17" },
+    { id:"eind",      type:"eind",      spoor:"ontwikkeling",  titel:"Eindbalans",              week:"23–24 + 26", datum:"2027-07-02" }
+  ],
+  /* Andere data die in de jaarlijn verschijnen (alleen ter informatie, uit de jaarplanner KSH) */
+  gebeurtenissen: [
+    { datum:"2026-09-28", week:"40", t:"MOL-gesprek 1 (28 sep – 2 okt)" },
+    { datum:"2026-10-01", week:"40–41", t:"Workshop ‘Hoe kies ik?’ (1 okt) · Bezoek Hogeschool Leiden (8 okt)" },
+    { datum:"2026-10-10", week:"42", t:"Herfstvakantie" },
+    { datum:"2026-10-27", week:"44", t:"SKIA studiekeuze-avonden (27 en 28 okt)" },
+    { datum:"2026-10-30", week:"44–45", t:"Toetsweek A (30 okt – 6 nov)" },
+    { datum:"2026-11-23", week:"48", t:"Deadline aanmelden herkansing toetsweek A (23 nov, 12.00 uur)" },
+    { datum:"2026-12-04", week:"49", t:"Inleveren LOB deel 1 in Magister" },
+    { datum:"2026-12-19", week:"52–53", t:"Kerstvakantie" },
+    { datum:"2027-01-15", week:"2–3", t:"Toetsweek B (15 – 22 jan)" },
+    { datum:"2027-02-08", week:"6", t:"Deadline aanmelden herkansing toetsweek B (8 feb, 12.00 uur) · herkansen 11 feb" },
+    { datum:"2027-02-15", week:"7", t:"MOL-gesprek 2 (15 – 18 feb)" },
+    { datum:"2027-02-20", week:"8", t:"Voorjaarsvakantie" },
+    { datum:"2027-03-19", week:"11", t:"Inleveren LOB deel 2 in Magister" },
+    { datum:"2027-03-22", week:"12–13", t:"Toetsweek C (22 – 31 mrt) · MOL-gesprek 3 (30 mrt – 2 apr)" },
+    { datum:"2027-04-19", week:"16", t:"Deadline inschrijven herkansing (19 apr, 12.00 uur) · herkansen 22 apr" },
+    { datum:"2027-04-24", week:"17–18", t:"Meivakantie" },
+    { datum:"2027-06-01", week:"22", t:"LOB-eindpitch" },
+    { datum:"2027-06-18", week:"24–25", t:"Toetsweek D (18 – 25 jun)" },
+    { datum:"2027-07-01", week:"26", t:"Inzage toetsen D en PWS-dag havo 4 (1 en 2 jul)" },
+    { datum:"2027-07-09", week:"27", t:"Rapport" }
+  ],
+  lessen: [
+    {"les":1,"wk":"37","ma":"2026-09-07","datum":"vr 11 sep","g":1,"bh":"Actieplan · start","blok":"Actieplan · start","klas":{"t":"Tool openen, vakken kiezen, back-up oefenen. Actieplan stap 1 en 2: terugkijken en waar sta ik nu.","open":["start","actieplan"]},"thuis":{"t":"LOB deel 1: reflectie op je profielkeuze (±300 woorden).","open":["lob1"]},"dl":""},
+    {"les":2,"wk":"38","ma":"2026-09-14","datum":"vr 18 sep","g":2,"bh":"Actieplan · SWOT en doelen","blok":"Actieplan · start","klas":{"t":"Tool openen, vakken kiezen, back-up oefenen. Actieplan stap 1 en 2.","open":["start","actieplan"]},"thuis":{"t":"Actieplan stap 3 en 4: mini-SWOT en je twee doelen (SMART en als-dan-plan).","open":["actieplan"]},"dl":""},
+    {"les":3,"wk":"39","ma":"2026-09-21","datum":"vr 25 sep","g":1,"bh":"Actieplan · doelen","blok":"Actieplan · doelen","klas":{"t":"Doelen aanscherpen in duo’s, actieplan afronden, PDF maken en inleveren.","open":["actieplan"]},"thuis":{"t":"Actieplan afronden (stap 3 tot en met 5), PDF maken en inleveren.","open":["actieplan"]},"dl":"Actieplan-PDF inleveren (alle leerlingen)"},
+    {"les":4,"wk":"40","ma":"2026-09-28","datum":"vr 2 okt","g":2,"bh":"MOL 1 · LOB deel 1","blok":"MOL 1 · LOB deel 1","klas":{"t":"MOL-afspraken invullen. LOB deel 1: interessetest.","open":["actieplan","lob1"]},"thuis":{"t":"MOL-afspraken invullen in de tool. LOB deel 1: interessetest.","open":["actieplan","lob1"]},"dl":""},
+    {"les":5,"wk":"41","ma":"2026-10-05","datum":"vr 9 okt","g":1,"bh":"Toetsweekplan A","blok":"Toetsweekplan A","klas":{"t":"Toetsweekplan A maken: klaar per vak, verwacht cijfer, leerstrategie, planning.","open":["twA_voor"]},"thuis":{"t":"Toetsweekplan A maken.","open":["twA_voor"]},"dl":""},
+    {"les":6,"wk":"43","ma":"2026-10-19","datum":"vr 23 okt","g":2,"bh":"Toetsweekplan A · check","blok":"Toetsweekplan A · check","klas":{"t":"Kolom ‘vlak ervoor’ bijwerken, vragen voor SKIA bedenken.","open":["twA_voor"]},"thuis":{"t":"Kolom ‘vlak ervoor’ bijwerken. LOB deel 1: talententest.","open":["twA_voor","lob1"]},"dl":"Toetsweekplan A klaar"},
+    {"les":7,"wk":"46","ma":"2026-11-09","datum":"9 – 13 nov","g":1,"bh":"Terugblik toetsweek A","blok":"Terugblik toetsweek A","klas":{"t":"Terugblik toetsweek A en check op je doelen.","open":["twA_na"]},"thuis":{"t":"Terugblik toetsweek A (organisatie). Cijfers invullen zodra ze binnen zijn.","open":["twA_na"]},"dl":""},
+    {"les":8,"wk":"47","ma":"2026-11-16","datum":"16 – 20 nov","g":2,"bh":"Terugblik A · doelcheck","blok":"Terugblik toetsweek A","klas":{"t":"Terugblik toetsweek A en check op je doelen.","open":["twA_na"]},"thuis":{"t":"Cijfers invullen in je terugblik, check op je doelen afmaken.","open":["twA_na"]},"dl":"Terugblik A klaar (vr 20 nov)"},
+    {"les":9,"wk":"48","ma":"2026-11-23","datum":"23 – 27 nov","g":1,"bh":"LOB deel 1","blok":"LOB deel 1","klas":{"t":"LOB deel 1 afmaken met feedback: visuele zelfanalyse.","open":["lob1"]},"thuis":{"t":"LOB deel 1 afmaken.","open":["lob1"]},"dl":"ma 23 nov 12.00 uur: aanmelden herkansing A"},
+    {"les":10,"wk":"49","ma":"2026-11-30","datum":"30 nov – 4 dec","g":2,"bh":"LOB deel 1 · afronden","blok":"LOB deel 1 · afronden","klas":{"t":"LOB deel 1 afronden en inleveren. LOB 1-reflectie in de tool.","open":["lob1"]},"thuis":{"t":"LOB deel 1 inleveren in Magister. LOB 1-reflectie in de tool.","open":["lob1"]},"dl":"LOB deel 1 inleveren (vr 4 dec)"},
+    {"les":11,"wk":"50","ma":"2026-12-07","datum":"7 – 11 dec","g":1,"bh":"Toetsweekplan B · LOB deel 2","blok":"Toetsweekplan B · LOB deel 2","klas":{"t":"Toetsweekplan B maken. Start LOB deel 2: kies twee opleidingen.","open":["twB_voor","lob2"]},"thuis":{"t":"Toetsweekplan B maken. Kerstvakantie meeplannen: toetsweek B begint kort daarna.","open":["twB_voor"]},"dl":""},
+    {"les":12,"wk":"51","ma":"2026-12-14","datum":"14 – 18 dec","g":2,"bh":"LOB deel 2 · opleidingen","blok":"Toetsweekplan B · LOB deel 2","klas":{"t":"Toetsweekplan B maken. Start LOB deel 2.","open":["twB_voor","lob2"]},"thuis":{"t":"LOB deel 2: eerste opleiding onderzoeken. Open dagen opzoeken.","open":["lob2"]},"dl":""},
+    {"les":13,"wk":"1","ma":"2027-01-04","datum":"4 – 8 jan","g":1,"bh":"Toetsweekplan B · check","blok":"Toetsweekplan B · check","klas":{"t":"Kolom ‘vlak ervoor’ bijwerken, leerplanning checken.","open":["twB_voor"]},"thuis":{"t":"Kolom ‘vlak ervoor’ bijwerken. LOB deel 2: open dag plannen.","open":["twB_voor","lob2"]},"dl":"Toetsweekplan B klaar (vr 8 jan)"},
+    {"les":14,"wk":"2","ma":"2027-01-11","datum":"11 – 14 jan","g":2,"bh":"Leren voor toetsweek B","blok":"Toetsweekplan B · check","klas":{"t":"Kolom ‘vlak ervoor’ bijwerken.","open":["twB_voor"]},"thuis":{"t":"Leren volgens je plan.","open":["twB_voor"]},"dl":""},
+    {"les":15,"wk":"4","ma":"2027-01-25","datum":"25 – 29 jan","g":1,"bh":"Terugblik B · spiegel","blok":"Terugblik B · Spiegel","klas":{"t":"Terugblik toetsweek B. Spiegel stap 1 en 2: eigen beeld, feedback vragen.","open":["twB_na","spiegel"]},"thuis":{"t":"Terugblik toetsweek B. Spiegel: eigen beeld invullen, feedback vragen.","open":["twB_na","spiegel"]},"dl":""},
+    {"les":16,"wk":"5","ma":"2027-02-01","datum":"1 – 5 feb","g":2,"bh":"Spiegel · feedback","blok":"Terugblik B · Spiegel","klas":{"t":"Terugblik toetsweek B. Spiegel stap 1 en 2.","open":["twB_na","spiegel"]},"thuis":{"t":"Spiegel: feedback invullen en vergelijken met je eigen beeld. Cijfers B invullen.","open":["spiegel","twB_na"]},"dl":"Terugblik B en spiegel klaar (vr 5 feb)"},
+    {"les":17,"wk":"6","ma":"2027-02-08","datum":"8 – 12 feb","g":1,"bh":"Tussenbalans","blok":"Tussenbalans","klas":{"t":"Tussenbalans maken en PDF inleveren.","open":["tussen"]},"thuis":{"t":"Tussenbalans maken en PDF inleveren.","open":["tussen"]},"dl":"Tussenbalans-PDF inleveren (vr 12 feb)"},
+    {"les":18,"wk":"7","ma":"2027-02-15","datum":"15 – 18 feb","g":2,"bh":"MOL 2 · LOB deel 2","blok":"MOL 2 · LOB deel 2","klas":{"t":"MOL-afspraken invullen. Interviewvragen maken.","open":["tussen","lob2"]},"thuis":{"t":"MOL-afspraken invullen. LOB deel 2: interview afspreken en voorbereiden.","open":["tussen","lob2"]},"dl":""},
+    {"les":19,"wk":"9","ma":"2027-03-01","datum":"1 – 5 mrt","g":1,"bh":"LOB deel 2 · beroepen","blok":"LOB deel 2 · Toetsweekplan C","klas":{"t":"LOB deel 2 bijwerken. Toetsweekplan C starten.","open":["lob2","twC_voor"]},"thuis":{"t":"LOB deel 2: vergelijking opleidingen en drie beroepen.","open":["lob2"]},"dl":""},
+    {"les":20,"wk":"10","ma":"2027-03-08","datum":"8 – 12 mrt","g":2,"bh":"Toetsweekplan C · LOB deel 2","blok":"LOB deel 2 · Toetsweekplan C","klas":{"t":"LOB deel 2 bijwerken. Toetsweekplan C starten.","open":["lob2","twC_voor"]},"thuis":{"t":"Toetsweekplan C maken. LOB deel 2 afronden.","open":["twC_voor","lob2"]},"dl":""},
+    {"les":21,"wk":"11","ma":"2027-03-15","datum":"15 – 19 mrt","g":1,"bh":"Toetsweekplan C · MOL 3","blok":"Toetsweekplan C · MOL 3","klas":{"t":"Toetsweekplan C afronden met doelcheck en overgang. LOB 2-reflectie.","open":["twC_voor","lob2"]},"thuis":{"t":"Toetsweekplan C afronden met doelcheck en overgang. LOB deel 2 inleveren, LOB 2-reflectie.","open":["twC_voor","lob2"]},"dl":"LOB deel 2 inleveren · Toetsweekplan C-PDF inleveren (vr 19 mrt)"},
+    {"les":22,"wk":"14","ma":"2027-04-05","datum":"5 – 9 apr","g":2,"bh":"MOL 3 · terugblik C","blok":"MOL 3 · start eindpitch","klas":{"t":"MOL-afspraken invullen. Uitleg eindpitch.","open":["twC_voor","lob3"]},"thuis":{"t":"MOL-afspraken invullen. Terugblik toetsweek C: organisatie.","open":["twC_voor","twC_na"]},"dl":""},
+    {"les":23,"wk":"15","ma":"2027-04-12","datum":"12 – 16 apr","g":1,"bh":"Terugblik C · eindpitch","blok":"Terugblik C · eindpitch","klas":{"t":"Terugblik toetsweek C. Uitleg eindpitch.","open":["twC_na","lob3"]},"thuis":{"t":"Terugblik toetsweek C afmaken met cijfers. Eerste idee voor je pitch.","open":["twC_na","lob3"]},"dl":"Terugblik C klaar (vr 16 apr)"},
+    {"les":24,"wk":"16","ma":"2027-04-19","datum":"19 – 23 apr","g":2,"bh":"Eindpitch · opzet","blok":"Herkansing · pitch opzet","klas":{"t":"Herkansing kiezen. Opzet pitch.","open":["twC_na","lob3"]},"thuis":{"t":"Opzet pitch maken.","open":["lob3"]},"dl":"ma 19 apr 12.00 uur: inschrijven herkansing"},
+    {"les":25,"wk":"19","ma":"2027-05-10","datum":"10 – 14 mei","g":1,"bh":"Eindpitch · opzet","blok":"Eindpitch · opzet","klas":{"t":"Pitch aanscherpen en oefenen.","open":["lob3"]},"thuis":{"t":"Pitch uitwerken.","open":["lob3"]},"dl":""},
+    {"les":26,"wk":"20","ma":"2027-05-17","datum":"17 – 21 mei","g":2,"bh":"Eindpitch · oefenen","blok":"Eindpitch · opzet","klas":{"t":"Pitch aanscherpen en oefenen.","open":["lob3"]},"thuis":{"t":"Pitch oefenen, binnen 5 minuten.","open":["lob3"]},"dl":""},
+    {"les":27,"wk":"21","ma":"2027-05-24","datum":"24 – 28 mei","g":1,"bh":"Eindpitch","blok":"Eindpitch groep 1","klas":{"t":"Pitch geven.","open":["lob3"]},"thuis":{"t":"Pitch afmaken en oefenen.","open":["lob3"]},"dl":""},
+    {"les":28,"wk":"22","ma":"2027-05-31","datum":"31 mei – 4 jun","g":2,"bh":"LOB 3-reflectie","blok":"Eindpitch groep 2","klas":{"t":"Pitch geven.","open":["lob3"]},"thuis":{"t":"LOB 3-reflectie in de tool.","open":["lob3"]},"dl":"LOB 3-reflectie klaar (vr 4 jun)"},
+    {"les":29,"wk":"23","ma":"2027-06-07","datum":"7 – 11 jun","g":1,"bh":"Toetsweekplan D · eindbalans","blok":"Toetsweekplan D · eindbalans","klas":{"t":"Toetsweekplan D. Eindbalans stap 1 tot en met 3.","open":["twD_voor","eind"]},"thuis":{"t":"LOB 3-reflectie (als dat nog niet klaar is). Toetsweekplan D.","open":["lob3","twD_voor"]},"dl":""},
+    {"les":30,"wk":"24","ma":"2027-06-14","datum":"14 – 17 jun","g":2,"bh":"Eindbalans stap 1 tot en met 3","blok":"Toetsweekplan D · eindbalans","klas":{"t":"Toetsweekplan D. Eindbalans stap 1 tot en met 3.","open":["twD_voor","eind"]},"thuis":{"t":"Eindbalans stap 1 tot en met 3.","open":["eind"]},"dl":"Toetsweekplan D klaar (do 17 jun)"},
+    {"les":31,"wk":"26","ma":"2027-06-28","datum":"28 jun – 2 jul","g":0,"bh":"Eindbalans afronden","blok":"Eindbalans afronden","klas":null,"thuis":{"t":"Thuis: eindbalans stap 4 en 5, met je cijfers van toetsweek D. PDF inleveren.","open":["eind"]},"dl":"Eindbalans-PDF inleveren (vr 2 jul)"}
+  ],
+  vakken: ["Nederlands","Engels","Frans","Duits","Wiskunde A","Wiskunde B","Geschiedenis","Aardrijkskunde","Economie","Bedrijfseconomie","Biologie","Scheikunde","Natuurkunde","NLT","Informatica","Maatschappijwetenschappen","Filosofie","Kunst","CKV","Maatschappijleer","Lichamelijke opvoeding"]
+};
+/* ============================================================ */
+
+const KEY = "ksh-jaarlijn-havo4-v2";
+const MOM = Object.fromEntries(CONFIG.momenten.map(m => [m.id, m]));
+const SPOORNAAM = { ontwikkeling:"Mijn ontwikkeling", toets:"Toetsweken", lob:"LOB" };
+
+const DOMEINEN = [
+  { id:"kennis", naam:"Kennis en vaardigheden", vraag:"Hoe goed beheers je de stof van je vakken?",
+    niveaus:["Bij veel vakken loop ik achter of snap ik de basis niet goed.",
+             "Bij een paar vakken loop ik achter of haal ik onvoldoendes.",
+             "De meeste vakken houd ik goed bij, met hier en daar een zwak punt.",
+             "Ik beheers de stof bij bijna alle vakken en weet per vak hoe ik moet leren."] },
+  { id:"motivatie", naam:"Motivatie", vraag:"Waarom doe je wat je doet voor school?",
+    niveaus:["Ik doe weinig voor school. Ik zie het nut er niet van.",
+             "Ik doe het vooral omdat het moet, of om gedoe thuis of op school te voorkomen.",
+             "Ik doe het omdat ik me anders schuldig voel, of omdat ik niet slechter wil zijn dan anderen.",
+             "Ik doe het omdat ik snap waarom het belangrijk is voor mij, of omdat ik het interessant vind."] },
+  { id:"werkhouding", naam:"Werkhouding", vraag:"Hoe werk je in de les en thuis?",
+    niveaus:["Ik begin vaak pas als het echt moet. In de les ben ik snel afgeleid.",
+             "Ik doe wat moet, maar ik haak af als het moeilijk of saai wordt.",
+             "Ik werk meestal geconcentreerd en maak mijn huiswerk. Bij tegenslag zet ik door.",
+             "Ik werk geconcentreerd, doe meer dan het minimum en vraag hulp als ik vastloop."] },
+  { id:"organisatie", naam:"Organisatie", vraag:"Hoe plan en regel je je schoolwerk?",
+    niveaus:["Ik vergeet vaak huiswerk, toetsen of spullen. Ik heb geen overzicht.",
+             "Ik kijk soms in Magister of mijn agenda, maar leer vaak op het laatste moment.",
+             "Ik weet wat er komt en plan meestal vooruit, al lukt dat niet altijd.",
+             "Ik plan mijn week vooruit, verdeel leerwerk over meerdere dagen en houd me eraan."] }
+];
+const GEDRAG = DOMEINEN.filter(d => d.id !== "kennis");
+const SCH4 = [{v:1,t:"1"},{v:2,t:"2"},{v:3,t:"3"},{v:4,t:"4"}];
+const VAKLABEL = {1:"loopt moeizaam",2:"twijfelachtig",3:"gaat redelijk",4:"gaat goed"};
+const KLAAR = {1:"weet nog niet goed wat ik moet kennen",2:"ken een deel van de stof",3:"ken de stof, moet nog oefenen",4:"kan het uitleggen en opgaven maken zonder boek"};
+const WELZIJN = [{v:1,t:"Niet goed"},{v:2,t:"Minder"},{v:3,t:"Gaat wel"},{v:4,t:"Goed"},{v:5,t:"Heel goed"}];
+const PLANFREQ = [{v:"nooit",t:"Nooit"},{v:"soms",t:"Soms"},{v:"vaak",t:"Vaak"},{v:"altijd",t:"(Bijna) altijd"}];
+const ROLLEN = ["Vakdocent","Klasgenoot","Ouder of verzorger","Trainer, coach of werkgever","Andere volwassene"];
+const STRATEGIEEN = [
+  { id:"overhoren",  t:"Mezelf overhoren of oefentoetsen maken", e:"sterk" },
+  { id:"gespreid",   t:"Leren verspreid over meerdere dagen", e:"sterk" },
+  { id:"opgaven",    t:"Opgaven maken zonder eerst de uitwerking te bekijken", e:"sterk" },
+  { id:"uitleggen",  t:"De stof uitleggen aan iemand anders", e:"redelijk" },
+  { id:"samenvatten",t:"Een samenvatting of schema maken", e:"zwak" },
+  { id:"markeren",   t:"Markeren of onderstrepen", e:"zwak" },
+  { id:"doorlezen",  t:"De stof een paar keer doorlezen", e:"zwak" }
+];
+const ETXT = { sterk:"werkt sterk", redelijk:"werkt redelijk", zwak:"werkt zwak" };
+const ORGCHECK = [
+  ["pta","Ik heb in het PTA en het toetsrooster gekeken welke stof er per vak komt."],
+  ["agenda","Mijn leermomenten staan in mijn agenda of planner, met datum."],
+  ["spullen","Ik weet wat ik mee moet nemen (rekenmachine, woordenboek, pennen)."],
+  ["afspraken","Bijbaan, sport en afspraken passen om mijn toetsen heen."],
+  ["telefoon","Ik heb een afspraak met mezelf over mijn telefoon tijdens het leren."],
+  ["slaap","Ik plan genoeg slaap in de toetsweek."]
+];
+
+/* ---------- opslag ---------- */
+function blank(){
+  return { versie:2, leerling:{voornaam:"",klas:"",profiel:"",groep:""}, meta:{}, lessen:{}, gesprek:{}, cfg:null, vakken:[], doelenA:[{},{}], doelenB:[{},{}],
+           m:{ spiegel:{ fb:[{rol:"Vakdocent"},{rol:"Klasgenoot"},{rol:"Ouder of verzorger"}] } },
+           ui:{ tab:"start", privacyOk:false } };
+}
+let storageOk = true;
+function load(){ try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; } catch(e){ storageOk = false; return null; } }
+let S = Object.assign(blank(), load() || {});
+S.m = S.m || {}; S.meta = S.meta || {}; S.lessen = S.lessen || {}; S.gesprek = S.gesprek || {};
+let saveTimer = null;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const el = document.getElementById("save");
+    try { localStorage.setItem(KEY, JSON.stringify(S)); storageOk = true;
+      el.textContent = "Opgeslagen op dit apparaat · " + new Date().toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"}); el.classList.remove("err");
+    } catch(e){ storageOk = false; el.textContent = "Opslaan lukt niet. Maak nu een back-up!"; el.classList.add("err"); }
+  }, 250);
+}
+function get(p){ return p.split(".").reduce((o,k) => (o == null ? undefined : o[k]), S); }
+function set(p, v){
+  const ks = p.split("."); let o = S;
+  for (let i = 0; i < ks.length - 1; i++){
+    if (o[ks[i]] == null || typeof o[ks[i]] !== "object") o[ks[i]] = /^\d+$/.test(ks[i+1]) ? [] : {};
+    o = o[ks[i]];
+  }
+  o[ks[ks.length-1]] = v; save();
+}
+
+/* ---------- hulpfuncties ---------- */
+const $ = s => document.querySelector(s);
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function vkey(v){ return String(v).replace(/[.\s]+/g,"_"); }
+function fmtDate(iso){ if(!iso) return ""; const d = new Date(iso+"T12:00:00"); return isNaN(d) ? iso : d.toLocaleDateString("nl-NL",{day:"numeric",month:"long"}); }
+function filled(v){ return v !== undefined && v !== null && v !== "" && v !== false; }
+function hasContent(o){ if (o == null) return false; if (typeof o !== "object") return filled(o);
+  return Object.entries(o).some(([k,v]) => k !== "klaar" && k !== "rol" && hasContent(v)); }
+function num(v){ if (v == null || v === "") return null; const n = parseFloat(String(v).replace(",", ".")); return isNaN(n) ? null : n; }
+function nl(n, d=1){ return n == null ? "–" : n.toFixed(d).replace(".", ","); }
+
+function ta(p, label, hint="", rows=3, ph=""){
+  return `<label class="f"><span class="lab">${label}</span>${hint?`<span class="hint">${hint}</span>`:""}<textarea data-p="${p}" rows="${rows}" placeholder="${esc(ph)}">${esc(get(p))}</textarea></label>`; }
+function inp(p, label, hint="", type="text", ph=""){
+  return `<label class="f"><span class="lab">${label}</span>${hint?`<span class="hint">${hint}</span>`:""}<input type="${type}" data-p="${p}" value="${esc(get(p))}" placeholder="${esc(ph)}"></label>`; }
+function sel(p, label, opts, hint=""){ const cur = get(p) ?? "";
+  return `<label class="f"><span class="lab">${label}</span>${hint?`<span class="hint">${hint}</span>`:""}<select data-p="${p}"><option value="">Kies…</option>${opts.map(o=>`<option ${String(cur)===String(o)?"selected":""}>${esc(o)}</option>`).join("")}</select></label>`; }
+function radios(p, opts, cls="", isNum=false){ const cur = get(p);
+  return `<div class="radios ${cls}" role="radiogroup">${opts.map(o => `<label class="opt"><input type="radio" name="${p}" data-p="${p}" ${isNum?"data-n":""} value="${esc(o.v)}" ${String(cur)===String(o.v)?"checked":""}><span>${o.lvl?`<span class="lvl">${o.v}</span>`:""}${o.t?`<b>${o.t}</b>`:""}${o.sub?`<small>${o.sub}</small>`:""}</span></label>`).join("")}</div>`; }
+function chk(p, label){ return `<label class="check"><input type="checkbox" data-p="${p}" ${get(p)?"checked":""}><span>${label}</span></label>`; }
+function rubric(p, d){ return `<div class="domain-h"><h3>${d.naam}</h3><span class="q">${d.vraag}</span></div>` + radios(p, d.niveaus.map((t,i)=>({v:i+1, sub:t, lvl:true})), "cols4", true); }
+function live(name, arg=""){ return `<div data-live="${name}" data-arg="${esc(arg)}">${LIVE[name](arg)}</div>`; }
+function example(title, text){ return `<details><summary>${title}</summary><div class="ex">${text}</div></details>`; }
+
+function status(id){
+  const m = MOM[id], d = S.m[id];
+  if (d && d.klaar) return "klaar";
+  const extra = id==="actieplan" ? hasContent(S.doelenA) : id==="tussen" ? hasContent(S.doelenB) : false;
+  return (hasContent(d) || extra) ? "bezig" : "leeg";
+}
+const STATUSTXT = { leeg:"nog niet begonnen", bezig:"bezig", klaar:"ingevuld", slot:"op slot", laat:"niet ingeleverd" };
+function nuId(){
+  const today = new Date().toISOString().slice(0,10);
+  const open = CONFIG.momenten.filter(m => status(m.id) !== "klaar");
+  const due = open.find(m => m.datum >= today);
+  return (due || open[open.length-1] || {}).id;
+}
+function momentHead(id, lead){
+  const m = MOM[id];
+  const tw = m.tw ? CONFIG.toetsweken[m.tw] : null;
+  return `<h1>${esc(m.titel)}</h1><div class="meta">
+    <span class="pill ${m.spoor==="toets"?"warm":m.spoor==="lob"?"lob":""}">${SPOORNAAM[m.spoor]}</span>
+    <span class="pill">week ${m.week}</span>${m.datum?`<span class="pill">klaar op ${fmtDate(m.datum)}</span>`:""}
+    ${tw?`<span class="pill warm">toetsweek ${m.tw}: ${fmtDate(tw.van)} – ${fmtDate(tw.tot)}</span>`:""}
+    ${m.mol?`<span class="pill warm">gespreksstuk ${esc(m.mol)}</span>`:""}</div><p class="lead">${lead}</p>`;
+}
+function klaarBox(id){
+  const k = S.m[id] && S.m[id].klaar;
+  return `<div class="card soft klaarbox"><div><b>${k?"Afgerond op "+new Date(k).toLocaleDateString("nl-NL"):"Klaar met dit onderdeel?"}</b><div class="small">${k?"Je kunt nog steeds dingen aanpassen.":"Markeer het als ingevuld. Maak daarna je PDF bij Opslaan en delen als je mentor erom vraagt."}</div></div>
+  <button class="btn ${k?"ghost":""}" data-act="klaar" data-id="${id}">${k?"Toch nog niet klaar":"Ik ben klaar"}</button></div>`;
+}
+function pager(id){
+  const i = CONFIG.momenten.findIndex(m => m.id === id), p = CONFIG.momenten[i-1], n = CONFIG.momenten[i+1];
+  return `<div class="pager">${p?`<button class="btn ghost" data-go="${p.id}">← ${esc(p.titel)}</button>`:"<span></span>"}${n?`<button class="btn ghost" data-go="${n.id}">${esc(n.titel)} →</button>`:""}</div>`;
+}
+
+/* ---------- bouwstenen ---------- */
+function meting(prefix, titel, sub){
+  let h = `<div class="card"><h2>${titel}</h2><p class="sub">${sub}</p>`;
+  DOMEINEN.forEach(d => h += rubric(`${prefix}.${d.id}`, d));
+  h += `</div>`;
+  if (S.vakken.length){
+    h += `<div class="card"><h2>Per vak</h2><p class="sub">1 = loopt moeizaam, 2 = twijfelachtig, 3 = gaat redelijk, 4 = gaat goed. Vink aan als een vak extra aandacht nodig heeft.</p><div class="tbl-wrap"><table class="vt"><thead><tr><th>Vak</th><th>Hoe gaat het?</th><th>Aandacht</th></tr></thead><tbody>`;
+    S.vakken.forEach(v => { const k = vkey(v);
+      h += `<tr><td class="vak">${esc(v)}</td><td>${radios(`${prefix}_vak.${k}`, SCH4, "inline", true)}</td><td><input type="checkbox" aria-label="Aandacht voor ${esc(v)}" data-p="${prefix}_aandacht.${k}" ${get(`${prefix}_aandacht.${k}`)?"checked":""} style="width:18px;height:18px;accent-color:var(--acc)"></td></tr>`; });
+    h += `</tbody></table></div></div>`;
+  } else h += geenVakken();
+  return h;
+}
+function geenVakken(){ return `<div class="card warn">Je hebt nog geen vakken gekozen. Doe dat eerst bij <button class="btn small ghost" data-go="start">Start</button></div>`; }
+
+function welzijn(id){
+  const p = `m.${id}.welzijn`;
+  return `<div class="card"><h2>Hoe gaat het met jou?</h2>
+  <p class="sub">Dit is alleen voor jou. Het komt pas in je PDF als je hieronder aanvinkt dat je mentor het mag zien.</p>
+  ${radios(p+".score", WELZIJN, "cols5", true)}
+  ${live("welzijnAlert", id)}
+  ${ta(p+".toelichting","Wil je er iets over kwijt? (mag leeg blijven)","Denk aan thuis, vrienden, de klas, slaap, sport of werk.",2)}
+  ${chk(p+".delen","Mijn mentor mag dit zien. Neem het op in mijn PDF.")}</div>`;
+}
+function molBox(id){
+  const m = MOM[id]; if (!m.mol) return "";
+  const naam = m.mol.split("·")[0].trim();
+  return `<div class="card"><h2>Na het ${esc(naam)}</h2>
+  <p class="sub">Vul dit in ná het gesprek met je mentor en je ouder(s). Zo weet je later nog wat er is afgesproken.</p>
+  ${ta(`m.${id}.mol.afspraken`,"Wat hebben we afgesproken?","Wat doe jij, wat doet je mentor, wat doet thuis?",3)}
+  ${ta(`m.${id}.mol.meegenomen`,"Wat verraste je, of wat nam je mee uit het gesprek?","",2)}</div>`;
+}
+
+/* doelen */
+function doelLabel(set, i){
+  const d = get(`${set}.${i}`) || {};
+  if (i === 0) return d.vak ? `Vakdoel: ${d.vak}` : "Vakdoel";
+  const dom = DOMEINEN.find(x => x.id === d.domein);
+  return dom ? `Doel voor ${dom.naam.toLowerCase()}` : "Doel voor motivatie, werkhouding of organisatie";
+}
+function clean(s){ return esc(String(s).trim().replace(/[.\s]+$/,"")); }
+function doelZin(d){
+  d = d || {};
+  if (!d.specifiek) return `<div class="zin leeg">Hier verschijnt je doel in één zin zodra je het invult.</div>`;
+  let s = clean(d.specifiek) + ".";
+  if (d.meetbaar) s += ` Ik weet dat het gelukt is als ${clean(d.meetbaar)}.`;
+  if (d.datum) s += ` Uiterlijk ${fmtDate(d.datum)}.`;
+  if (d.als && d.dan) s += `<br><b>Als</b> ${clean(d.als)}, <b>dan</b> ${clean(d.dan)}.`;
+  return `<div class="zin">${s}</div>`;
+}
+function smartCheck(d){
+  d = d || {};
+  const M = /\d|keer|per |elke|iedere|minimaal|minstens|cijfer|uur|minuten|dagen|week/i;
+  const c = [["S",(d.specifiek||"").trim().length>=20,"Specifiek: beschrijf precies wat je gaat doen of bereiken."],
+             ["M",M.test(d.meetbaar||""),"Meetbaar: noem iets wat je kunt tellen of zien (aantal, cijfer, keer per week)."],
+             ["A",(d.haalbaar||"").trim().length>=8,"Acceptabel: leg uit waarom het haalbaar is en toch uitdagend."],
+             ["R",(d.relevant||"").trim().length>=8,"Relevant: schrijf op waarom dit belangrijk is voor jou."],
+             ["T",!!d.datum,"Tijdgebonden: kies een datum."]];
+  const miss = c.filter(x=>!x[1]).map(x=>x[2]);
+  return `<div class="badges" aria-label="SMART-check">${c.map(x=>`<span class="badge ${x[1]?"on":""}" title="${esc(x[2])}">${x[0]}</span>`).join("")}</div>` +
+    (miss.length ? `<div class="small">Nog doen: ${miss[0]}</div>` : `<div class="small" style="color:var(--ok)">Je doel is SMART.</div>`);
+}
+function bronHint(set){
+  const s = get("m.actieplan.swot") || {}, t = [];
+  const zw = [s.w1,s.w2].filter(Boolean), bd = [s.b].filter(Boolean);
+  if (zw.length) t.push(`<b>Zwaktes uit je SWOT:</b> ${zw.map(esc).join("; ")}`);
+  if (bd.length) t.push(`<b>Bedreiging:</b> ${bd.map(esc).join("; ")}`);
+  if (set === "doelenB"){
+    const tips = (get("m.spiegel.fb")||[]).map(f=>f.tip).filter(Boolean);
+    if (tips.length) t.push(`<b>Tips uit je spiegel:</b> ${tips.map(esc).join("; ")}`);
+    const an = ["twA_na","twB_na"].map(id => get(`m.${id}.anders`)).filter(Boolean);
+    if (an.length) t.push(`<b>Na de toetsweken nam je je voor:</b> ${an.map(esc).join("; ")}`);
+  }
+  return t.length ? `<div class="hint" style="margin-top:-8px">${t.join("<br>")}</div>` : "";
+}
+function doelForm(set, i){
+  const b = `${set}.${i}`;
+  const next = set === "doelenA" ? MOM.tussen : MOM.eind;
+  let h = `<div class="card"><h2>Doel ${i+1}: <span data-doellabel="${b}">${esc(doelLabel(set,i))}</span></h2>`;
+  if (i === 0) h += S.vakken.length ? sel(`${b}.vak`, "Voor welk vak?", S.vakken, "Kies bij voorkeur een vak dat je als aandachtsvak aanvinkte.") : `<p class="alert">Kies eerst je vakken bij Start.</p>`;
+  else h += `<span class="lab">Waar gaat dit doel over?</span>` + radios(`${b}.domein`, GEDRAG.map(g=>({v:g.id,t:g.naam})), "cols3");
+  h += `<span class="lab">Wat voor doel is het?</span><span class="hint">Bij iets nieuws of lastigs werkt een leerdoel meestal beter dan een cijferdoel.</span>` +
+    radios(`${b}.type`, [{v:"leer",t:"Leerdoel",sub:"Ik leer een nieuwe aanpak of vaardigheid."},{v:"prestatie",t:"Prestatiedoel",sub:"Ik haal een bepaald resultaat, zoals een cijfer."}], "cols2");
+  h += example("Voorbeelden bekijken",
+    `<b>Leerdoel:</b> Ik leer mijn Engelse woordjes verspreid over drie dagen in plaats van de avond ervoor. Ik weet dat het gelukt is als ik dat vier weken lang elke week doe.<br><br>
+     <b>Prestatiedoel:</b> Ik sta voor wiskunde A na toetsweek B minimaal een 6,0 gemiddeld.<br><br>
+     <b>Als-dan-plan:</b> Als ik thuiskom en op mijn telefoon wil, dan leg ik hem eerst in de gang en werk ik 25 minuten.`);
+  h += `<h3>Wat wil je?</h3>` + ta(`${b}.specifiek`, "S · Wat ga je precies doen of bereiken?", "Schrijf het als: Ik ...", 2);
+  h += `<div class="grid2">${ta(`${b}.meetbaar`,"M · Hoe zie je dat het gelukt is?","Iets wat je kunt tellen of laten zien.",2)}${ta(`${b}.haalbaar`,"A · Waarom is dit haalbaar, en toch een uitdaging?","",2)}</div>`;
+  h += `<div class="grid2">${ta(`${b}.relevant`,"R · Waarom is dit belangrijk voor jóu?","Denk aan de overgang, je studiekeuze of hoe je je wilt voelen.",2)}${inp(`${b}.datum`,"T · Uiterlijk wanneer?",`Tip: ${fmtDate(next.datum)} (${next.titel.toLowerCase()}).`,"date")}</div>`;
+  h += live("smart", b);
+  h += `<h3>Zorg dat het ook gebeurt</h3>`;
+  h += ta(`${b}.uitkomst`,"Uitkomst · Wat is het mooiste gevolg als het lukt?","Stel het je concreet voor. Wat merk je, hoe voelt het?",2);
+  h += ta(`${b}.obstakel`,"Obstakel · Wat in jezelf houdt je het meest tegen?","Geen smoesjes over anderen, maar iets van jezelf: een gewoonte, een gevoel, een gedachte.",2) + bronHint(set);
+  h += `<div class="grid2">${ta(`${b}.als`,"Plan · Als ...","De situatie waarin je obstakel opduikt.",2,"ik na school op de bank ga zitten")}${ta(`${b}.dan`,"... dan ...","Wat je dan meteen doet.",2,"pak ik eerst 20 minuten mijn planner erbij")}</div>`;
+  h += inp(`${b}.hulp`,"Wie kan je helpen, en hoe?");
+  h += `<span class="lab">Je doel in één zin</span>` + live("zin", b) + `</div>`;
+  return h;
+}
+function evalDoel(id, set, i){
+  const d = get(`${set}.${i}`) || {};
+  if (!d.specifiek) return `<div class="card"><h2>Doel ${i+1}</h2><p class="muted">Dit doel is niet ingevuld.</p></div>`;
+  const b = `m.${id}.eval.${i}`;
+  return `<div class="card"><h2>Doel ${i+1}: ${esc(doelLabel(set,i))}</h2>${doelZin(d)}
+    <span class="lab" style="margin-top:12px">Is het gelukt?</span>
+    ${radios(b+".status", [{v:"ja",t:"Gelukt"},{v:"deels",t:"Deels gelukt"},{v:"nee",t:"Niet gelukt"}], "cols3")}
+    ${ta(b+".waarom","Wat hielp, of wat zat in de weg?","Kijk ook naar je als-dan-plan: heb je het echt uitgevoerd?",2)}
+    ${ta(b+".geleerd","Wat heb je over jezelf geleerd?","",2)}</div>`;
+}
+function checkin(id, set){
+  const has = [0,1].some(i => (get(`${set}.${i}`)||{}).specifiek);
+  if (!has) return `<div class="card warn">Je hebt nog geen doelen voor deze periode. Vul die eerst in bij ${set==="doelenA"?"het Actieplan":"de Tussenbalans"}.</div>`;
+  return `<div class="card soft"><b>Check op je doelen.</b> Voer je je plan uit, en werkt het? Werkt het niet, pas je als-dan-plan dan hier aan.</div>` + [0,1].map(i => {
+    const d = get(`${set}.${i}`) || {}; if (!d.specifiek) return "";
+    const b = `m.${id}.doel.${i}`;
+    return `<div class="card"><h2>Doel ${i+1}: ${esc(doelLabel(set,i))}</h2>${doelZin(d)}
+      <span class="lab" style="margin-top:12px">Hoe vaak heb je je als-dan-plan echt uitgevoerd?</span>${radios(b+".plan", PLANFREQ, "cols4")}
+      <span class="lab">Kom je dichter bij je doel?</span>${radios(b+".dichterbij", [{v:1,t:"Nee"},{v:2,t:"Een beetje"},{v:3,t:"Ja"},{v:4,t:"Al gehaald"}], "cols4", true)}
+      ${ta(b+".werkt","Wat werkt, en wat niet?","",2)}
+      <div class="grid2">${ta(`${set}.${i}.als`,"Als ... (aanpassen mag)","",2)}${ta(`${set}.${i}.dan`,"... dan ...","",2)}</div></div>`; }).join("");
+}
+
+/* toetsweken */
+function prevNa(tw){ const order = ["A","B","C","D"]; const i = order.indexOf(tw); return i > 0 ? `tw${order[i-1]}_na` : null; }
+function toetsVoor(id){
+  const m = MOM[id], b = `m.${id}`;
+  let h = "";
+  const pn = prevNa(m.tw), vorig = pn && get(`m.${pn}.anders`);
+  if (vorig) h += `<div class="note"><b>Dit nam je je voor na toetsweek ${prevNa(m.tw)[2]}:</b> ${esc(vorig)}</div>`;
+  if (!S.vakken.length) return h + geenVakken();
+  h += `<div class="card"><h2>1. Ben je er klaar voor?</h2><p class="sub">Vink aan welke vakken een toets hebben. Schat per vak in hoe klaar je bent, nu én vlak voor de toetsweek. Voorspel ook je cijfer: na de toetsweek vergelijk je dat met wat je haalde.</p>
+  <div class="small" style="margin-bottom:8px">1 = ${KLAAR[1]} · 2 = ${KLAAR[2]} · 3 = ${KLAAR[3]} · 4 = ${KLAAR[4]}</div>
+  <div class="tbl-wrap"><table class="vt"><thead><tr><th>Vak</th><th>Toets?</th><th>Welke stof?</th><th>Klaar nu</th><th>Vlak ervoor</th><th>Verwacht</th></tr></thead><tbody>`;
+  S.vakken.forEach(v => { const k = vkey(v), vp = `${b}.vak.${k}`, on = get(vp+".toets");
+    h += `<tr class="${on?"":"off"}"><td class="vak">${esc(v)}</td><td><input type="checkbox" data-p="${vp}.toets" data-rerender aria-label="${esc(v)} heeft toets" ${on?"checked":""} style="width:18px;height:18px;accent-color:var(--acc)"></td>
+      <td><input type="text" data-p="${vp}.stof" value="${esc(get(vp+".stof"))}" placeholder="bijv. H1–3" aria-label="Stof ${esc(v)}" style="min-width:110px"></td>
+      <td>${radios(vp+".klaarNu", SCH4, "inline", true)}</td><td>${radios(vp+".klaarVoor", SCH4, "inline", true)}</td>
+      <td><input type="text" class="cijfer" inputmode="decimal" data-p="${vp}.verwacht" value="${esc(get(vp+".verwacht"))}" placeholder="6,5" aria-label="Verwacht cijfer ${esc(v)}"></td></tr>`; });
+  h += `</tbody></table></div>${live("klaarSamen", id)}</div>`;
+  h += `<div class="card"><h2>2. Hoe ga je leren?</h2><p class="sub">Vink aan wat je van plan bent. Onderzoek laat zien dat sommige manieren veel beter werken dan andere.</p>
+    ${STRATEGIEEN.map(s => `<label class="check"><input type="checkbox" data-p="${b}.strat.${s.id}" ${get(`${b}.strat.${s.id}`)?"checked":""}><span>${s.t}<span class="tag ${s.e}">${ETXT[s.e]}</span></span></label>`).join("")}
+    ${live("stratFeedback", id)}</div>`;
+  h += `<div class="card"><h2>3. Hoe organiseer je het?</h2>
+    <div class="grid2">${inp(`${b}.start`,"Wanneer begin je met leren?","Reken terug vanaf de eerste toets.","date")}
+    ${sel(`${b}.waar`,"Waar staat je planning?",["Agenda op papier","Magister","Planner-app of agenda op telefoon","Weekplanner van school","Nog nergens"])}</div>
+    <span class="lab">Hoeveel leermomenten plan je per week?</span>${radios(`${b}.momenten`, [{v:"1-2",t:"1 of 2"},{v:"3-4",t:"3 of 4"},{v:"5+",t:"5 of meer"}], "cols3")}
+    ${ORGCHECK.map(([k,t]) => chk(`${b}.org.${k}`, t)).join("")}
+    <div class="grid2" style="margin-top:6px">${ta(`${b}.als`,"Als-dan voor deze toetsweek · Als ...","De situatie waarin het meestal misgaat.",2)}${ta(`${b}.dan`,"... dan ...","",2)}</div></div>`;
+  h += `<div class="card"><h2>4. Zorg en hulp</h2>${ta(`${b}.zorg`,"Voor welke toets ben je het minst klaar, en waarom?","",2)}${ta(`${b}.hulp`,"Welke hulp heb je nodig, en van wie?","Bijvoorbeeld een vakdocent om uitleg vragen, of samen leren met een klasgenoot.",2)}</div>`;
+  return h;
+}
+function toetsNa(id){
+  const m = MOM[id], b = `m.${id}`, vb = `m.tw${m.tw}_voor`;
+  const vakken = S.vakken.filter(v => get(`${vb}.vak.${vkey(v)}.toets`));
+  let h = `<div class="card"><h2>1. Wat haalde je?</h2><p class="sub">Vul je cijfers in zodra ze in Magister staan. Je ziet direct hoe goed je jezelf inschatte.</p>`;
+  if (!vakken.length) h += `<p class="alert">Je hebt bij het toetsweekplan geen vakken met een toets aangevinkt. Doe dat eerst bij <button class="btn small ghost" data-go="tw${m.tw}_voor">Toetsweekplan ${m.tw}</button></p>`;
+  else {
+    h += `<div class="tbl-wrap"><table class="vt"><thead><tr><th>Vak</th><th>Klaar vlak ervoor</th><th>Verwacht</th><th>Behaald</th></tr></thead><tbody>`;
+    vakken.forEach(v => { const k = vkey(v), kv = get(`${vb}.vak.${k}.klaarVoor`) || get(`${vb}.vak.${k}.klaarNu`);
+      h += `<tr><td class="vak">${esc(v)}</td><td>${kv||"–"}</td><td>${esc(get(`${vb}.vak.${k}.verwacht`)||"–")}</td><td><input type="text" class="cijfer" inputmode="decimal" data-p="${b}.cijfer.${k}" value="${esc(get(`${b}.cijfer.${k}`))}" aria-label="Behaald cijfer ${esc(v)}"></td></tr>`; });
+    h += `</tbody></table></div>${live("kalibratie", id)}`;
+  }
+  h += ta(`${b}.nietklaar`,"Bij welke toets merkte je dat je niet klaar was? Hoe kwam dat?","",2) + `</div>`;
+  h += `<div class="card"><h2>2. Hoe organiseerde je het?</h2>
+    <span class="lab">Hoe goed hield je je aan je planning?</span>${radios(`${b}.planning`, [{v:1,t:"Niet"},{v:2,t:"Een beetje"},{v:3,t:"Grotendeels"},{v:4,t:"Helemaal"}], "cols4", true)}
+    <span class="lab">Wanneer begon je echt met leren?</span>${radios(`${b}.begon`, [{v:"2w",t:"Meer dan 2 weken ervoor"},{v:"1w",t:"1 à 2 weken ervoor"},{v:"dagen",t:"Een paar dagen ervoor"},{v:"avond",t:"De avond ervoor"}], "cols4")}
+    ${ta(`${b}.strategie`,"Welke manier van leren werkte het best? En welke niet?","",2)}
+    <div class="grid2">${ta(`${b}.goed`,"Wat ging goed in je organisatie?","",2)}${ta(`${b}.mis`,"Wat ging mis?","",2)}</div></div>`;
+  h += `<div class="card"><h2>3. Volgende keer</h2>${ta(`${b}.anders`,"Wat doe je bij de volgende toetsweek anders?","Dit zie je terug bij je volgende toetsweekplan. Maak het concreet.",2)}
+    ${ta(`${b}.herkansing`,"Wil je een toets herkansen? Welke, en waarom die?","Kijk in het PTA welke toetsen herkansbaar zijn en in de jaarlijn tot wanneer je je kunt aanmelden.",2)}</div>`;
+  return h;
+}
+
+/* LOB */
+function lobChecklist(id, items){ return `<div class="card lobc"><h2>Stand van je LOB-dossier</h2><p class="sub">Het dossier zelf lever je in via Magister. Hier houd je bij hoe ver je bent.</p>${items.map(([k,t]) => chk(`m.${id}.check.${k}`, t)).join("")}</div>`; }
+function lob1(){ const b = "m.lob1";
+  return lobChecklist("lob1", [["reflectie","Reflectie op mijn profielkeuze"],["interesse","Interessetest gedaan"],["talent","Talententest gedaan"],["overzicht","Overzicht van mijn resultaten"],["visueel","Visuele zelfanalyse (mindmap, collage, moodboard of video)"],["ingeleverd","Deel 1 ingeleverd in Magister (week 49)"]]) +
+  `<div class="card"><h2>Wat weet je nu over jezelf?</h2><p class="sub">Haal dit uit je tests en je zelfanalyse. Kort is prima.</p>
+  ${inp(`${b}.tests`,"Welke tests heb je gedaan?")}
+  <div class="grid3">${[1,2,3].map(n=>inp(`${b}.interesse${n}`, n===1?"Drie interesses":"","","text",`interesse ${n}`)).join("")}</div>
+  <div class="grid3">${[1,2,3].map(n=>inp(`${b}.talent${n}`, n===1?"Drie talenten of sterke punten":"","","text",`talent ${n}`)).join("")}</div>
+  <div class="grid3">${[1,2,3].map(n=>inp(`${b}.waarde${n}`, n===1?"Drie dingen die je belangrijk vindt in werk":"","","text",`waarde ${n}`)).join("")}</div>
+  ${ta(`${b}.verrast`,"Wat verraste je aan de uitslagen?","",2)}
+  <span class="lab">Zou je je profiel opnieuw kiezen?</span>${radios(`${b}.profiel`, [{v:"ja",t:"Ja"},{v:"twijfel",t:"Ik twijfel"},{v:"nee",t:"Nee"}], "cols3")}
+  ${ta(`${b}.profielWaarom`,"Waarom?","",2)}
+  ${ta(`${b}.actieplan`,"Wat betekent dit voor je actieplan? Past je doel nog bij wie je bent?","",2)}</div>
+  <div class="card"><h2>Profielreflectie</h2><p class="sub">Schrijf hier je reflectie op je profielkeuze (ongeveer 300 woorden). Waarom koos je dit profiel in havo 3? Welke vakken liggen je goed of juist niet? Zou je dezelfde keuze opnieuw maken? Je kunt de tekst daarna gebruiken in je LOB-dossier.</p>
+  ${ta(`${b}.profieltekst`,"Mijn profielreflectie","",12)}${live("woorden", `${b}.profieltekst`)}</div>`; }
+function lob2(){ const b = "m.lob2";
+  return lobChecklist("lob2", [["opl1","Opleiding 1 onderzocht"],["opl2","Opleiding 2 onderzocht"],["skia","SKIA bijgewoond"],["od1","Open dag 1 bezocht + verslag"],["od2","Open dag 2 bezocht + verslag"],["interview","Interview met student of professional"],["beroepen","Overzicht van 3 beroepen"],["ingeleverd","Deel 2 ingeleverd in Magister (week 11)"]]) +
+  `<div class="card"><h2>Wat heb je ontdekt?</h2>
+  <div class="grid2">${inp(`${b}.opl1`,"Opleiding 1","naam en instelling")}${inp(`${b}.opl2`,"Opleiding 2","naam en instelling")}</div>
+  <div class="grid2">${inp(`${b}.od1`,"Open dag 1","waar en wanneer")}${inp(`${b}.od2`,"Open dag 2","waar en wanneer")}</div>
+  <div class="grid3">${[1,2,3].map(n=>inp(`${b}.beroep${n}`, n===1?"Drie beroepen die je aanspreken":"","","text",`beroep ${n}`)).join("")}</div>
+  ${ta(`${b}.richting`,"Welke richting spreekt je nu het meest aan, en waarom?","Verbind het met je interesses, talenten en waarden uit deel 1.",3)}
+  ${ta(`${b}.veranderd`,"Wat is er veranderd sinds deel 1? Wat is bevestigd?","",2)}
+  ${ta(`${b}.twijfel`,"Welke twijfel heb je nog, en hoe ga je die uitzoeken?","",2)}</div>
+  ${[1,2].map(n => `<div class="card"><h2>Verslag open dag ${n}</h2><p class="sub">Schrijf je verslag hier, dan kun je het daarna gebruiken in je LOB-dossier.</p>
+    ${inp(`${b}.odv${n}.waar`,"Welke opleiding en school, en wanneer?")}
+    ${ta(`${b}.odv${n}.waarom`,"Waarom bezocht je deze open dag?","",2)}
+    ${ta(`${b}.odv${n}.gedaan`,"Wat heb je gezien en gedaan?","",3)}
+    ${ta(`${b}.odv${n}.plusmin`,"Wat vond je goed, en wat minder?","",3)}
+    ${ta(`${b}.odv${n}.past`,"Past deze opleiding bij jou? Waarom wel of niet?","Verbind het met je interesses, talenten en waarden.",3)}
+    ${ta(`${b}.odv${n}.betekenis`,"Wat betekent dit voor je studiekeuze?","",2)}</div>`).join("")}
+  <div class="card"><h2>Interview voorbereiden</h2>${ta(`${b}.interview`,"Je vijf (of meer) vragen voor een student of iemand uit het werkveld","Stel open vragen: over de dagelijkse praktijk, de studiekeuze, voor- en nadelen.",6)}</div>`; }
+function lob3(){ const b = "m.lob3";
+  return lobChecklist("lob3", [["opzet","Eerste opzet van mijn pitch"],["feedback","Feedback gekregen van mijn mentor"],["geoefend","Pitch geoefend, past binnen 5 minuten"],["gepresenteerd","Pitch gegeven (week 22)"]]) +
+  `<div class="card"><h2>Jouw richting</h2>
+  ${ta(`${b}.zin`,"Mijn richting in één zin","Bijvoorbeeld: Ik wil iets met mensen en techniek, en denk nu aan de hbo-opleiding ...",2)}
+  ${ta(`${b}.havo5`,"Wat ga je in havo 5 doen om je keuze te maken of te bevestigen?","Denk aan open dagen, proefstuderen, meeloopdagen, gesprekken met de decaan.",3)}
+  ${ta(`${b}.feedback`,"Welke feedback kreeg je op je pitch?","",2)}
+  ${ta(`${b}.trots`,"Waar ben je trots op in je LOB-dossier?","",2)}</div>
+  <div class="card"><h2>Opzet van je pitch</h2>${ta(`${b}.pitch`,"Hoe bouw je je pitch op?","Wie ben je, wat heb je dit jaar ontdekt, welke richting en waarom, je plan voor havo 5. Maximaal 5 minuten.",8)}${live("woorden", `${b}.pitch`)}</div>`; }
+
+/* ---------- live onderdelen ---------- */
+const LIVE = {
+  smart: b => smartCheck(get(b)),
+  zin: b => doelZin(get(b)),
+  welzijnAlert: id => { const s = get(`m.${id}.welzijn.score`); return (s && s <= 2) ? `<div class="alert">Fijn dat je dit eerlijk invult. Wacht niet tot het volgende moment in deze tool: loop even bij je mentor langs of stuur een berichtje. Je kunt ook terecht bij de leerlingcoördinator of de vertrouwenspersoon op school.</div>` : ""; },
+  terugVergelijk: () => {
+    const t = get("m.actieplan.terug") || {}, n = get("m.actieplan.nu") || {};
+    const rows = DOMEINEN.filter(d => t[d.id] && n[d.id]); if (!rows.length) return "";
+    return `<div class="card soft"><h2>Havo 3 en nu naast elkaar</h2>${rows.map(d => { const a = t[d.id], b = n[d.id];
+      return `<div>${d.naam}: ${a} → ${b} <span class="muted">(${b>a?"vooruit":b<a?"achteruit":"gelijk"})</span></div>`; }).join("")}
+      <p class="small" style="margin:8px 0 0">Waar ga je achteruit, of blijf je laag? Daar ligt misschien je tweede doel.</p></div>`;
+  },
+  klaarSamen: id => {
+    const b = `m.${id}`, rows = S.vakken.filter(v => get(`${b}.vak.${vkey(v)}.toets`));
+    if (!rows.length) return "";
+    const laag = rows.filter(v => { const k = vkey(v), x = get(`${b}.vak.${k}.klaarVoor`) || get(`${b}.vak.${k}.klaarNu`); return x && x <= 2; });
+    return `<p class="small" style="margin-top:10px">${rows.length} toetsen. ${laag.length ? `<span class="flag">Nog niet klaar (1 of 2): ${laag.map(esc).join(", ")}.</span> Plan voor deze vakken als eerste je leermomenten.` : "Geen vakken op 1 of 2. Houd dat vast."}</p>`;
+  },
+  stratFeedback: id => {
+    const st = get(`m.${id}.strat`) || {}, on = STRATEGIEEN.filter(s => st[s.id]);
+    if (!on.length) return "";
+    const sterk = on.filter(s => s.e === "sterk").length, zwak = on.filter(s => s.e === "zwak").length;
+    if (!sterk) return `<div class="alert">Je kiest nu alleen manieren die weinig opleveren. Voeg er minstens één toe die sterk werkt, zoals jezelf overhoren.</div>`;
+    if (zwak) return `<div class="note">Goed dat je ook een sterke manier kiest. Een samenvatting maken of doorlezen mag, maar gebruik het als start en overhoor jezelf daarna.</div>`;
+    return `<div class="note">Sterke keuze. Jezelf overhoren en gespreid leren zijn de best onderzochte manieren om stof te onthouden.</div>`;
+  },
+  kalibratie: id => {
+    const m = MOM[id], vb = `m.tw${m.tw}_voor`, b = `m.${id}`;
+    const pairs = S.vakken.map(v => { const k = vkey(v); return [v, num(get(`${vb}.vak.${k}.verwacht`)), num(get(`${b}.cijfer.${k}`))]; }).filter(p => p[1]!=null && p[2]!=null);
+    if (!pairs.length) return "";
+    const diff = pairs.reduce((a,p)=>a+(p[2]-p[1]),0)/pairs.length, abs = pairs.reduce((a,p)=>a+Math.abs(p[2]-p[1]),0)/pairs.length;
+    const tekst = abs < 0.6 ? "Je schatte jezelf goed in." : diff < 0 ? "Je schatte jezelf gemiddeld te hoog in. Je dacht dat je verder was dan je was." : "Je schatte jezelf gemiddeld te laag in. Je kunt meer dan je denkt.";
+    const hoog = pairs.filter(p => p[1]-p[2] >= 1).map(p=>p[0]);
+    return `<p class="note">Gemiddeld verschil tussen verwacht en behaald: <b>${diff>0?"+":""}${nl(diff)}</b>. ${tekst}${hoog.length?` Grootste tegenvaller: ${hoog.map(esc).join(", ")}.`:""}</p>`;
+  },
+  gap: () => {
+    const z = get("m.spiegel.zelf") || {}, fb = get("m.spiegel.fb") || [];
+    const rows = DOMEINEN.map(d => {
+      const vals = fb.map(f => f.scores && f.scores[d.id]).filter(Boolean).map(Number);
+      const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null, me = z[d.id] ? Number(z[d.id]) : null;
+      let note = "";
+      if (avg !== null && me !== null){ const df = avg - me;
+        note = df >= 1 ? `<span class="flag">Anderen zien dit positiever dan jij</span>` : df <= -1 ? `<span class="flag">Jij ziet dit positiever dan anderen</span>` : `<span class="muted">Ongeveer hetzelfde</span>`; }
+      return `<tr><td>${d.naam}</td><td>${me ?? "–"}</td><td>${avg!==null?nl(avg)+` <span class="muted">(${vals.length})</span>`:"–"}</td><td>${note}</td></tr>`; }).join("");
+    return `<div class="tbl-wrap"><table class="gap"><thead><tr><th>Onderdeel</th><th>Jij</th><th>Anderen (gem.)</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  },
+  chart: () => chartHTML(),
+  toetsOverzicht: () => toetsOverzicht()
+};
+function refreshLive(){ document.querySelectorAll("[data-live]").forEach(el => { el.innerHTML = LIVE[el.dataset.live](el.dataset.arg); }); }
+
+function chartHTML(){
+  const series = [{k:"m.actieplan.terug",t:"Havo 3",c:"var(--b1)"},{k:"m.actieplan.nu",t:"September",c:"var(--b2)"},{k:"m.tussen.nu",t:"Februari",c:"var(--b3)"},{k:"m.eind.nu",t:"Juni",c:"var(--b4)"}];
+  const fb = get("m.spiegel.fb") || [];
+  if (!series.some(s => DOMEINEN.some(d => get(s.k+"."+d.id)))) return `<p class="muted">Nog geen metingen. Na je actieplan verschijnt hier je lijn.</p>`;
+  let h = `<div class="legend">${series.map(s=>`<span><i style="background:${s.c}"></i>${s.t}</span>`).join("")}<span><i style="background:var(--b5)"></i>Anderen (spiegel)</span></div><div class="chart">`;
+  DOMEINEN.forEach(d => {
+    const vals = fb.map(f => f.scores && f.scores[d.id]).filter(Boolean).map(Number), avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+    h += `<div class="rowc"><div><b>${d.naam}</b></div><div class="bars">`;
+    series.forEach(s => { const v = Number(get(s.k+"."+d.id)) || 0; h += `<div class="bar" style="height:${v/4*100}%;background:${v?s.c:"transparent"}" title="${s.t}: ${v||"–"}"><span>${v||""}</span></div>`; });
+    h += `<div class="bar" style="height:${avg?avg/4*100:0}%;background:${avg?"var(--b5)":"transparent"}" title="Anderen"><span>${avg?nl(avg):""}</span></div></div></div>`;
+  });
+  return h + `</div><p class="small">Schaal 1 tot 4. Een lege plek betekent: nog niet gemeten.</p>`;
+}
+function toetsOverzicht(){
+  const rows = ["A","B","C","D"].map(tw => {
+    const vb = `m.tw${tw}_voor`, na = tw === "D" ? "m.eind.tw" : `m.tw${tw}_na`;
+    const vk = S.vakken.filter(v => get(`${vb}.vak.${vkey(v)}.toets`));
+    if (!vk.length) return "";
+    const kl = vk.map(v => get(`${vb}.vak.${vkey(v)}.klaarVoor`) || get(`${vb}.vak.${vkey(v)}.klaarNu`)).filter(Boolean);
+    const pairs = vk.map(v => [num(get(`${vb}.vak.${vkey(v)}.verwacht`)), num(get(`${na}.cijfer.${vkey(v)}`))]).filter(p=>p[0]!=null&&p[1]!=null);
+    const avgB = pairs.length ? pairs.reduce((a,p)=>a+p[1],0)/pairs.length : null, diff = pairs.length ? pairs.reduce((a,p)=>a+(p[1]-p[0]),0)/pairs.length : null;
+    const plan = get(`${na}.planning`);
+    return `<tr><td>Toetsweek ${tw}</td><td>${kl.length?nl(kl.reduce((a,b)=>a+b,0)/kl.length):"–"}</td><td>${nl(avgB)}</td><td>${diff==null?"–":(diff>0?"+":"")+nl(diff)}</td><td>${plan?["","niet","een beetje","grotendeels","helemaal"][plan]:"–"}</td></tr>`; }).join("");
+  if (!rows) return `<p class="muted">Nog geen toetsweken ingevuld.</p>`;
+  return `<div class="tbl-wrap"><table class="gap"><thead><tr><th></th><th>Klaar (gem.)</th><th>Behaald (gem.)</th><th>Behaald − verwacht</th><th>Planning gehouden</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- stappen binnen een onderdeel ---------- */
+const stepIdx = {};
+function stepped(id, steps){
+  const i = Math.min(stepIdx[id] || 0, steps.length-1);
+  let h = `<div class="steps">${steps.map((s,j)=>`<button data-step="${id}:${j}" ${j===i?'aria-current="step"':""}>${j+1}. ${s.t}</button>`).join("")}</div>`;
+  h += steps[i].html();
+  h += `<div class="row end">${i>0?`<button class="btn ghost" data-step="${id}:${i-1}">← Vorige stap</button>`:"<span></span>"}${i<steps.length-1?`<button class="btn" data-step="${id}:${i+1}">Volgende: ${steps[i+1].t} →</button>`:""}</div>`;
+  return h;
+}
+
+/* ---------- schermen per type ---------- */
+const TYPES = {
+  actieplan: id => momentHead(id, "Je nulmeting en je plan tot februari. Dit is het stuk waar je eerste MOL-gesprek over gaat, dus neem er de tijd voor.") + stepped(id, [
+    { t:"Terugkijken", html:() => { let h = `<div class="card soft"><b>Kijk terug op havo 3 (of je vorige schooljaar).</b> Hoe ging het toen? Wees eerlijk, dit is geen toets.</div><div class="card">`;
+      DOMEINEN.forEach(d => h += rubric(`m.${id}.terug.${d.id}`, d));
+      return h + `</div><div class="card"><h2>Twee momenten</h2><p class="sub">Denk aan een concreet moment, niet aan een heel jaar.</p>
+        ${ta(`m.${id}.terugtekst.goed`,"Een moment waarop school echt goed ging. Wat deed jíj toen?","",3)}
+        ${ta(`m.${id}.terugtekst.mis`,"Een moment waarop het misging. Wat gebeurde er, en wat was jouw aandeel?","",3)}
+        ${ta(`m.${id}.terugtekst.zeggen`,"Wat zeiden docenten of je ouders vaak over jou?","In rapporten, gesprekken of gewoon aan tafel.",2)}</div>`; } },
+    { t:"Waar sta ik nu", html:() => meting(`m.${id}.nu`,"Waar sta je nu, aan het begin van havo 4?","Kies per onderdeel de zin die nu het best bij je past.") + live("terugVergelijk") + welzijn(id) },
+    { t:"Mini-SWOT", html:() => `<div class="card"><h2>Mini-SWOT</h2><p class="sub">Sterktes en zwaktes gaan over jou. Kansen en bedreigingen komen van buiten: dingen in je omgeving die dit jaar kunnen helpen of tegenwerken.</p><div class="swot">
+      <div class="q s"><h3>Sterktes</h3><p class="small">Waar ben je goed in, wat helpt je op school?</p>${["s1","s2"].map(k=>`<input type="text" data-p="m.${id}.swot.${k}" value="${esc(get(`m.${id}.swot.${k}`))}" aria-label="Sterkte">`).join("")}</div>
+      <div class="q w"><h3>Zwaktes</h3><p class="small">Wat zit je zelf in de weg?</p>${["w1","w2"].map(k=>`<input type="text" data-p="m.${id}.swot.${k}" value="${esc(get(`m.${id}.swot.${k}`))}" aria-label="Zwakte">`).join("")}</div>
+      <div class="q k"><h3>Kans</h3><p class="small">Wat kan je dit jaar helpen? Een nieuwe klas, een profiel dat je zelf koos, huiswerkbegeleiding, de LOB-dagen.</p><input type="text" data-p="m.${id}.swot.k" value="${esc(get(`m.${id}.swot.k`))}" aria-label="Kans"></div>
+      <div class="q b"><h3>Bedreiging</h3><p class="small">Wat kan tegenwerken? Je bijbaan, veel sporten, je telefoon, nieuwe vakken.</p><input type="text" data-p="m.${id}.swot.b" value="${esc(get(`m.${id}.swot.b`))}" aria-label="Bedreiging"></div></div></div>` },
+    { t:"Doelen", html:() => `<div class="card soft">Je stelt <b>twee doelen</b>: één voor een vak en één voor motivatie, werkhouding of organisatie. Meer doelen tegelijk werkt niet. Ze lopen tot de tussenbalans in februari.</div>` + doelForm("doelenA",0) + doelForm("doelenA",1) },
+    { t:"Afronden", html:() => `<div class="card"><h2>Laatste vraag</h2>${ta(`m.${id}.mentor`,"Wat moet je mentor weten om je dit jaar goed te kunnen helpen?","",3)}</div>` + klaarBox(id) + molBox(id) }
+  ]),
+  toetsVoor: id => { const m = MOM[id];
+    return momentHead(id, `Maak je plan voor toetsweek ${m.tw}. ${m.tw==="A"?"Doe het vóór de herfstvakantie en werk in week 43 de kolom ‘vlak ervoor’ bij.":m.tw==="B"?"Doe het vóór de kerstvakantie, want de toetsweek begint kort erna. Werk in week 1 de kolom ‘vlak ervoor’ bij.":"Werk vlak voor de toetsweek de kolom ‘vlak ervoor’ bij."}`) +
+      toetsVoor(id) + (m.checkin ? checkin(id, m.checkin) : "") +
+      (m.overgang ? `<div class="card"><h2>De overgang</h2>${ta(`m.${id}.overgang`,"Hoe sta je ervoor met de overgang naar havo 5? Welk vak is je grootste zorg?","Kijk in Magister naar je cijfers en naar de overgangsnormering.",3)}</div>` : "") +
+      (m.mol ? welzijn(id) : "") + klaarBox(id) + molBox(id); },
+  toetsNa: id => { const m = MOM[id];
+    return momentHead(id, `Kijk terug op toetsweek ${m.tw}: was je klaar, hoe organiseerde je het, en wat doe je volgende keer anders?`) +
+      toetsNa(id) + (m.checkin ? checkin(id, m.checkin) : "") + welzijn(id) + klaarBox(id); },
+  lob1: id => momentHead(id, "Je sluit deel 1 van je LOB-dossier af. Wat weet je nu over je interesses, talenten en wat je belangrijk vindt?") + lob1() + klaarBox(id),
+  lob2: id => momentHead(id, "Je sluit deel 2 af: opleidingen, open dagen, een interview en beroepen. Welke richting tekent zich af?") + lob2() + klaarBox(id),
+  lob3: id => momentHead(id, "Je eindpitch. Vat samen welke richting je op wilt en wat je in havo 5 gaat doen.") + lob3() + klaarBox(id),
+  spiegel: id => momentHead(id, "Hoe zien anderen jou? Je vraagt drie mensen om feedback en legt die naast je eigen beeld. Het verschil is het interessantste deel.") + stepped(id, [
+    { t:"Jouw beeld", html:() => { let h = `<div class="card"><h2>Eerst jij</h2><p class="sub">Vul dit in vóór je de feedback van anderen bekijkt.</p>`; DOMEINEN.forEach(d => h += rubric(`m.${id}.zelf.${d.id}`, d)); return h + `</div>`; } },
+    { t:"Feedback vragen", html:() => {
+      const vraag = "Hoi! In mijn mentorles werk ik aan mijn ontwikkeling en ik wil graag eerlijke feedback van je.\n1. Geef me een cijfer van 1 tot 4 voor: kennis en vaardigheden, motivatie, werkhouding en organisatie (1 = daar moet echt iets gebeuren, 4 = gaat heel goed).\n2. Top: wat doe ik goed?\n3. Tip: wat kan ik beter doen?\nDank je wel!";
+      const fb = get(`m.${id}.fb`) || [];
+      let h = `<div class="card soft"><b>Vraag feedback aan drie mensen</b>: bij voorkeur een vakdocent, een klasgenoot en je ouder of verzorger. Vraag het in een gesprek of stuur de vragen via Teams. Vul hun antwoorden daarna zelf in. Schrijf geen namen op, alleen wie het is.</div>
+      <div class="card"><h2>De vragen</h2><textarea readonly rows="7" id="fbVraag">${esc(vraag)}</textarea><div class="row" style="margin-top:8px"><button class="btn small ghost" data-act="copyVraag">Kopieer de vragen</button><span class="small" id="copied"></span></div></div>`;
+      fb.forEach((f,j) => { h += `<div class="fb"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Feedback ${j+1}</h3>${fb.length>1?`<button class="btn small danger" data-act="delFb" data-i="${j}">Verwijderen</button>`:""}</div>
+        ${sel(`m.${id}.fb.${j}.rol`,"Van wie?",ROLLEN)}
+        <span class="lab">Scores (1 tot 4)</span><div class="tbl-wrap"><table class="vt"><tbody>${DOMEINEN.map(d=>`<tr><td>${d.naam}</td><td>${radios(`m.${id}.fb.${j}.scores.${d.id}`, SCH4, "inline", true)}</td></tr>`).join("")}</tbody></table></div>
+        <div class="grid2" style="margin-top:10px">${ta(`m.${id}.fb.${j}.top`,"Top","",2)}${ta(`m.${id}.fb.${j}.tip`,"Tip","",2)}</div></div>`; });
+      if (fb.length < 4) h += `<button class="btn ghost" data-act="addFb">+ Nog iemand toevoegen</button>`;
+      return h; } },
+    { t:"Vergelijken", html:() => `<div class="card"><h2>Jij en de anderen</h2><p class="sub">Een verschil van 1 of meer is de moeite waard om over na te denken.</p>${live("gap")}
+      ${ta(`m.${id}.verschil`,"Waar zien anderen jou anders dan jij jezelf? Hoe verklaar je dat?","",3)}
+      ${ta(`m.${id}.herken`,"Welke top of tip herken je het meest?","",2)}</div>` },
+    { t:"Bijsturen", html:() => { let h = `<div class="card soft">Je doelen lopen tot de tussenbalans, over een week. Wat neem je uit deze spiegel mee naar je nieuwe doelen?</div>`;
+      h += `<div class="card">${ta(`m.${id}.meenemen`,"Wat neem je mee naar je nieuwe doelen?","",3)}</div>`;
+      return h + welzijn(id) + klaarBox(id); } }
+  ]),
+  tussen: id => momentHead(id, "Halverwege het jaar. Je meet opnieuw, kijkt of je doelen gelukt zijn en stelt nieuwe doelen voor de rest van het jaar. Dit is het stuk voor MOL-gesprek 2.") + stepped(id, [
+    { t:"Meten", html:() => meting(`m.${id}.nu`,"Waar sta je nu?","Kies per onderdeel de zin die nu het best bij je past. Kijk niet eerst naar wat je in september koos.") },
+    { t:"Doelen evalueren", html:() => evalDoel(id,"doelenA",0) + evalDoel(id,"doelenA",1) },
+    { t:"Nieuwe doelen", html:() => { let h = `<div class="card soft">Twee nieuwe doelen tot de eindbalans. Was een doel nog niet gelukt? Neem het over en maak het beter. Gebruik ook wat je uit je toetsweken en je spiegel haalde.</div>`;
+      [0,1].forEach(i => { if ((get(`doelenA.${i}`)||{}).specifiek) h += `<button class="btn small ghost" data-act="copyGoal" data-i="${i}" style="margin:0 8px 10px 0">Doel ${i+1} uit september overnemen</button>`; });
+      return h + doelForm("doelenB",0) + doelForm("doelenB",1); } },
+    { t:"Afronden", html:() => welzijn(id) + klaarBox(id) + molBox(id) }
+  ]),
+  eind: id => momentHead(id, "Het jaar zit erop. Stap 1 tot en met 3 doe je vóór toetsweek D, stap 4 en 5 als je cijfers van toetsweek D binnen zijn.") + stepped(id, [
+    { t:"Meten", html:() => meting(`m.${id}.nu`,"Waar sta je nu, aan het eind van havo 4?","Kies per onderdeel de zin die nu het best bij je past. Kijk niet eerst naar wat je eerder koos.") },
+    { t:"Doelen evalueren", html:() => evalDoel(id,"doelenB",0) + evalDoel(id,"doelenB",1) },
+    { t:"Vooruitkijken", html:() => `<div class="card"><h2>Op naar havo 5</h2>
+      ${get("m.lob3.zin")?`<div class="note"><b>Je richting uit je pitch:</b> ${esc(get("m.lob3.zin"))}</div>`:""}
+      ${ta(`m.${id}.meenemen`,"Welke aanpak neem je zeker mee naar havo 5?","",3)}
+      ${ta(`m.${id}.valkuil`,"Voor welke valkuil moet je in havo 5 oppassen?","",2)}
+      ${ta(`m.${id}.nieuwementor`,"Wat moet je mentor in havo 5 van je weten?","",3)}</div>` },
+    { t:"Toetsweek D", html:() => toetsNaEind() },
+    { t:"Je jaar", html:() => `<div class="card"><h2>Je jaar in één beeld</h2>${live("chart")}</div><div class="card"><h2>Je toetsweken</h2>${live("toetsOverzicht")}</div>
+      <div class="card">${ta(`m.${id}.trots`,"Waar ben je trots op dit jaar?","",3)}${ta(`m.${id}.groei`,"Waarop ben je het meest gegroeid, en hoe kwam dat?","",3)}</div>` + welzijn(id) + klaarBox(id) }
+  ])
+};
+/* Toetsweek D-terugblik zit in de eindbalans; hij gebruikt een eigen pad m.eind.tw */
+function toetsNaEind(){
+  const vb = "m.twD_voor", b = "m.eind.tw";
+  const vakken = S.vakken.filter(v => get(`${vb}.vak.${vkey(v)}.toets`));
+  let h = `<div class="card"><h2>Wat haalde je in toetsweek D?</h2>`;
+  if (!vakken.length) h += `<p class="alert">Je hebt bij Toetsweekplan D geen vakken aangevinkt.</p>`;
+  else { h += `<div class="tbl-wrap"><table class="vt"><thead><tr><th>Vak</th><th>Verwacht</th><th>Behaald</th></tr></thead><tbody>` +
+    vakken.map(v => { const k = vkey(v); return `<tr><td class="vak">${esc(v)}</td><td>${esc(get(`${vb}.vak.${k}.verwacht`)||"–")}</td><td><input type="text" class="cijfer" inputmode="decimal" data-p="${b}.cijfer.${k}" value="${esc(get(`${b}.cijfer.${k}`))}" aria-label="Behaald ${esc(v)}"></td></tr>`; }).join("") + `</tbody></table></div>`; }
+  h += `<span class="lab">Hoe goed hield je je aan je planning?</span>${radios(`${b}.planning`, [{v:1,t:"Niet"},{v:2,t:"Een beetje"},{v:3,t:"Grotendeels"},{v:4,t:"Helemaal"}], "cols4", true)}
+    ${ta(`${b}.les`,"Wat is na vier toetsweken jouw belangrijkste les over leren en plannen?","",3)}</div>`;
+  return h;
+}
+
+/* ---------- vaste schermen ---------- */
+function jaarlijn(){
+  const nu = nuId();
+  const items = [...CONFIG.momenten.map(m => ({...m, kind:"m"})), ...CONFIG.gebeurtenissen.map(g => ({...g, kind:"e"}))].sort((a,b) => a.datum.localeCompare(b.datum) || (a.kind==="e"?-1:1));
+  const per = d => d < "2026-11-09" ? "Periode 1 · tot en met toetsweek A" : d < "2027-01-25" ? "Periode 2 · tot en met toetsweek B" : d < "2027-04-05" ? "Periode 3 · tot en met toetsweek C" : "Periode 4 · tot de zomer";
+  let h = `<div class="legend" style="margin-top:4px"><span><i style="background:var(--acc)"></i>Mijn ontwikkeling</span><span><i style="background:var(--warm)"></i>Toetsweken</span><span><i style="background:var(--lob)"></i>LOB</span></div><div class="tl">`, cur = "";
+  items.forEach(it => {
+    const p = per(it.datum); if (p !== cur){ h += `<div class="per">${p}</div>`; cur = p; }
+    if (it.kind === "e") h += `<div class="ev"><span>wk ${esc(it.week)}</span><span>${esc(it.t)}</span></div>`;
+    else { const st = momentGeblokkeerd(it.id) ? "slot" : status(it.id);
+      h += `<button class="it ${it.spoor==="toets"?"toets":it.spoor==="lob"?"lob":""} ${it.id===nu?"nu":""}" data-go="${it.id}"><span class="wk">week<b>${esc(it.week)}</b></span><span><b>${esc(it.titel)}</b>${it.id===nu?` <span class="pill" style="font-size:11px">nu aan de beurt</span>`:""}<small>${SPOORNAAM[it.spoor]} · klaar op ${fmtDate(it.datum)}${it.mol?" · voor "+esc(it.mol.split("·")[0].trim()):""}</small></span><span class="status ${st}">${STATUSTXT[st]}</span></button>`; }
+  });
+  return h + `</div>`;
+}
+const PAGES = {
+  start: () => {
+    let h = `<h1>Welkom bij je jaarlijn</h1>
+    <p class="lead">Dit jaar houd je zelf bij hoe het gaat met je vakken, je motivatie, je werkhouding en je organisatie. Je begint met een actieplan. Daarna kijk je steeds terug en stuur je bij: rond elke toetsweek, bij je LOB-dossier en voor elk MOL-gesprek. Plannen, doen, checken, bijsturen.</p>`;
+    if (!S.ui.privacyOk) h += `<div class="card warn"><h2>Eerst even dit</h2>
+      <p>Alles wat je invult blijft op <b>dit apparaat, in deze browser</b>. Het wordt nergens naartoe gestuurd. Je mentor ziet het pas als jij een PDF inlevert.</p>
+      <p>Gebruik dus altijd hetzelfde apparaat en dezelfde browser, en geen privévenster. Maak na elk onderdeel een <b>back-up</b> (bij Opslaan en delen). Wis je je browsergegevens zonder back-up, dan is alles weg.</p>
+      <button class="btn" data-act="privacyOk">Begrepen</button></div>`;
+    h += backupWaarschuwing();
+    if (!storageOk) h += `<div class="alert">Deze browser staat opslaan niet toe (misschien een privévenster). Open de pagina in een gewoon venster, of maak tussendoor steeds een back-up.</div>`;
+    h += `<div class="card"><h2>Over jou</h2><div class="grid2">${inp("leerling.voornaam","Voornaam","Komt op je PDF, zodat je mentor weet van wie hij is.")}${inp("leerling.klas","Klas","","text","H4E")}</div>${inp("leerling.profiel","Profiel","","text","bijvoorbeeld Economie en Maatschappij")}
+      ${CFG().werkwijze==="half" ? `<span class="lab">In welke groep zit je?</span><span class="hint">Je mentor vertelt je dit. De ene groep is om de week in de klas, de andere werkt dan thuis.</span>${radios("leerling.groep", [{v:"1",t:"Groep 1"},{v:"2",t:"Groep 2"}], "cols2")}` : ""}
+      ${S.cfg ? `<p class="small" style="margin:6px 0 0">Ingesteld door je mentor: ${esc([S.cfg.klas, S.cfg.werkwijze==="heel"?"hele klas elke week":"halve klas om de week", gates().length?"gesprek vóór les "+gates().join(", "):""].filter(Boolean).join(" · "))}</p>` : `<p class="small" style="margin:6px 0 0">Open de tool bij voorkeur via de link die je mentor in Teams zet. Dan staan de lessen goed voor jouw klas.</p>`}</div>
+    <div class="card soft"><h2>Zo lever je in</h2><p style="margin:0 0 8px">Elke week sluit je een les af en lever je die in als PDF via Teams. In die PDF staat wanneer je hem maakte en hoe lang je aan elke opdracht hebt <b>getypt</b>. Pauzes tellen niet mee.</p><p style="margin:0">Plakken en kopiëren staan uit: je typt alles zelf. Gebruik je spraakherkenning, dan kan dat gewoon. In de PDF staat dan dat die tekst ingesproken is.</p></div>`;
+    h += `<div class="card"><h2>Jouw vakken</h2><p class="sub">Vink de vakken aan die je dit jaar hebt.</p><div class="radios cols3">`;
+    Array.from(new Set([...CONFIG.vakken, ...S.vakken])).forEach(v => { h += `<label class="opt"><input type="checkbox" data-vak="${esc(v)}" ${S.vakken.includes(v)?"checked":""}><span><b>${esc(v)}</b></span></label>`; });
+    h += `</div><div class="row"><input type="text" id="nieuwVak" placeholder="Ander vak toevoegen" style="flex:1;min-width:180px"><button class="btn ghost" data-act="addVak">Toevoegen</button></div></div>`;
+    h += `<p class="small" style="margin-top:28px">Ben je mentor? <button class="btn small ghost" data-go="mentor">Naar de mentorpagina</button></p>`;
+    const hl = LES.find(l => l.les === huidigeLes()); h += `<div class="card soft klaarbox"><div><b>Deze week: les ${hl.les} · ${esc(lesBlok(hl))}</b><div class="small">week ${esc(hl.wk)} · ${esc(hl.datum)}${lesInfo(hl).mode?" · "+{klas:"in de klas",thuis:"thuis",les:"mentorles"}[lesInfo(hl).mode]:""}</div></div><button class="btn" data-go="les:${hl.les}">Open de les</button></div>`;
+    return h;
+  },
+  jaarlijn: () => `<h1>Jaarlijn</h1><p class="lead">Alle onderdelen van dit jaar, in volgorde. Klik op een onderdeel om het te openen.</p>` + jaarlijn(),
+  lijn: () => {
+    let h = `<h1>Mijn lijn</h1><p class="lead">Hoe je jezelf door het jaar heen hebt ingeschat, en waar je nu aan werkt.</p><div class="card"><h2>Metingen</h2>${chartHTML()}</div><div class="card"><h2>Toetsweken</h2>${toetsOverzicht()}</div>`;
+    const set = (S.doelenB||[]).some(d => d && d.specifiek) ? "doelenB" : "doelenA";
+    h += `<div class="card"><h2>Mijn doelen nu</h2>${[0,1].map(i => `<h3>${esc(doelLabel(set,i))}</h3>${doelZin(get(`${set}.${i}`))}`).join("")}</div>`;
+    const lob = [get("m.lob1.interesse1"), get("m.lob2.richting"), get("m.lob3.zin")];
+    if (lob.some(Boolean)) h += `<div class="card lobc"><h2>Mijn LOB-lijn</h2>${lob[0]?`<p><b>Interesses:</b> ${[1,2,3].map(n=>get("m.lob1.interesse"+n)).filter(Boolean).map(esc).join(", ")}</p>`:""}${lob[1]?`<p><b>Richting na deel 2:</b> ${esc(lob[1])}</p>`:""}${lob[2]?`<p><b>Richting uit mijn pitch:</b> ${esc(lob[2])}</p>`:""}</div>`;
+    const w = CONFIG.momenten.map(m => ({m, s:get(`m.${m.id}.welzijn.score`)})).filter(x => x.s);
+    if (w.length) h += `<div class="card"><h2>Hoe het met je ging</h2><p class="sub">Alleen voor jou zichtbaar.</p>${w.map(x=>`<div>${esc(x.m.titel)}: ${WELZIJN.find(o=>o.v==x.s).t}</div>`).join("")}</div>`;
+    return h;
+  },
+  delen: () => `<h1>Opslaan en delen</h1><p class="lead">Je werk staat alleen op dit apparaat. Hier maak je een PDF voor je mentor en een back-up voor jezelf.</p>
+    <div class="card"><h2>PDF van een onderdeel</h2><p class="sub">Je wekelijkse PDF maak je bij <b>Lessen</b>, onderaan elke les. Hier kun je ook een los onderdeel of alles samen als PDF maken. ${esc(CONFIG.inleveren)} Kies bij het afdrukken <b>Opslaan als PDF</b>. Hoe het met je gaat, komt er alleen in als je dat per onderdeel hebt aangevinkt.</p>
+      <label class="f"><span class="lab">Wat wil je in de PDF?</span><select id="pdfSel"><option value="alles">Alles wat ik tot nu toe invulde</option>${CONFIG.momenten.map(m=>`<option value="${m.id}">${esc(m.titel)} (week ${esc(m.week)})</option>`).join("")}</select></label>
+      <button class="btn" data-act="pdf">PDF maken</button></div>
+    <div class="card"><h2>Back-up</h2><p class="sub">Bij elke les-PDF maakt de tool automatisch een back-up in je map Downloads. Zet die in je OneDrive van school, dan ben je nooit meer dan een week werk kwijt.${S.ui.lastBackup ? " Laatste back-up: " + fmtTs(S.ui.lastBackup) + "." : ""} Op een ander apparaat zet je hem hier terug. Let op: de back-up bevat álles, ook wat je privé hield. Deel hem dus niet.</p>
+      <div class="row"><button class="btn" data-act="backup">Back-up downloaden</button><button class="btn ghost" data-act="restore">Back-up terugzetten</button></div></div>
+    <div class="card"><h2>Opnieuw beginnen</h2><p class="sub">Wist alles op dit apparaat. Maak eerst een back-up als je twijfelt.</p><button class="btn danger" data-act="wipe">Alles wissen</button></div>`
+};
+
+/* ---------- PDF-rapport ---------- */
+function qa(label, v, p){ return filled(v) ? `<div class="qa"><b>${label}</b><div>${esc(v)}</div>${p?metaNote(p):""}</div>` : ""; }
+function qp(label, p){ return qa(label, get(p), p); }
+function scoreTxt(p, d){ const v = get(p); return v ? `${v} – ${d.niveaus[v-1]}` : ""; }
+function rMeting(prefix){
+  let h = DOMEINEN.map(d => qa(d.naam, scoreTxt(`${prefix}.${d.id}`, d))).join("");
+  const rows = S.vakken.map(v => { const k = vkey(v), s = get(`${prefix}_vak.${k}`), a = get(`${prefix}_aandacht.${k}`);
+    return (s||a) ? `<tr><td>${esc(v)}</td><td>${s?s+" ("+VAKLABEL[s]+")":"–"}</td><td>${a?"ja":""}</td></tr>` : ""; }).join("");
+  return h + (rows ? `<table><thead><tr><th>Vak</th><th>Hoe gaat het</th><th>Aandacht</th></tr></thead><tbody>${rows}</tbody></table>` : "");
+}
+function rDoel(set, i){ const d = get(`${set}.${i}`)||{}; if (!d.specifiek) return "";
+  return `<h3>Doel ${i+1}: ${esc(doelLabel(set,i))}${d.type?` (${d.type==="leer"?"leerdoel":"prestatiedoel"})`:""}</h3>` + qp("Specifiek",`${set}.${i}.specifiek`)+qp("Meetbaar",`${set}.${i}.meetbaar`)+qp("Haalbaar",`${set}.${i}.haalbaar`)+qp("Relevant",`${set}.${i}.relevant`)+qa("Uiterlijk",fmtDate(d.datum))+qp("Beste uitkomst",`${set}.${i}.uitkomst`)+qp("Obstakel",`${set}.${i}.obstakel`)+qa("Als-dan-plan",d.als&&d.dan?`Als ${d.als}, dan ${d.dan}`:"",`${set}.${i}.als`)+qp("Hulp",`${set}.${i}.hulp`); }
+function rWelzijn(id){ const w = get(`m.${id}.welzijn`)||{}; if (!w.delen || !w.score) return ""; return qa("Hoe het met me gaat", `${w.score} – ${WELZIJN.find(o=>o.v==w.score).t}${w.toelichting?"\n"+w.toelichting:""}`); }
+function rMol(id){ return qp("Afspraken uit het MOL-gesprek", `m.${id}.mol.afspraken`) + qp("Wat ik meenam uit het gesprek", `m.${id}.mol.meegenomen`); }
+function rEval(id,set){ return [0,1].map(i => { const e = get(`m.${id}.eval.${i}`)||{}, d = get(`${set}.${i}`)||{}; if (!d.specifiek) return "";
+  return `<h3>Doel ${i+1}: ${esc(d.specifiek)}</h3>` + qa("Gelukt?",{ja:"Gelukt",deels:"Deels gelukt",nee:"Niet gelukt"}[e.status]) + qp("Wat hielp of zat in de weg",`m.${id}.eval.${i}.waarom`) + qp("Wat ik over mezelf leerde",`m.${id}.eval.${i}.geleerd`); }).join(""); }
+function rCheckin(id,set){ return [0,1].map(i => { const c = get(`m.${id}.doel.${i}`)||{}, d = get(`${set}.${i}`)||{}; if (!d.specifiek || !hasContent(c)) return "";
+  return `<h3>Check doel ${i+1}: ${esc(d.specifiek)}</h3>` + qa("Als-dan-plan uitgevoerd",c.plan) + qa("Dichter bij doel",{1:"Nee",2:"Een beetje",3:"Ja",4:"Al gehaald"}[c.dichterbij]) + qp("Wat werkt en wat niet",`m.${id}.doel.${i}.werkt`) + qa("Huidig als-dan-plan",d.als&&d.dan?`Als ${d.als}, dan ${d.dan}`:""); }).join(""); }
+function rToetsVoor(id){ const b = `m.${id}`, vk = S.vakken.filter(v => get(`${b}.vak.${vkey(v)}.toets`));
+  let h = vk.length ? `<table><thead><tr><th>Vak</th><th>Stof</th><th>Klaar nu</th><th>Vlak ervoor</th><th>Verwacht</th></tr></thead><tbody>${vk.map(v => { const k = `${b}.vak.${vkey(v)}`; return `<tr><td>${esc(v)}</td><td>${esc(get(k+".stof")||"")}</td><td>${get(k+".klaarNu")||"–"}</td><td>${get(k+".klaarVoor")||"–"}</td><td>${esc(get(k+".verwacht")||"–")}</td></tr>`; }).join("")}</tbody></table><div class="qa" style="font-size:9pt;color:#444">Klaar: 1 = ${KLAAR[1]}, 2 = ${KLAAR[2]}, 3 = ${KLAAR[3]}, 4 = ${KLAAR[4]}</div>` : "";
+  const st = get(`${b}.strat`)||{}; h += qa("Leerstrategieën", STRATEGIEEN.filter(s=>st[s.id]).map(s=>s.t).join("; "));
+  h += qa("Begint met leren op", fmtDate(get(`${b}.start`))) + qp("Planning staat in", `${b}.waar`) + qp("Leermomenten per week", `${b}.momenten`);
+  const org = get(`${b}.org`)||{}; h += qa("Organisatie geregeld", ORGCHECK.filter(([k])=>org[k]).map(([,t])=>t).join("\n"));
+  h += qa("Als-dan voor de toetsweek", get(`${b}.als`)&&get(`${b}.dan`)?`Als ${get(`${b}.als`)}, dan ${get(`${b}.dan`)}`:"") + qp("Minst klaar voor", `${b}.zorg`) + qp("Hulp nodig", `${b}.hulp`);
+  return h; }
+function rToetsNa(id){ const m = MOM[id], b = `m.${id}`, vb = `m.tw${m.tw}_voor`, vk = S.vakken.filter(v => get(`${vb}.vak.${vkey(v)}.toets`));
+  let h = vk.length ? `<table><thead><tr><th>Vak</th><th>Verwacht</th><th>Behaald</th></tr></thead><tbody>${vk.map(v => `<tr><td>${esc(v)}</td><td>${esc(get(`${vb}.vak.${vkey(v)}.verwacht`)||"–")}</td><td>${esc(get(`${b}.cijfer.${vkey(v)}`)||"–")}</td></tr>`).join("")}</tbody></table>` : "";
+  return h + qp("Niet klaar voor", `${b}.nietklaar`) + qa("Planning gehouden", ["","niet","een beetje","grotendeels","helemaal"][get(`${b}.planning`)||0]) + qa("Begon met leren", {"2w":"meer dan 2 weken ervoor","1w":"1 à 2 weken ervoor",dagen:"een paar dagen ervoor",avond:"de avond ervoor"}[get(`${b}.begon`)]) + qp("Welke manier van leren werkte", `${b}.strategie`) + qp("Wat ging goed", `${b}.goed`) + qp("Wat ging mis", `${b}.mis`) + qp("Volgende keer anders", `${b}.anders`); }
+function rLob(id){ const b = `m.${id}`, c = get(`${b}.check`)||{};
+  const labels = { reflectie:"profielreflectie",interesse:"interessetest",talent:"talententest",overzicht:"overzicht",visueel:"visuele zelfanalyse",ingeleverd:"ingeleverd",opl1:"opleiding 1",opl2:"opleiding 2",skia:"SKIA",od1:"open dag 1",od2:"open dag 2",interview:"interview",beroepen:"3 beroepen",opzet:"opzet",feedback:"feedback",geoefend:"geoefend",gepresenteerd:"gepresenteerd" };
+  let h = qa("Afgevinkt", Object.keys(c).filter(k=>c[k]).map(k=>labels[k]||k).join(", "));
+  const trio = (pre) => [1,2,3].map(n=>get(`${b}.${pre}${n}`)).filter(Boolean).join(", ");
+  if (id === "lob1") h += qp("Tests", `${b}.tests`) + qa("Interesses",trio("interesse")) + qa("Talenten",trio("talent")) + qa("Waarden",trio("waarde")) + qp("Wat me verraste", `${b}.verrast`) + qa("Profiel opnieuw kiezen?",[get(`${b}.profiel`),get(`${b}.profielWaarom`)].filter(Boolean).join(": ")) + qp("Betekenis voor mijn actieplan", `${b}.actieplan`) + qp("Profielreflectie (concept)", `${b}.profieltekst`);
+  if (id === "lob2") h += qa("Opleidingen",[get(`${b}.opl1`),get(`${b}.opl2`)].filter(Boolean).join("; ")) + qa("Open dagen",[get(`${b}.od1`),get(`${b}.od2`)].filter(Boolean).join("; ")) + qa("Beroepen",trio("beroep")) + qp("Richting", `${b}.richting`) + qp("Veranderd of bevestigd", `${b}.veranderd`) + qp("Twijfel", `${b}.twijfel`) + qp("Interviewvragen", `${b}.interview`) + [1,2].map(n => get(`${b}.odv${n}.waar`) || get(`${b}.odv${n}.gedaan`) ? `<h3>Verslag open dag ${n}</h3>` + qp("Opleiding, school en datum", `${b}.odv${n}.waar`) + qp("Waarom bezocht", `${b}.odv${n}.waarom`) + qp("Gezien en gedaan", `${b}.odv${n}.gedaan`) + qp("Goed en minder goed", `${b}.odv${n}.plusmin`) + qp("Past het bij mij?", `${b}.odv${n}.past`) + qp("Betekenis voor mijn studiekeuze", `${b}.odv${n}.betekenis`) : "").join("");
+  if (id === "lob3") h += qp("Mijn richting", `${b}.zin`) + qp("Plan voor havo 5", `${b}.havo5`) + qp("Feedback op mijn pitch", `${b}.feedback`) + qp("Trots op", `${b}.trots`) + qp("Opzet van mijn pitch", `${b}.pitch`);
+  return h; }
+const REPORT = {
+  actieplan: id => `<h3>Terugblik op havo 3</h3>` + DOMEINEN.map(d=>qa(d.naam, scoreTxt(`m.${id}.terug.${d.id}`,d))).join("") + qp("Een moment dat het goed ging", `m.${id}.terugtekst.goed`) + qp("Een moment dat het misging", `m.${id}.terugtekst.mis`) + qp("Wat anderen vaak over mij zeiden", `m.${id}.terugtekst.zeggen`) +
+    `<h3>Nulmeting</h3>` + rMeting(`m.${id}.nu`) + rWelzijn(id) +
+    `<h3>Mini-SWOT</h3><table><tr><th>Sterktes</th><td>${esc([get(`m.${id}.swot.s1`),get(`m.${id}.swot.s2`)].filter(Boolean).join("; "))}</td></tr><tr><th>Zwaktes</th><td>${esc([get(`m.${id}.swot.w1`),get(`m.${id}.swot.w2`)].filter(Boolean).join("; "))}</td></tr><tr><th>Kans</th><td>${esc(get(`m.${id}.swot.k`))}</td></tr><tr><th>Bedreiging</th><td>${esc(get(`m.${id}.swot.b`))}</td></tr></table>` +
+    rDoel("doelenA",0) + rDoel("doelenA",1) + qp("Wat mijn mentor moet weten", `m.${id}.mentor`) + rMol(id),
+  toetsVoor: id => rToetsVoor(id) + (MOM[id].checkin ? rCheckin(id, MOM[id].checkin) : "") + qp("Overgang naar havo 5", `m.${id}.overgang`) + rWelzijn(id) + rMol(id),
+  toetsNa: id => rToetsNa(id) + (MOM[id].checkin ? rCheckin(id, MOM[id].checkin) : "") + rWelzijn(id),
+  lob1: rLob, lob2: rLob, lob3: rLob,
+  spiegel: id => { const fb = get(`m.${id}.fb`)||[];
+    return `<table><thead><tr><th>Onderdeel</th><th>Ik</th>${fb.map(f=>`<th>${esc(f.rol||"?")}</th>`).join("")}</tr></thead><tbody>${DOMEINEN.map(d=>`<tr><td>${d.naam}</td><td>${get(`m.${id}.zelf.${d.id}`)||"–"}</td>${fb.map(f=>`<td>${(f.scores&&f.scores[d.id])||"–"}</td>`).join("")}</tr>`).join("")}</tbody></table>` +
+      fb.map((f,j) => (f.top||f.tip) ? qa(f.rol||"Feedback", `Top: ${f.top||"–"}\nTip: ${f.tip||"–"}`, `m.${id}.fb.${j}.top`) : "").join("") + qp("Waar anderen mij anders zien", `m.${id}.verschil`) + qp("Welke feedback ik herken", `m.${id}.herken`) + qp("Wat ik meeneem", `m.${id}.meenemen`) + rWelzijn(id); },
+  tussen: id => `<h3>Meting februari</h3>` + rMeting(`m.${id}.nu`) + `<h3>Evaluatie doelen september</h3>` + rEval(id,"doelenA") + `<h3>Nieuwe doelen</h3>` + rDoel("doelenB",0) + rDoel("doelenB",1) + rWelzijn(id) + rMol(id),
+  eind: id => { const vb = "m.twD_voor", vk = S.vakken.filter(v => get(`${vb}.vak.${vkey(v)}.toets`));
+    return `<h3>Toetsweek D</h3>` + (vk.length?`<table><thead><tr><th>Vak</th><th>Verwacht</th><th>Behaald</th></tr></thead><tbody>${vk.map(v=>`<tr><td>${esc(v)}</td><td>${esc(get(`${vb}.vak.${vkey(v)}.verwacht`)||"–")}</td><td>${esc(get(`m.eind.tw.cijfer.${vkey(v)}`)||"–")}</td></tr>`).join("")}</tbody></table>`:"") + qp("Belangrijkste les over leren en plannen", "m.eind.tw.les") +
+      `<h3>Eindmeting</h3>` + rMeting(`m.${id}.nu`) + `<h3>Evaluatie doelen</h3>` + rEval(id,"doelenB") + qp("Trots op", `m.${id}.trots`) + qp("Meest gegroeid", `m.${id}.groei`) + qp("Neem ik mee naar havo 5", `m.${id}.meenemen`) + qp("Valkuil", `m.${id}.valkuil`) + qp("Voor mijn mentor in havo 5", `m.${id}.nieuwementor`) + rWelzijn(id); }
+};
+function buildReport(which){
+  const ids = which === "alles" ? CONFIG.momenten.filter(m => status(m.id) !== "leeg").map(m => m.id) : [which];
+  const L = S.leerling;
+  let h = `<h1>Jaarlijn havo 4 · ${esc(L.voornaam||"(geen naam)")}</h1><div class="pmeta">${[L.klas, L.profiel, CONFIG.school, CONFIG.schooljaar, "PDF gemaakt op " + fmtTs(Date.now())].filter(Boolean).map(esc).join(" · ")}</div>`;
+  if (!ids.length) h += `<p>Er is nog niets ingevuld.</p>`;
+  ids.forEach((id,j) => { const m = MOM[id]; h += `<h2 class="${j>0&&(m.type==="actieplan"||m.type==="tussen"||m.type==="eind")?"newpage":""}">${esc(m.titel)} <span style="font-weight:400;font-size:10pt">(week ${esc(m.week)})</span></h2>` + `<div class="qa" style="font-size:9pt;color:#444">Getypt aan dit onderdeel: ${fmtDur(sumMeta(prefixesOf(id)).tot)} · laatst bewerkt ${fmtTs(sumMeta(prefixesOf(id)).last||0)}</div>` + REPORT[m.type](id); });
+  return h;
+}
+
+/* ---------- klasinstellingen (uit de klaslink van de mentor) ---------- */
+function cyrb53(str, seed = 0){ let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0, ch; i < str.length; i++){ ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0); }
+function sleutelUitPin(pin){ return cyrb53("jaarlijn|" + String(pin).trim()).toString(36); }
+function vrijgaveCode(sleutel, aanvraag){ return String(cyrb53(sleutel + "|" + String(aanvraag).trim().toUpperCase()) % 10000).padStart(4, "0"); }
+function leesKlaslink(){
+  try { const q = new URLSearchParams(location.search);
+    if (q.has("w") || q.has("klas")){
+      S.cfg = { klas: q.get("klas") || "", werkwijze: q.get("w") === "heel" ? "heel" : "half",
+                gates: (q.get("g") || "").split(",").map(Number).filter(n => n > 1 && n <= 31).sort((a,b) => a-b), key: q.get("k") || "" };
+      if (S.cfg.klas && !S.leerling.klas) S.leerling.klas = S.cfg.klas;
+      save();
+    }
+    if (location.hash === "#mentor") S.ui.tab = "mentor";
+  } catch(e){}
+}
+function CFG(){ return S.cfg || { klas:"", werkwijze:"half", gates:[], key:"" }; }
+function gates(){ const c = CFG(); return c.key ? c.gates : []; }
+function gesprekVrij(g){ return !!(S.gesprek && S.gesprek[g] && S.gesprek[g].vrij); }
+function blokGate(){ return gates().find(g => !gesprekVrij(g)) || null; }
+function gateVenster(g){ const gs = gates(), i = gs.indexOf(g); return i > 0 ? gs[i-1] : 1; }
+const EERSTE_LES = {};
+CONFIG.lessen.forEach(L => [L.klas, L.thuis].filter(Boolean).forEach(t => t.open.forEach(id => { if (!(id in EERSTE_LES) || L.les < EERSTE_LES[id]) EERSTE_LES[id] = L.les; })));
+function momentGeblokkeerd(id){ const b = blokGate(); return !!(b && EERSTE_LES[id] && EERSTE_LES[id] >= b); }
+
+/* ---------- typtijd, tijdstempels en plakblokkade ---------- */
+const IDLE_MS = 5000;           /* pauzes langer dan 5 seconden tellen niet mee */
+let lastTyped = 0;
+function isTextField(el){ return el && el.dataset && el.dataset.p && !el.readOnly && (el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && el.type === "text")); }
+function woorden(t){ return (String(t||"").trim().match(/\S+/g) || []).length; }
+function trackTyping(e){
+  const el = e.target; if (!isTextField(el)) return;
+  const p = el.dataset.p, now = Date.now(), t = e.inputType || "", data = e.data || "";
+  const m = S.meta[p] || (S.meta[p] = { ms:0, first:now, last:now, ins:0 });
+  const ingevoegd = (t === "insertText" && data.length > 3) || (t === "insertReplacementText" && data.length > 20) || t === "insertFromDictation";
+  if (ingevoegd) m.ins += data.length;
+  else { const gap = now - lastTyped; if (lastTyped && gap <= IDLE_MS) m.ms += gap; lastTyped = now; }
+  m.last = now;
+}
+document.addEventListener("input", trackTyping, true);
+function toast(msg){
+  let t = document.getElementById("toast");
+  if (!t){ t = document.createElement("div"); t.id = "toast"; t.setAttribute("role","status"); document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2600);
+}
+function blokkeer(e){ if (isTextField(e.target)){ e.preventDefault(); toast(e.type === "copy" || e.type === "cut" ? "Kopiëren staat uit in deze tool." : "Plakken staat uit. Typ je antwoord zelf."); } }
+["paste","drop","copy","cut"].forEach(ev => document.addEventListener(ev, blokkeer, true));
+document.addEventListener("dragover", e => { if (isTextField(e.target)) e.preventDefault(); }, true);
+document.addEventListener("beforeinput", e => {
+  if (!isTextField(e.target)) return;
+  if (/^insertFrom(Paste|Drop|Yank|PasteAsQuotation)/.test(e.inputType || "")){ e.preventDefault(); toast("Plakken staat uit. Typ je antwoord zelf."); }
+}, true);
+
+function fmtDur(ms){ const s = Math.round((ms||0)/1000); if (s < 60) return s + " s"; const m = Math.floor(s/60), r = s % 60; return m < 60 ? `${m} min ${r} s` : `${Math.floor(m/60)} u ${m%60} min`; }
+function fmtTs(t){ if (!t) return "–"; const d = new Date(t); return d.toLocaleDateString("nl-NL",{weekday:"short",day:"numeric",month:"short"}) + " " + d.toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"}); }
+function metaNote(p){
+  const m = S.meta[p]; if (!m) return "";
+  const w = woorden(get(p));
+  return `<i class="meta">getypt ${fmtDur(m.ms)} · ${w} woorden · laatst bewerkt ${fmtTs(m.last)}${m.ins > 0 ? ` · ${m.ins} tekens niet getypt (ingesproken of automatisch aangevuld)` : ""}</i>`;
+}
+function prefixesOf(id){ return [`m.${id}.`].concat(id === "actieplan" ? ["doelenA."] : id === "tussen" ? ["doelenB."] : []); }
+function sumMeta(prefixes, snap){
+  let ms = 0, tot = 0, w = 0, last = 0, ins = 0, n = 0;
+  Object.entries(S.meta).forEach(([k,m]) => { if (!prefixes.some(pf => k === pf.replace(/\.$/,"") || k.startsWith(pf))) return;
+    tot += m.ms; ms += Math.max(0, m.ms - ((snap && snap[k]) || 0)); w += woorden(get(k)); last = Math.max(last, m.last||0); ins += m.ins||0; n++; });
+  return { ms, tot, w, last, ins, n };
+}
+LIVE.woorden = p => `<div class="small" style="margin-top:-8px">${woorden(get(p))} woorden</div>`;
+
+/* ---------- lessen ---------- */
+const LES = CONFIG.lessen;
+const KWALITEIT = [["concreet","Mijn antwoorden zijn concreet: je snapt wat ik bedoel zonder dat je het hoeft te vragen."],["ik","Ze gaan over mij, niet over ‘je’ of ‘mensen’."],["voorbeeld","Ik geef minstens één voorbeeld uit mijn eigen schoolweek."]];
+/* modus: klas | thuis | les (hele klas) · taak: de opdracht van deze week */
+function lesInfo(L){
+  if (L.g === 0) return { mode:"thuis", taak:L.thuis };
+  if (CFG().werkwijze === "heel") return { mode:"les", taak: L.g === 2 ? L.thuis : (L.klas || L.thuis) };
+  const g = Number(S.leerling.groep);
+  if (!g) return { mode:null, taak:null };
+  const mode = g === L.g ? "klas" : "thuis"; return { mode, taak:L[mode] };
+}
+function lesBlok(L){ return CFG().werkwijze === "heel" && L.bh ? L.bh : L.blok; }
+const MODETXT = { klas:"Je bent deze week in de klas", thuis:"Deze week werk je thuis", les:"Mentorles" };
+function huidigeLes(){ const today = new Date().toISOString().slice(0,10); const past = LES.filter(l => l.ma <= today); return (past[past.length-1] || LES[0]).les; }
+function weekVoorbij(L){ const e = new Date(L.ma + "T12:00:00"); e.setDate(e.getDate() + 7); return new Date() > e; }
+function lesStatus(n){ const d = S.lessen[n], L = LES.find(l => l.les === n);
+  if (d && d.pdf && d.pdf.length) return "klaar";
+  if (L && weekVoorbij(L)) return "laat";
+  return hasContent(d) ? "bezig" : "leeg"; }
+function vorigeSnap(n){ for (let k = n-1; k >= 1; k--){ const d = S.lessen[k]; if (d && d.snap) return d.snap; } return {}; }
+
+function gesprekKaart(g, volledig){
+  S.gesprek = S.gesprek || {};
+  const gs = S.gesprek[g] || (S.gesprek[g] = {});
+  if (!gs.code){ const abc = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let c = ""; for (let i = 0; i < 4; i++) c += abc[Math.floor(Math.random()*abc.length)]; gs.code = g + "-" + c; save(); }
+  const b = `gesprek.${g}`;
+  if (gs.vrij) return `<div class="card soft"><h2>Gesprek met je mentor</h2><p class="small">Gesprek gehad op ${fmtTs(gs.vrij)}.</p>${ta(`${b}.afspraken`,"Wat hebben jullie afgesproken?","",3)}</div>`;
+  return `<div class="card ${volledig?"warn":"soft"}"><h2>${volledig?"Eerst een gesprek met je mentor":"Binnenkort: gesprek met je mentor"}</h2>
+    <p>${volledig?`Vanaf les ${g} kun je pas verder als je een gesprek met je mentor hebt gehad.`:`Vóór les ${g} heb je een gesprek met je mentor. Bereid het alvast voor. Heb je het gesprek al? Laat je mentor dan je code zien.`}</p>
+    ${ta(`${b}.prep.goed`,"Wat gaat goed sinds het vorige gesprek?","",2)}
+    ${ta(`${b}.prep.lastig`,"Wat vind je lastig?","",2)}
+    ${ta(`${b}.prep.vraag`,"Wat wil je bespreken, of waar wil je hulp bij?","",2)}
+    <div class="codebox"><div><span class="small">Jouw aanvraagcode</span><b>${esc(gs.code)}</b></div>
+    <label class="f" style="margin:0;flex:1;min-width:160px"><span class="lab">Vrijgavecode van je mentor</span><input type="text" id="vrij-${g}" inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off"></label>
+    <button class="btn" data-act="ontgrendel" data-g="${g}">Ontgrendel</button></div></div>`;
+}
+function lesView(n){
+  const L = LES.find(l => l.les === n); if (!L) return PAGES.lessen();
+  const { mode, taak } = lesInfo(L), b = `lessen.${n}`, bg = blokGate();
+  let h = `<h1>Les ${n} · ${esc(lesBlok(L))}</h1><div class="meta"><span class="pill">week ${esc(L.wk)}</span><span class="pill">${esc(L.datum)}</span>`;
+  h += mode ? `<span class="pill ${mode==="thuis"?"warm":""}">${MODETXT[mode]}</span>` : "";
+  h += L.dl ? `<span class="pill lob">deadline: ${esc(L.dl)}</span>` : "";
+  h += `</div>`;
+  if (bg && n >= bg){
+    return h + gesprekKaart(bg, true) + `<div class="pager"><button class="btn ghost" data-go="lessen">← Naar het overzicht</button></div>`;
+  }
+  if (!mode) h += `<div class="alert">Kies eerst bij <button class="btn small ghost" data-go="start">Start</button> in welke groep je zit. Dan zie je of je deze week in de klas zit of thuis werkt.</div>`;
+  h += `<p class="lead">Elke les heeft drie stappen: kort terugkijken, je opdracht en een afsluiting. Daarna lever je de les in als PDF. Reken op 20 à 25 minuten.</p>`;
+  if (gates().includes(n)) h += gesprekKaart(n, false);
+  // 1 terugblik
+  let prev = null; for (let k = n-1; k >= 1; k--){ const v = get(`lessen.${k}.afsl.volgende`); if (v){ prev = { k, v }; break; } }
+  h += `<div class="card"><h2>1. Terugkijken <span class="small">ongeveer 5 minuten</span></h2>`;
+  if (prev) h += `<div class="note"><b>In les ${prev.k} schreef je als volgende stap:</b> ${esc(prev.v)}</div><span class="lab">Is dat gelukt?</span>` + radios(`${b}.terug.gelukt`, [{v:"ja",t:"Ja"},{v:"deels",t:"Deels"},{v:"nee",t:"Nee"}], "cols3");
+  const set = (S.doelenB||[]).some(d => d && d.specifiek) ? "doelenB" : "doelenA";
+  const doelen = [0,1].map(i => get(`${set}.${i}`)).filter(d => d && d.specifiek);
+  if (doelen.length) h += `<span class="lab">Je doelen op dit moment</span>` + doelen.map(d => doelZin(d)).join("");
+  h += ta(`${b}.terug.tekst`, prev ? "Wat heb je sinds de vorige les gedaan? Hoe ging het met je doelen en je als-dan-plan?" : "Hoe zijn je eerste weken in havo 4 gegaan? Wat valt je op?", "Twee of drie zinnen is genoeg, maar maak het concreet.", 3) + `</div>`;
+  // 2 opdracht
+  const taken = taak ? [taak] : [L.klas, L.thuis].filter(Boolean);
+  h += `<div class="card"><h2>2. Je opdracht</h2>`;
+  taken.forEach(tk => {
+    h += `<p style="margin:0 0 10px">${!taak && L.klas ? `<b>${tk===L.klas?"In de klas":"Thuis"}:</b> ` : ""}${esc(tk.t)}</p><div class="row" style="margin-bottom:12px">`;
+    tk.open.forEach(id => { if (id === "start") h += `<button class="btn ghost small" data-go="start">Open: Start (vakken en groep)</button>`;
+      else { const st = status(id); h += `<button class="btn ghost small" data-lesgo="${id}" data-les="${n}">Open: ${esc(MOM[id].titel)} <span class="status ${st}" style="margin-left:6px">${STATUSTXT[st]}</span></button>`; } });
+    h += `</div>`;
+  });
+  h += ta(`${b}.buiten`, "Werk buiten de tool", "Werkte je ook aan iets anders, zoals je LOB-dossier in Word of Canva? Schrijf op wat je hebt gemaakt en hoe ver je bent. Laat leeg als je alles in de tool deed.", 2) + `</div>`;
+  // 3 afsluiting
+  h += `<div class="card"><h2>3. Afsluiting</h2>
+    ${ta(`${b}.afsl.gedaan`, "Wat heb je gedaan, en wat heb je ontdekt?", "Concreet, over jezelf, met een voorbeeld.", 3)}
+    <span class="lab">Hoe goed heb je gewerkt?</span>${radios(`${b}.afsl.inzet`, [{v:1,t:"Nauwelijks"},{v:2,t:"Matig"},{v:3,t:"Goed"},{v:4,t:"Heel goed"}], "cols4", true)}
+    ${ta(`${b}.afsl.volgende`, "Wat is je volgende stap?", "Dit zie je terug aan het begin van de volgende les.", 2)}</div>`;
+  // 4 inleveren
+  const d = S.lessen[n] || {};
+  h += `<div class="card soft"><h2>4. Check en inleveren</h2>
+    <span class="lab">Check je werk</span>${KWALITEIT.map(([k,t]) => chk(`${b}.check.${k}`, t)).join("")}
+    <p class="sub" style="color:inherit;margin-top:8px">Maak een PDF van deze les en lever hem in via de Teams-opdracht van deze week. Na het maken van de PDF gaat de les op slot. Tegelijk downloadt de tool een back-up van al je werk: zet die in je OneDrive.</p>
+    ${d.locked ? `<div class="note"><b>Ingeleverd en vergrendeld.</b> Wil je toch nog iets aanpassen? Heropen de les en maak daarna een nieuwe PDF. In je PDF staat dan dat je de les hebt heropend.</div><button class="btn ghost" data-act="heropen" data-les="${n}">Les heropenen</button>`
+      : `<button class="btn" data-act="lesPdf" data-les="${n}">PDF maken van les ${n}</button>`}
+    ${d.pdf && d.pdf.length ? `<p class="small" style="margin:10px 0 0">PDF gemaakt: ${d.pdf.map(fmtTs).join(", ")}${d.heropend && d.heropend.length ? ` · heropend: ${d.heropend.map(fmtTs).join(", ")}` : ""}</p>` : ""}</div>`;
+  const nx = gates().find(g => g > n && !gesprekVrij(g) && n >= gateVenster(g) && n !== g);
+  if (nx && nx - n <= 4) h += gesprekKaart(nx, false);
+  const i = LES.findIndex(l => l.les === n), pv = LES[i-1], nl = LES[i+1];
+  h += `<div class="pager">${pv?`<button class="btn ghost" data-go="les:${pv.les}">← Les ${pv.les}</button>`:"<span></span>"}${nl?`<button class="btn ghost" data-go="les:${nl.les}">Les ${nl.les} →</button>`:""}</div>`;
+  return h;
+}
+function naLesRender(n){
+  const d = S.lessen[n]; if (!d || !d.locked) return;
+  document.querySelectorAll(`#app [data-p^="lessen.${n}."]`).forEach(el => { el.disabled = true; });
+}
+PAGES.lessen = () => {
+  const nu = huidigeLes(), bg = blokGate();
+  let h = `<h1>Lessen</h1><p class="lead">Elke week is er een les${CFG().werkwijze==="half"?", in de klas of thuis":""}. Elke les sluit je af met een PDF voor je mentor.</p>`;
+  if (CFG().werkwijze === "half" && !S.leerling.groep) h += `<div class="alert">Kies eerst bij <button class="btn small ghost" data-go="start">Start</button> in welke groep je zit.</div>`;
+  h += `<div class="tl">`;
+  LES.forEach(L => { const { mode } = lesInfo(L), st = lesStatus(L.les), slot = bg && L.les >= bg;
+    if (gates().includes(L.les)) h += `<div class="ev"><span></span><span><b>Gesprek met je mentor</b> vóór les ${L.les}${gesprekVrij(L.les)?" · gehad":""}</span></div>`;
+    h += `<button class="it ${mode==="thuis"?"toets":""} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(L.datum)} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${L.dl?" · deadline: "+esc(L.dl):""}</small></span><span class="status ${slot?"slot":st}">${slot?"op slot":st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":STATUSTXT[st]}</span></button>`; });
+  return h + `</div>`;
+};
+function buildLesReport(n){
+  const L = LES.find(l => l.les === n), { mode, taak } = lesInfo(L), b = `lessen.${n}`, snap = vorigeSnap(n), P = S.leerling, now = Date.now(), d = S.lessen[n] || {};
+  const opdr = (taak || L.thuis || L.klas);
+  const rows = [{ naam:"Terugblik", pf:[`${b}.terug.`] }]
+    .concat((opdr ? opdr.open : []).filter(id => id !== "start").map(id => ({ naam: MOM[id].titel, pf: prefixesOf(id) })))
+    .concat([{ naam:"Werk buiten de tool", pf:[`${b}.buiten`] }, { naam:"Afsluiting", pf:[`${b}.afsl.`] }]);
+  if (gates().includes(n)) rows.push({ naam:"Gesprek met mentor", pf:[`gesprek.${n}.`] });
+  const sums = rows.map(r => ({ ...r, ...sumMeta(r.pf, snap) }));
+  const totWeek = sums.reduce((a,r) => a + r.ms, 0), afslOk = !!(get(`${b}.afsl.gedaan`) && get(`${b}.afsl.volgende`));
+  const chk = get(`${b}.check`) || {}, nChk = KWALITEIT.filter(([k]) => chk[k]).length;
+  const modeTxt = { klas:"in de klas", thuis:"thuis", les:"mentorles" }[mode] || "–";
+  let h = `<h1>Les ${n} · ${esc(lesBlok(L))} · ${esc(P.voornaam||"(geen naam)")}</h1>
+  <table class="strook"><tr><th>Leerling</th><td>${esc([P.voornaam, P.klas, CFG().werkwijze==="half"&&P.groep?"groep "+P.groep:""].filter(Boolean).join(" · "))}</td><th>Les</th><td>les ${n} · week ${esc(L.wk)} · ${esc(L.datum)} · ${modeTxt}</td></tr>
+  <tr><th>PDF gemaakt op</th><td><b>${fmtTs(now)}</b>${d.heropend && d.heropend.length ? `<br>heropend na inleveren: ${d.heropend.map(fmtTs).join(", ")}` : ""}</td><th>Getypt sinds vorige PDF</th><td><b>${fmtDur(totWeek)}</b></td></tr>
+  <tr><th>Afsluiting ingevuld</th><td>${afslOk?"ja":"<b>nee</b>"}</td><th>Eigen oordeel</th><td>gewerkt: ${["","nauwelijks","matig","goed","heel goed"][get(`${b}.afsl.inzet`)||0]||"–"} · kwaliteitscheck ${nChk} van 3</td></tr></table>
+  <h2>Opdrachten</h2><table><thead><tr><th>Opdracht</th><th>Getypt sinds vorige PDF</th><th>Getypt in totaal</th><th>Woorden</th><th>Laatst bewerkt</th><th>Niet getypt</th></tr></thead><tbody>
+  ${sums.map(r => `<tr><td>${esc(r.naam)}</td><td>${r.n?fmtDur(r.ms):"–"}</td><td>${r.n?fmtDur(r.tot):"–"}</td><td>${r.n?r.w:"–"}</td><td>${r.n?fmtTs(r.last):"–"}</td><td>${r.ins?r.ins+" tekens":"–"}</td></tr>`).join("")}</tbody></table>`;
+  h += `<h2>1. Terugblik</h2>` + qa("Is de volgende stap van vorige keer gelukt?", {ja:"Ja",deels:"Deels",nee:"Nee"}[get(`${b}.terug.gelukt`)]) + qp("Wat ik sinds de vorige les deed", `${b}.terug.tekst`);
+  h += `<h2>2. Opdracht</h2>` + (opdr ? qa("Opdracht van deze les", opdr.t) : "");
+  (opdr ? opdr.open : []).filter(id => id !== "start").forEach(id => { h += `<h3>${esc(MOM[id].titel)}</h3>` + (REPORT[MOM[id].type](id) || "<p>Nog niets ingevuld.</p>"); });
+  h += qp("Werk buiten de tool", `${b}.buiten`);
+  h += `<h2>3. Afsluiting</h2>` + qp("Wat ik deed en ontdekte", `${b}.afsl.gedaan`) + qp("Mijn volgende stap", `${b}.afsl.volgende`);
+  if (gates().includes(n) || (S.gesprek && S.gesprek[n])){ const gs = (S.gesprek||{})[n] || {};
+    h += `<h2>Gesprek met mentor</h2>` + qa("Status", gs.vrij ? "Gesprek gehad op " + fmtTs(gs.vrij) : "Nog niet gehad") + qp("Wat gaat goed", `gesprek.${n}.prep.goed`) + qp("Wat is lastig", `gesprek.${n}.prep.lastig`) + qp("Wat ik wilde bespreken", `gesprek.${n}.prep.vraag`) + qp("Afspraken", `gesprek.${n}.afspraken`); }
+  h += `<p class="uitleg">Getypte tijd telt alleen de tijd tussen toetsaanslagen die minder dan 5 seconden na elkaar komen. ‘Niet getypt’ is tekst die is ingesproken of automatisch aangevuld. Plakken is uitgeschakeld. Tijdstippen komen van de klok van het apparaat van de leerling.</p>`;
+  return h;
+}
+function snapshot(){ const o = {}; Object.entries(S.meta).forEach(([k,m]) => o[k] = m.ms); return o; }
+
+/* ---------- mentorpagina ---------- */
+PAGES.mentor = () => {
+  const hier = location.href.split(/[?#]/)[0], base = /^https?:/.test(hier) ? hier : CONFIG.toolAdres;
+  return `<h1>Mentorpagina</h1><p class="lead">Voor mentoren. Hier maak je de klaslink voor je leerlingen, maak je vrijgavecodes na een gesprek en lees je hoe je de tool het best inzet. Op deze pagina wordt niets opgeslagen.</p>
+  <div class="card"><h2>1. Klaslink maken</h2><p class="sub">Leerlingen die de tool via deze link openen, krijgen jouw instellingen. Zet de link in Teams.</p>
+    <div class="grid2"><label class="f"><span class="lab">Klas</span><input type="text" id="mk-klas" placeholder="H4E"></label>
+    <label class="f"><span class="lab">Pincode (4 tot 8 cijfers)</span><span class="hint">Alleen jij kent hem. Hij staat niet in de link. Zonder pincode kun je later geen vrijgavecodes maken.</span><input type="password" id="mk-pin" inputmode="numeric" autocomplete="off"></label></div>
+    <span class="lab">Hoe werk je?</span>
+    <div class="radios cols2" role="radiogroup"><label class="opt"><input type="radio" name="mk-w" value="half" checked><span><b>Halve klas om de week</b><small>De ene helft in de klas, de andere helft werkt thuis. Leerlingen kiezen groep 1 of 2.</small></span></label>
+    <label class="opt"><input type="radio" name="mk-w" value="heel"><span><b>Hele klas elke week</b><small>Iedereen volgt elke week dezelfde les.</small></span></label></div>
+    <label class="f"><span class="lab">Gesprek verplicht vóór les</span><span class="hint">Lesnummers met komma’s. Leeg laten betekent geen gespreksslot. Standaard 9, 17 en 25: eind november, begin februari en half mei.</span><input type="text" id="mk-g" value="9, 17, 25"></label>
+    <label class="f"><span class="lab">Adres van de tool</span><span class="hint">Het adres op GitHub. Dit is voor alle mentoren hetzelfde; alleen de instellingen achter het vraagteken verschillen per klas.</span><input type="text" id="mk-base" value="${esc(base)}"></label>
+    ${/^https?:/.test(hier) ? "" : `<div class="alert">Je hebt de tool nu als bestand op je computer geopend. Een klaslink moet naar het adres op GitHub wijzen; dat staat hierboven al ingevuld.</div>`}
+    <button class="btn" data-act="mkLink">Maak klaslink</button>
+    <div id="mk-out" style="margin-top:12px"></div></div>
+  <div class="card"><h2>2. Vrijgavecode na een gesprek</h2><p class="sub">De leerling laat zijn aanvraagcode zien (bijvoorbeeld 9-K7F3). Jij typt die hier in met je pincode en geeft de leerling de vrijgavecode. Die werkt alleen voor die leerling.</p>
+    <div class="grid2"><label class="f"><span class="lab">Pincode</span><input type="password" id="vg-pin" inputmode="numeric" autocomplete="off"></label>
+    <label class="f"><span class="lab">Aanvraagcode van de leerling</span><input type="text" id="vg-code" placeholder="9-K7F3" autocomplete="off"></label></div>
+    <button class="btn" data-act="mkVrij">Maak vrijgavecode</button><div id="vg-out" style="margin-top:12px"></div></div>
+  <div class="card"><h2>3. Zo haal je het meeste uit de tool</h2>
+    <h3>Elke week: de controlestrook</h3><p>Bovenaan elke weekpdf staan tijdstip, getypte tijd sinds de vorige PDF, of de afsluiting is ingevuld en de eigen kwaliteitscheck van de leerling. Dat check je in tien seconden. Lees het werk helemaal bij de grote momenten (actieplan, terugblik A, tussenbalans, toetsweekplan C, eindbalans) en bij twijfel. Een lang antwoord in weinig typtijd, of veel ‘niet getypte’ tekens, is een reden om door te vragen, geen bewijs.</p>
+    <h3>Laat leerlingen hun werk uitleggen</h3><p>Kies in een gesprekje één antwoord uit de PDF en vraag: “Leg eens uit wat je hiermee bedoelt.” “Geef eens een voorbeeld uit deze week.” “Wat ga je morgen concreet anders doen?” Wie het zelf schreef, kan dat in twee minuten. Dit is sterker dan elke technische controle, en leerlingen die weten dat het kan gebeuren, schrijven anders.</p>
+    <h3>Laat merken dat je leest</h3><p>Reageer elke week op vier of vijf PDF’s met één zin in Teams, steeds andere leerlingen. Werk waar nooit iemand op reageert, wordt invulwerk.</p>
+    <h3>Maak de norm zichtbaar</h3><p>Een goed antwoord is concreet, gaat over de leerling zelf en heeft een voorbeeld. Die drie punten staan in de tool bij de afsluiting en in de kwaliteitscheck. Laat in de les duo’s elkaars afsluiting daaraan toetsen: vijf minuten, en ze leren wat je verwacht.</p>
+    <h3>Een vaste afspraak bij een ontbrekende PDF</h3><p>Een les waarvan de week voorbij is zonder PDF, staat bij de leerling als ‘niet ingeleverd’. Spreek af dat hij die de volgende les in de klas eerst inhaalt. Een routine, geen straf.</p>
+    <h3>Houd het klein</h3><p>Een les kost 20 à 25 minuten. Voeg niets toe, anders gaan leerlingen afraffelen.</p>
+    <h3>Gespreksmomenten</h3><p>Bij een gespreksslot kan een leerling pas verder na een gesprek. Hij kan het gesprek al eerder hebben: vanaf het vorige slot ziet hij het gesprek aankomen en kan hij het voorbereiden. Reken na: met vier gesprekjes per les spreek je in acht lessen ongeveer dertig leerlingen. Houd dus minstens acht lessen tussen twee sloten. Een MOL-gesprek mag meetellen: geef dan in het MOL-gesprek de vrijgavecode.</p>
+    <h3>Na inleveren op slot</h3><p>Na het maken van de PDF gaat de les op slot. Past een leerling daarna nog iets aan, dan moet hij de les heropenen en een nieuwe PDF maken; in die PDF staat dat de les heropend is. In Teams zie je dan twee inleveringen.</p>
+    <h3>Wat de tool niet kan</h3><p>Alles gebeurt op het apparaat van de leerling. Een leerling die de klok verzet, een back-up bewerkt of de broncode leest, kan de controles omzeilen. Het inlevertijdstip in Teams is betrouwbaar. De tool is een drempel en een spiegel, geen bewijsmiddel.</p>
+    <h3>Privacy</h3><p>Er gaat niets naar een server. De mentor ziet alleen wat de leerling als PDF inlevert. Welbevinden komt alleen in de PDF als de leerling dat aanvinkt. De tool meet typtijd en vertelt dat aan de leerling. Informeer ook ouders (bijvoorbeeld bij MOL-gesprek 1) en leg de werkwijze voor aan de privacyfunctionaris van de school.</p></div>`;
+};
+
+/* ---------- back-up en blijvende opslag ---------- */
+function maakBackup(extra){
+  try {
+    S.ui.lastBackup = Date.now(); save();
+    const blob = new Blob([JSON.stringify(S, null, 2)], {type:"application/json"}), url = URL.createObjectURL(blob), link = document.createElement("a");
+    const naam = (S.leerling.voornaam || "leerling").toLowerCase().replace(/[^a-z0-9]+/g,"-");
+    link.href = url; link.download = `jaarlijn-${naam}${extra ? "-" + extra : ""}-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+  } catch(e){ toast("De back-up kon niet worden gemaakt. Probeer het bij Opslaan en delen."); }
+}
+function vraagBlijvendeOpslag(){ try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().then(ok => { S.ui.persist = !!ok; }); } catch(e){} }
+const IS_SAFARI = /Safari/.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|Edg|FxiOS|Firefox/.test(navigator.userAgent);
+function backupWaarschuwing(){
+  const heeftWerk = hasContent(S.m) || hasContent(S.lessen) || hasContent(S.doelenA);
+  let h = "";
+  if (IS_SAFARI) h += `<div class="alert"><b>Je gebruikt Safari.</b> Safari wist opgeslagen gegevens van een website die je zeven dagen niet gebruikt, bijvoorbeeld na een vakantie. Gebruik liever Chrome of Edge. Blijf je Safari gebruiken, bewaar dan elke back-up in je OneDrive.</div>`;
+  if (heeftWerk && (!S.ui.lastBackup || Date.now() - S.ui.lastBackup > 7*24*3600*1000))
+    h += `<div class="alert klaarbox"><div><b>${S.ui.lastBackup ? "Je laatste back-up is van " + fmtTs(S.ui.lastBackup) + "." : "Je hebt nog geen back-up gemaakt."}</b> Maak er nu een en zet hem in je OneDrive.</div><button class="btn small" data-act="backup">Back-up maken</button></div>`;
+  if (!heeftWerk && S.ui.privacyOk) h += `<div class="note klaarbox"><div>Heb je al eerder in de tool gewerkt en is alles weg? Zet dan je laatste back-up terug. Die staat in je OneDrive of in je map Downloads.</div><button class="btn small ghost" data-act="restore">Back-up terugzetten</button></div>`;
+  return h;
+}
+
+/* ---------- navigatie ---------- */
+function renderNav(){
+  const tabs = [["start","Start"],["lessen","Lessen"],["jaarlijn","Jaarlijn"],["lijn","Mijn lijn"],["delen","Opslaan en delen"]];
+  const t = S.ui.tab, inMoment = MOM[t], inLes = String(t).startsWith("les:");
+  $("#nav").innerHTML = tabs.map(([id,l]) => `<button data-go="${id}" ${(t===id || (id==="jaarlijn" && inMoment && !S.ui.fromLes) || (id==="lessen" && (inLes || (inMoment && S.ui.fromLes))))?'aria-current="page"':""}>${l}</button>`).join("");
+  const L = S.leerling; $("#who").textContent = [L.voornaam, L.klas, CONFIG.school].filter(Boolean).join(" · ");
+}
+function render(top){
+  renderNav();
+  const t = S.ui.tab;
+  const back = (MOM[t] && S.ui.fromLes) ? `<div style="margin-top:16px"><button class="btn small ghost" data-go="les:${S.ui.fromLes}">← Terug naar les ${S.ui.fromLes}</button></div>` : "";
+  if (String(t).startsWith("les:")){ const n = Number(t.slice(4)); $("#app").innerHTML = lesView(n); naLesRender(n); }
+  else if (MOM[t] && momentGeblokkeerd(t)) $("#app").innerHTML = `<h1>${esc(MOM[t].titel)}</h1>` + gesprekKaart(blokGate(), true);
+  else $("#app").innerHTML = MOM[t] ? back + TYPES[MOM[t].type](t) + pager(t) + back : (PAGES[t] || PAGES.start)();
+  if (top) window.scrollTo({top:0});
+}
+function go(tab){ if (!MOM[tab]) S.ui.fromLes = null; S.ui.tab = tab; save(); render(true); }
+
+/* ---------- events ---------- */
+function onField(e){
+  const el = e.target;
+  if (el.dataset.vak !== undefined){ const v = el.dataset.vak; S.vakken = el.checked ? Array.from(new Set([...S.vakken, v])) : S.vakken.filter(x => x !== v); save(); return; }
+  const p = el.dataset.p; if (!p) return;
+  let v = el.type === "checkbox" ? el.checked : el.value;
+  if (el.dataset.n !== undefined && v !== "") v = Number(v);
+  set(p, v);
+  if (el.dataset.rerender !== undefined){ const tr = el.closest("tr"); if (tr) tr.classList.toggle("off", !el.checked); }
+  const lab = p.match(/^(doelen[AB])\.(\d)\.(vak|domein)$/);
+  if (lab){ const s = document.querySelector(`[data-doellabel="${lab[1]}.${lab[2]}"]`); if (s) s.textContent = doelLabel(lab[1], +lab[2]); }
+  refreshLive(); renderNav();
+}
+document.addEventListener("input", onField);
+document.addEventListener("change", e => { if (e.target.type === "radio" || e.target.type === "checkbox" || e.target.tagName === "SELECT") onField(e); });
+document.addEventListener("click", e => {
+  const lg = e.target.closest("[data-lesgo]"); if (lg){ S.ui.fromLes = Number(lg.dataset.les); S.ui.tab = lg.dataset.lesgo; save(); render(true); return; }
+  const g = e.target.closest("[data-go]"); if (g){ go(g.dataset.go); return; }
+  const st = e.target.closest("[data-step]"); if (st){ const [id,j] = st.dataset.step.split(":"); stepIdx[id] = +j; render(true); return; }
+  const a = e.target.closest("[data-act]"); if (!a) return;
+  const act = a.dataset.act;
+  if (act === "privacyOk"){ S.ui.privacyOk = true; vraagBlijvendeOpslag(); save(); render(); }
+  if (act === "addVak"){ const v = $("#nieuwVak").value.trim(); if (v && !S.vakken.includes(v)){ S.vakken.push(v); save(); render(); } }
+  if (act === "klaar"){ const id = a.dataset.id; S.m[id] = S.m[id] || {}; S.m[id].klaar = S.m[id].klaar ? null : new Date().toISOString(); save(); render(); }
+  if (act === "addFb"){ const fb = get("m.spiegel.fb") || []; fb.push({}); set("m.spiegel.fb", fb); render(); }
+  if (act === "delFb"){ const fb = get("m.spiegel.fb") || []; fb.splice(+a.dataset.i, 1); set("m.spiegel.fb", fb); render(); }
+  if (act === "copyVraag"){ const t = $("#fbVraag"), done = () => $("#copied").textContent = "Gekopieerd.";
+    const fallback = () => { t.select(); document.execCommand("copy"); done(); };
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(done, fallback); else fallback(); }
+  if (act === "copyGoal"){ const i = +a.dataset.i, cur = get(`doelenB.${i}`)||{};
+    if (hasContent(cur) && !confirm("Doel "+(i+1)+" voor februari is al (deels) ingevuld. Overschrijven?")) return;
+    const src = JSON.parse(JSON.stringify(get(`doelenA.${i}`)||{})); src.datum = MOM.eind.datum; S.doelenB[i] = src; save(); render(); }
+  if (act === "lesPdf"){ const n = Number(a.dataset.les), b = `lessen.${n}`;
+    if (!(get(`${b}.afsl.gedaan`) && get(`${b}.afsl.volgende`)) && !confirm("Je afsluiting is nog niet helemaal ingevuld. Toch een PDF maken?")) return;
+    const html = buildLesReport(n);
+    S.lessen[n] = S.lessen[n] || {}; S.lessen[n].pdf = (S.lessen[n].pdf || []).concat(Date.now()); S.lessen[n].snap = snapshot(); S.lessen[n].locked = true; save();
+    $("#print").innerHTML = html; document.title = `Les ${n} - ${S.leerling.voornaam || "leerling"}`; window.print(); document.title = "Mijn jaarlijn havo 4"; maakBackup("les" + n); toast("PDF gemaakt. Je back-up staat in Downloads: zet hem in je OneDrive."); render(); }
+  if (act === "heropen"){ const n = Number(a.dataset.les); if (!confirm("Les heropenen? Maak daarna een nieuwe PDF en lever die opnieuw in. In de PDF staat dat je de les hebt heropend.")) return;
+    S.lessen[n].locked = false; S.lessen[n].heropend = (S.lessen[n].heropend || []).concat(Date.now()); save(); render(); }
+  if (act === "ontgrendel"){ const g = Number(a.dataset.g), inv = ($("#vrij-"+g).value || "").trim(), gs = S.gesprek[g] || {};
+    if (CFG().key && inv === vrijgaveCode(CFG().key, gs.code)){ gs.vrij = Date.now(); S.gesprek[g] = gs; save(); toast("Ontgrendeld. Je kunt verder."); render(true); }
+    else toast("Deze code klopt niet. Vraag je mentor om de vrijgavecode."); }
+  if (act === "mkLink"){ const klas = $("#mk-klas").value.trim(), pin = $("#mk-pin").value.trim(), w = (document.querySelector('input[name="mk-w"]:checked')||{}).value || "half";
+    const g = $("#mk-g").value.split(",").map(x => parseInt(x,10)).filter(x => x > 1 && x <= 31);
+    if (g.length && !/^\d{4,8}$/.test(pin)){ toast("Kies een pincode van 4 tot 8 cijfers."); return; }
+    const q = new URLSearchParams({ klas, w }); if (g.length){ q.set("g", g.join(",")); q.set("k", sleutelUitPin(pin)); }
+    const b0 = $("#mk-base").value.trim(); if (!/^https:\/\//.test(b0)){ toast("Het adres moet beginnen met https:// (het adres op GitHub)."); return; }
+    const url = b0 + "?" + q.toString();
+    $("#mk-out").innerHTML = `<label class="f"><span class="lab">Klaslink</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Test de link zelf in een privévenster voordat je hem deelt.</span>`; }
+  if (act === "copyLink"){ const t = $("#mk-url"); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Link gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Link gekopieerd."); } }
+  if (act === "mkVrij"){ const pin = $("#vg-pin").value.trim(), code = $("#vg-code").value.trim().toUpperCase();
+    if (!/^\d{4,8}$/.test(pin) || !/^\d+-[A-Z0-9]{4}$/.test(code)){ toast("Vul je pincode en een aanvraagcode zoals 9-K7F3 in."); return; }
+    $("#vg-out").innerHTML = `<div class="codebox"><div><span class="small">Vrijgavecode voor ${esc(code)}</span><b>${vrijgaveCode(sleutelUitPin(pin), code)}</b></div></div>`; }
+  if (act === "pdf"){ $("#print").innerHTML = buildReport($("#pdfSel").value); window.print(); }
+  if (act === "backup"){ maakBackup(""); render(); }
+  if (act === "restore") $("#importFile").click();
+  if (act === "wipe"){ if (confirm("Weet je het zeker? Alles op dit apparaat wordt gewist.")){ try { localStorage.removeItem(KEY); } catch(_){} S = blank(); render(true); } }
+});
+$("#importFile").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try { const data = JSON.parse(r.result);
+      if (!data || data.versie !== 2 || !data.leerling) throw new Error("geen jaarlijn");
+      if (!confirm("Je huidige gegevens op dit apparaat worden vervangen door de back-up. Doorgaan?")) return;
+      S = Object.assign(blank(), data); save(); render(true); alert("Back-up teruggezet.");
+    } catch(err){ alert("Dit bestand is geen geldige back-up van de jaarlijn."); }
+    e.target.value = "";
+  };
+  r.readAsText(f);
+});
+
+leesKlaslink();
+if (S.ui.privacyOk) vraagBlijvendeOpslag();
+render();
+if (!storageOk){ const el = $("#save"); el.textContent = "Opslaan niet mogelijk in deze browser"; el.classList.add("err"); }
+</script>
+</body>
+</html>
