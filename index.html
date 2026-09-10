@@ -905,7 +905,6 @@ const PAGES = {
       <div class="row"><input type="text" id="nieuwVak" placeholder="Ander vak toevoegen" style="flex:1;min-width:180px"><button class="btn ghost" data-act="addVak">Toevoegen</button></div></div>
     <div class="card soft"><h2>Zo lever je in</h2><p style="margin:0 0 8px">Elke week sluit je een les af en lever je die in als PDF via Teams. In die PDF staat wanneer je hem maakte en hoe lang je aan elke opdracht hebt <b>getypt</b>. Pauzes tellen niet mee.</p><p style="margin:0">Plakken en kopiëren staan uit: je typt alles zelf. Gebruik je spraakherkenning, dan kan dat gewoon. In de PDF staat dan dat die tekst ingesproken is.</p></div>`;
     if (S.ui.privacyOk) h += opgezet ? `<details class="card"><summary>Je naam, groep en vakken aanpassen</summary><div style="margin-top:12px">${inst}</div></details>` : inst + (S.leerling.voornaam && S.vakken.length ? `<button class="btn" data-go="start">Klaar, naar deze week</button>` : "");
-    if (!MENTOR) h += `<p class="small" style="margin-top:28px">Ben je mentor? <a href="#mentor">Naar het mentorportaal</a></p>`;
     return h;
   },
   jaarlijn: () => `<h1>Jaarlijn</h1><p class="lead">Alle onderdelen van dit jaar, in volgorde. Klik op een onderdeel om het te openen.</p>` + jaarlijn(),
