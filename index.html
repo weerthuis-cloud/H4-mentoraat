@@ -97,6 +97,7 @@ textarea,input[type=text],input[type=password],input[type=date],select{width:100
 textarea{resize:vertical;min-height:60px}
 textarea:focus,input:focus,select:focus,button:focus-visible,.opt input:focus-visible+span{outline:3px solid color-mix(in srgb,var(--acc) 45%,transparent);outline-offset:1px;border-color:var(--acc)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.dagkies{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0 12px;margin-top:4px}
 .grid2 > .f{display:flex;flex-direction:column} .grid2 > .f > input:not([type=date]),.grid2 > .f > select,.grid2 > .f > textarea{margin-top:auto}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px}
 @media (max-width:620px){.grid2,.grid3{grid-template-columns:1fr}}
@@ -1350,6 +1351,7 @@ function leesKlaslink(){
                 gates: (q.get("g") || "").split(",").map(Number).filter(n => n > 1 && n <= 31).sort((a,b) => a-b), key: q.get("k") || "",
                 adj: Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvz])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]])) };
       if (q.has("x")) S.cfg.mods = (q.get("x") || "").split(",").filter(Boolean);
+      if (q.has("d")) S.cfg.dagen = (q.get("d") || "").split(",").map(Number).slice(0, 4);
       if (S.cfg.klas && !S.leerling.klas) S.leerling.klas = S.cfg.klas;
       save();
     }
@@ -1362,6 +1364,43 @@ function mod(c){ const cfg = S.cfg; if (!cfg) return false; if (!cfg.mods) retur
 function zichtbaar(id){ const m = MOM[id]; return !m || !m.mod || mod(m.mod); }
 function taakTekst(tk){ return tk ? tk.t + (tk.x || []).filter(e => mod(e.m)).map(e => " " + e.t).join("") : ""; }
 function taakOpen(tk){ return tk ? tk.open.concat(...(tk.x || []).filter(e => mod(e.m)).map(e => e.open || [])).filter(zichtbaar) : []; }
+/* ---------- lesdag per periode (uit de klaslink) ---------- */
+const DAGKORT = ["", "ma", "di", "wo", "do", "vr"], DAGVOL = ["", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag"];
+const MNDK = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+const VRIJEDAG = { "2026-09-15":"organisatiedag", "2026-11-19":"organisatiedag", "2027-02-19":"verlofdag", "2027-03-11":"organisatiedag", "2027-03-26":"Goede Vrijdag", "2027-03-29":"tweede paasdag", "2027-05-17":"tweede pinksterdag" };
+function perVan(ma){ return ma < "2026-11-09" ? 1 : ma < "2027-01-25" ? 2 : ma < "2027-04-05" ? 3 : 4; }
+function lesDag(L, dagen){
+  if (!L || !Array.isArray(dagen)) return null; const d = dagen[perVan(L.ma) - 1] || 0; if (!d) return null;
+  const dt = new Date(L.ma + "T12:00:00"); dt.setDate(dt.getDate() + d - 1);
+  const iso = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
+  const tw = Object.entries(CONFIG.toetsweken).find(([k,v]) => iso >= v.van && iso <= v.tot);
+  return { iso, txt: `${DAGKORT[d]} ${dt.getDate()} ${MNDK[dt.getMonth()]}`, vrij: VRIJEDAG[iso] || (tw ? "toetsweek " + tw[0] : "") }; }
+function lesDatum(L, dagen){ const x = lesDag(L, dagen); return x ? x.txt + (x.vrij ? ` (let op: ${x.vrij})` : "") : (L ? L.datum : ""); }
+function leerlingDagen(){ return CFG().dagen || null; }
+function mentorDagen(){ return (S.ui && Array.isArray(S.ui.mdagen)) ? S.ui.mdagen : null; }
+function lesDatumL(n){ return lesDatum(LES.find(l => l.les === n), leerlingDagen()); }
+function lesDatumM(n){ return lesDatum(LES.find(l => l.les === n), mentorDagen()); }
+function dagKiezer(prefix, dagen){ const PN = ["Periode 1 (sep–okt)","Periode 2 (nov–jan)","Periode 3 (jan–mrt)","Periode 4 (apr–jul)"];
+  return `<div class="dagkies">${PN.map((p, i) => `<label class="f"><span class="lab">${p}</span><select id="${prefix}-${i}">${[0,1,2,3,4,5].map(d => `<option value="${d}" ${((dagen && dagen[i]) || (i === 0 && !dagen ? 5 : 0)) === d ? "selected" : ""}>${d ? DAGVOL[d] : "nog onbekend"}</option>`).join("")}</select></label>`).join("")}</div>`; }
+function leesDagKiezer(prefix){ return [0,1,2,3].map(i => Number(($("#" + prefix + "-" + i) || {}).value || 0)); }
+function dagRegel(){ const md = mentorDagen();
+  return md ? `<p class="small" style="margin:6px 0 0">Jouw lesdag: ${md.map((d, i) => `P${i+1} ${d ? DAGKORT[d] : "?"}`).join(" · ")}. Wijzigen: <a href="#mentor/planning">Planning aanpassen</a>.</p>`
+    : `<p class="small" style="margin:6px 0 0">Stel je lesdag in bij <a href="#mentor/klaslink">Klaslink maken</a>; tot die tijd staan hier weken in plaats van data.</p>`; }
+function leerlingPlanPdf(){
+  const w = mWerkwijze(), klas = (S.ui && S.ui.mklas) || "";
+  let h = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Jaarplanner mentorles${klas ? " · " + esc(klas) : ""}</h1><div class="pmeta">${w==="heel"?"Hele klas elke week":"Halve klas om de week"} · ${CONFIG.school} · ${CONFIG.schooljaar}</div>
+  <table class="mplan"><thead><tr><th style="width:6%">Week</th><th style="width:12%">Datum</th><th style="width:5%">Les</th>${w === "heel" ? `<th style="width:57%">Wat doe je</th>` : `<th style="width:28.5%">Groep 1</th><th style="width:28.5%">Groep 2</th>`}<th style="width:20%">Deadline</th></tr></thead><tbody>`;
+  let per = 0;
+  mentorRijen(w).forEach(r => {
+    if (r.per !== per){ per = r.per; h += `<tr class="pper"><td colspan="${w === "heel" ? 5 : 6}">${PERTXT[per]}</td></tr>`; }
+    const dat = r.les ? lesDatumM(r.les) : r.datum;
+    if (!r.les){ h += `<tr class="pvrij"><td>${esc(r.wk)}</td><td>${esc(dat)}</td><td>–</td><td colspan="${w === "heel" ? 1 : 2}"><b>${esc(r.titel)}</b>${r.st ? " · " + esc(r.st) : ""}</td><td>${r.dl ? `<b>${esc(r.dl)}</b>` : ""}</td></tr>`; return; }
+    const kl = `<b>In de klas:</b> ${esc(r.sk || "")}`, th = `<b>Thuis:</b> ${esc(r.st || "")}`;
+    h += `<tr><td>${esc(r.wk)}</td><td>${esc(dat)}</td><td>${r.les}</td>${w === "heel" ? `<td><b>${esc(r.titel)}.</b> ${esc(r.ltHeel || "")}</td>` : `<td>${r.g === 1 ? kl : th}</td><td>${r.g === 2 ? kl : th}</td>`}<td>${r.dl ? `<b>${esc(r.dl)}</b>` : ""}</td></tr>`; });
+  h += `</tbody></table><p class="uitleg">Open de tool altijd via de klaslink in Teams. Elke les sluit je af met een PDF.</p>`;
+  $("#print").innerHTML = h;
+  const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st);
+  const oud = document.title; document.title = `Jaarplanner leerlingen${klas ? " " + klas : ""}`; window.print(); document.title = oud; st.remove(); }
 function gates(){ const c = CFG(); if (!c.key) return []; return Array.from(new Set(c.gates.map(g => (typeof adjOf === "function" && adjOf(g) === "v") ? samenIn(g) : g))).sort((a,b) => a-b); }
 function gesprekVrij(g){ return !!(S.gesprek && S.gesprek[g] && S.gesprek[g].vrij); }
 function blokGate(){ return gates().find(g => !gesprekVrij(g)) || null; }
@@ -1471,7 +1510,7 @@ function lesView(n){
   const L = LES.find(l => l.les === n); if (!L) return PAGES.lessen();
   const { mode: mode0, taak } = lesInfo(L), b = `lessen.${n}`, bg = blokGate(), aj = adjOf(n), kort = isKort(n);
   const mode = (aj === "z" && mode0) ? "zelf" : mode0;
-  let h = `<h1>Les ${n} · ${esc(lesBlok(L))}</h1><div class="meta"><span class="pill">week ${esc(L.wk)}</span><span class="pill">${esc(L.datum)}</span>`;
+  let h = `<h1>Les ${n} · ${esc(lesBlok(L))}</h1><div class="meta"><span class="pill">week ${esc(L.wk)}</span><span class="pill">${esc(lesDatumL(L.les))}</span>`;
   if (aj === "v"){ const naar = samenIn(n);
     return h + `</div><div class="card soft"><h2>Deze les is samengevoegd met les ${naar}</h2><p style="margin:0 0 12px">Je mentor heeft deze les laten vervallen. Het werk van deze week doe je in les ${naar}, samen met die les en in een korte versie. Je hoeft voor deze les geen PDF te maken.</p><button class="btn" data-go="les:${naar}">Naar les ${naar}</button></div>` + `<div class="pager"><button class="btn ghost" data-go="lessen">← Naar het overzicht</button></div>`; }
   h += mode ? `<span class="pill ${mode==="thuis"||mode==="zelf"?"warm":""}">${MODETXT[mode]}</span>` : "";
@@ -1538,7 +1577,7 @@ PAGES.lessen = () => {
   h += `<div class="tl">`;
   LES.forEach(L => { const { mode } = lesInfo(L), st = lesStatus(L.les), slot = bg && L.les >= bg && st !== "samen", aj = adjOf(L.les);
     if (gates().includes(L.les)) h += `<div class="ev"><span></span><span><b>Gesprek met je mentor</b> vóór les ${L.les}${gesprekVrij(L.les)?" · gehad":""}</span></div>`;
-    h += `<button class="it ${mode==="thuis"?"toets":""} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(L.datum)} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}</small></span><span class="status ${slot?"slot":st}">${slot?"op slot":st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
+    h += `<button class="it ${mode==="thuis"?"toets":""} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(lesDatumL(L.les))} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}</small></span><span class="status ${slot?"slot":st}">${slot?"op slot":st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
   return h + `</div>`;
 };
 function buildLesReport(n){
@@ -1558,7 +1597,7 @@ function buildLesReport(n){
   const modeTxt = (aj === "z" ? "zelfstandig, zonder mentor" : { klas:"in de klas", thuis:"thuis", les:"mentorles" }[mode]) || "–";
   const aanp = [kort ? "korte les" : "", sv.length ? "samen met les " + sv.join(" en ") : "", aj === "z" ? "zelfstandig" : ""].filter(Boolean).join(" · ");
   let h = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Les ${n} · ${esc(lesBlok(L))} · ${esc(P.voornaam||"(geen naam)")}</h1>
-  <table class="strook"><tr><th>Leerling</th><td>${esc([P.voornaam, P.klas, CFG().werkwijze==="half"&&P.groep?"groep "+P.groep:""].filter(Boolean).join(" · "))}</td><th>Les</th><td>les ${n} · week ${esc(L.wk)} · ${esc(L.datum)} · ${modeTxt}</td></tr>
+  <table class="strook"><tr><th>Leerling</th><td>${esc([P.voornaam, P.klas, CFG().werkwijze==="half"&&P.groep?"groep "+P.groep:""].filter(Boolean).join(" · "))}</td><th>Les</th><td>les ${n} · week ${esc(L.wk)} · ${esc(lesDatumL(n))} · ${modeTxt}</td></tr>
   <tr><th>PDF gemaakt op</th><td><b>${fmtTs(now)}</b>${d.heropend && d.heropend.length ? `<br>heropend na inleveren: ${d.heropend.map(fmtTs).join(", ")}` : ""}</td><th>Getypt sinds vorige PDF</th><td><b>${fmtDur(totWeek)}</b></td></tr>
   <tr><th>Afsluiting ingevuld</th><td>${afslOk?"ja":"<b>nee</b>"}</td><th>Eigen oordeel</th><td>gewerkt: ${["","nauwelijks","matig","goed","heel goed"][get(`${b}.afsl.inzet`)||0]||"–"} · kwaliteitscheck ${nChk} van 3</td></tr>${aanp ? `<tr><th>Aangepaste les</th><td colspan="3">${esc(aanp)}</td></tr>` : ""}</table>
   <h2>Opdrachten</h2><table><thead><tr><th>Opdracht</th><th>Getypt sinds vorige PDF</th><th>Getypt in totaal</th><th>Woorden</th><th>Laatst bewerkt</th><th>Niet getypt</th></tr></thead><tbody>
@@ -1585,7 +1624,8 @@ const MPAGES = {
     <div class="card"><h2>1. Je klas</h2><label class="f"><span class="lab">Klas</span><input type="text" id="mk-klas" placeholder="H4E"></label>
     <span class="lab">Hoe werk je?</span>
     <div class="radios cols2" role="radiogroup"><label class="opt"><input type="radio" name="mk-w" value="half" checked><span><b>Halve klas om de week</b><small>De ene helft in de klas, de andere helft werkt thuis. Leerlingen kiezen groep 1 of 2.</small></span></label>
-    <label class="opt"><input type="radio" name="mk-w" value="heel"><span><b>Hele klas elke week</b><small>Iedereen volgt elke week dezelfde les.</small></span></label></div></div>
+    <label class="opt"><input type="radio" name="mk-w" value="heel"><span><b>Hele klas elke week</b><small>Iedereen volgt elke week dezelfde les.</small></span></label></div>
+    <span class="lab">Op welke dag is je mentorles?</span><span class="hint">Per periode, want je rooster kan wisselen. Weet je het nog niet? Kies ‘nog onbekend’ en pas het later aan bij Planning aanpassen. De data in de lessen en jaarplanners volgen deze dag.</span>${dagKiezer("mk-dag", mentorDagen())}</div>
     <div class="card"><h2>2. Wat zet je aan?</h2>
     <div class="note"><b>Altijd aan, de basis:</b> de weekles met PDF, het actieplan, de toetsweekplannen en terugblikken, de spiegel, de tussenbalans, de eindbalans, het LOB-dossier en de voorbereiding van de MOL-gesprekken.</div>
     <p class="sub"><b>Advies:</b> begin met alleen de basis. Zet in periode 2 één extra aan als de basis loopt.</p>
@@ -1595,7 +1635,7 @@ const MPAGES = {
     <label class="f"><span class="lab">Gesprek verplicht vóór les</span><span class="hint">Lesnummers met komma’s. Standaard 9, 17 en 25.</span><input type="text" id="mk-g" value="9, 17, 25"></label></div></div></div>
     <div class="card"><h2>3. Maak de link</h2><details style="margin-bottom:12px"><summary>Adres van de tool (hoef je meestal niet te veranderen)</summary><label class="f" style="margin-top:8px"><span class="lab">Adres van de tool</span><span class="hint">Voor alle mentoren hetzelfde.</span><input type="text" id="mk-base" value="${esc(base)}"></label></details>
     <button class="btn" data-act="mkLink">Maak klaslink</button><div id="mk-out" style="margin-top:12px"></div></div>`; },
-  vrijgave: () => { const mg = mentorGates(), datum = n => { const L = LES.find(l => l.les === n); return L ? L.datum : ""; };
+  vrijgave: () => { const mg = mentorGates(), datum = n => lesDatumM(n);
     const status = mg ? (mg.length ? `<div class="note"><b>In jouw klaslink:</b> gesprek vóór ${mg.map(n => `les ${n} (${esc(datum(n))})`).join(", ")}.</div>` : `<div class="note">Je laatste klaslink heeft <b>geen gespreksslot</b>. Deze pagina heb je dan niet nodig.</div>`)
       : `<div class="note">Het gespreksslot werkt alleen als je bij het maken van je klaslink het vinkje <i>Gespreksslot</i> aanzette. Standaard liggen de gesprekken vóór ${gatesStd.map(n => `les ${n} (${esc(datum(n))})`).join(", ")}.</div>`;
     return `<h1>Gesprek en vrijgavecode</h1><p class="lead">Met het gespreksslot kunnen leerlingen vanaf een paar vaste lessen pas verder in de tool als ze een kort gesprek met jou hebben gehad. Zo weet je zeker dat je iedereen spreekt.</p>
@@ -1619,11 +1659,13 @@ MPAGES.planning = () => {
     <div class="row" style="margin-top:8px"><button class="btn" data-act="plLoad">Laden</button></div></div>`;
   if (!PL) return h;
   const w = PL.q.get("w") === "heel" ? "heel" : "half", g = (PL.q.get("g")||"").split(",").map(Number).filter(Boolean);
-  h += `<div class="card"><h2>2. Kies per les</h2><p class="sub">Klas ${esc(PL.q.get("klas")||"–")} · ${w==="heel"?"hele klas elke week":"halve klas om de week"}${g.length?" · gesprek vóór les "+g.join(", "):""}</p>
+  const pd = PL.q.get("d") ? PL.q.get("d").split(",").map(Number) : null;
+  h += `<div class="card"><h2>2. Lesdag</h2><p class="sub">Verandert je rooster, bijvoorbeeld in een nieuwe periode? Kies hier de nieuwe dag. De data in de lessen van je leerlingen schuiven mee.</p>${dagKiezer("pl-dag", pd)}</div>`;
+  h += `<div class="card"><h2>3. Kies per les</h2><p class="sub">Klas ${esc(PL.q.get("klas")||"–")} · ${w==="heel"?"hele klas elke week":"halve klas om de week"}${g.length?" · gesprek vóór les "+g.join(", "):""}</p>
     <div class="tbl-wrap"><table class="gap"><thead><tr><th>Les</th><th>Week</th><th>Onderdeel</th><th style="min-width:210px">Aanpassing</th></tr></thead><tbody>`;
   LES.forEach(L => { const cur = PL.adj[L.les] || "";
     const opts = [["","Normaal"],["k","Kort"],["v","Samenvoegen met volgende les"],["z","Zelfstandig (zonder mentor)"]].filter(o => !(o[0]==="v" && L.les === LES.length));
-    h += `<tr><td><b>${L.les}</b>${g.includes(L.les)?' <span class="pill geel" style="font-size:11px">gesprek</span>':""}</td><td>${esc(L.wk)}<br><span class="small">${esc(L.datum)}</span></td><td>${esc(w==="heel" ? (L.bh||L.blok) : L.blok)}${L.dl?`<br><span class="small">deadline: ${esc(L.dl)}</span>`:""}</td>
+    h += `<tr><td><b>${L.les}</b>${g.includes(L.les)?' <span class="pill geel" style="font-size:11px">gesprek</span>':""}</td><td>${esc(L.wk)}<br><span class="small">${esc(lesDatumM(L.les))}</span></td><td>${esc(w==="heel" ? (L.bh||L.blok) : L.blok)}${L.dl?`<br><span class="small">deadline: ${esc(L.dl)}</span>`:""}</td>
       <td><select data-pl="${L.les}">${opts.map(([v,t]) => `<option value="${v}" ${cur===v?"selected":""}>${t}</option>`).join("")}</select>${L.dl?`<div class="small" data-plw="${L.les}" ${cur==="v"?"":"hidden"} style="color:var(--c-toets);margin-top:4px">Deze les heeft een deadline. Kies liever Kort.</div>`:""}</td></tr>`; });
   h += `</tbody></table></div><div class="row" style="margin-top:12px"><button class="btn" data-act="plMake">Maak nieuwe klaslink</button><button class="btn ghost" data-act="plReset">Alles terug naar normaal</button></div><div id="pl-out" style="margin-top:12px"></div></div>`;
   return h;
@@ -1637,7 +1679,7 @@ function plLaad(){
   try { const u = new URL(raw); const q = u.searchParams;
     if (!q.has("w") && !q.has("klas")) throw 0;
     const adj = Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvz])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]]));
-    PL = { url: raw, base: u.origin + u.pathname, q, adj }; S.ui.madj = Object.assign({}, adj);
+    PL = { url: raw, base: u.origin + u.pathname, q, adj }; S.ui.madj = Object.assign({}, adj); S.ui.mdagen = q.get("d") ? q.get("d").split(",").map(Number) : S.ui.mdagen; S.ui.mklas = q.get("klas") || S.ui.mklas;
     S.ui.mgates = q.get("k") ? (q.get("g") || "").split(",").map(Number).filter(Boolean) : []; if (q.has("x")) S.ui.mmods = (q.get("x") || "").split(",").filter(Boolean); save(); render();
   } catch(e){ toast("Dit is geen klaslink. Plak de link die nu in Teams staat."); }
 }
@@ -1645,6 +1687,7 @@ function plMaak(){
   const q = new URLSearchParams(PL.q.toString());
   const a = Object.keys(PL.adj).map(Number).sort((x,y) => x-y).filter(n => PL.adj[n]).map(n => n + PL.adj[n]).join(",");
   if (a) q.set("a", a); else q.delete("a");
+  const dagen = leesDagKiezer("pl-dag"); if (dagen.some(Boolean)) q.set("d", dagen.join(",")); else q.delete("d"); S.ui.mdagen = dagen.some(Boolean) ? dagen : null;
   const url = PL.base + "?" + q.toString().replace(/%2C/g, ","); S.ui.madj = Object.assign({}, PL.adj); save(); PL.url = url; PL.q = q;
   const n = Object.keys(PL.adj).length;
   $("#pl-out").innerHTML = `<label class="f"><span class="lab">Nieuwe klaslink${n?` (${n} ${n===1?"les":"lessen"} aangepast)`:""}</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Vervang de oude link in Teams door deze. Leerlingen zien de aanpassingen zodra ze de tool via de nieuwe link openen.</span>`;
@@ -1675,7 +1718,7 @@ MPAGES.lessen = () => {
     <label class="opt"><input type="radio" name="mw" value="heel" ${w==="heel"?"checked":""}><span><b>Hele klas elke week</b></span></label>
     <label class="opt"><input type="radio" name="mw" value="half" ${w==="half"?"checked":""}><span><b>Halve klas om de week</b></span></label></div>
     <div class="row" style="justify-content:space-between;margin-top:12px"><div class="legend" style="margin:0"><span><i style="background:var(--c-leerling)"></i>Ontwikkeling</span><span><i style="background:var(--c-toets)"></i>Toetsweken</span><span><i style="background:var(--c-lob)"></i>LOB</span><span><i style="background:var(--c-geel)"></i>Gesprek met de mentor</span></div>
-    <button class="btn" data-act="mPlanPdf">PDF maken</button></div></div>`;
+    <div class="row"><button class="btn" data-act="mPlanPdf">PDF voor de mentor</button><button class="btn ghost" data-act="lPlanPdf">Jaarplanner voor leerlingen (PDF)</button></div></div>${dagRegel()}</div>`;
   let per = 0;
   mentorRijen(w).forEach(r => {
     if (r.per !== per){ per = r.per; h += `<h2 class="mper">${PERTXT[per]}</h2>`; }
@@ -1684,7 +1727,7 @@ MPAGES.lessen = () => {
       h += `<div class="wkrow vrij"><div class="wkcol"><b>week ${esc(r.wk)}</b><span>${esc(r.datum)}</span></div><div class="wkmain"><b>${esc(r.titel)}</b>${r.st?`<div class="wkdo">${esc(r.st)}</div>`:""}${r.nbW?`<div class="small">${esc(r.nbW)}</div>`:""}</div>${r.dl?`<div class="wkside"><b>${esc(r.dl)}</b></div>`:""}</div>`;
       return;
     }
-    h += `<div class="wkrow s-${r.spoor}"><div class="wkcol"><b>week ${esc(r.wk)}</b><span>${esc(r.datum)}</span><span class="lesnr">les ${r.les}</span><button class="btn small ghost" style="margin-top:6px" data-bord="open" data-les="${r.les}">▶ Digibord</button></div>
+    h += `<div class="wkrow s-${r.spoor}"><div class="wkcol"><b>week ${esc(r.wk)}</b><span>${esc(lesDatumM(r.les))}</span><span class="lesnr">les ${r.les}</span><button class="btn small ghost" style="margin-top:6px" data-bord="open" data-les="${r.les}">▶ Digibord</button></div>
       <div class="wkmain"><div class="wkhead">${esc(r.titel)}</div>
         <div class="wkdo"><span class="lbl">Jij als mentor</span>${esc(r.mkW)}</div>
         ${r.leerl.map(([l,t]) => `<div class="wkdo"><span class="lbl">${esc(l)}</span>${esc(t)}</div>`).join("")}
@@ -1702,7 +1745,7 @@ function mentorPlanPdf(){
     if (r.per !== per){ per = r.per; h += `<tr class="pper"><td colspan="7">${PERTXT[per]}</td></tr>`; }
     if (r.les && gatesStd.includes(r.les)) h += `<tr class="pgate"><td colspan="7">Alleen met gespreksslot: gesprek met de mentor vóór les ${r.les}; leerlingen kunnen pas verder na dit gesprek.</td></tr>`;
     if (!r.les){ h += `<tr class="pvrij"><td>${esc(r.wk)}</td><td>${esc(r.datum)}</td><td>–</td><td colspan="3"><b>${esc(r.titel)}</b>${r.st?" · "+esc(r.st):""}${r.nbW?" · "+esc(r.nbW):""}</td><td>${r.dl?`<b>${esc(r.dl)}</b>`:""}</td></tr>`; return; }
-    h += `<tr><td>${esc(r.wk)}</td><td>${esc(r.datum)}</td><td>${r.les}</td><td class="p-${r.spoor}"><b>${esc(r.titel)}</b></td><td>${(g => g ? `<i>Opener (groepsvorming): ${esc(g.titel)}.</i><br>` : "")(gvVan(r.les, w))}${esc(r.mkW)}</td><td>${r.leerl.map(([l,t]) => w==="heel" ? esc(t) : `<b>${esc(l)}:</b> ${esc(t)}`).join("<br>")}</td><td>${r.dl?`<b>${esc(r.dl)}</b><br>`:""}${esc(r.nbW||"")}</td></tr>`;
+    h += `<tr><td>${esc(r.wk)}</td><td>${esc(lesDatumM(r.les))}</td><td>${r.les}</td><td class="p-${r.spoor}"><b>${esc(r.titel)}</b></td><td>${(g => g ? `<i>Opener (groepsvorming): ${esc(g.titel)}.</i><br>` : "")(gvVan(r.les, w))}${esc(r.mkW)}</td><td>${r.leerl.map(([l,t]) => w==="heel" ? esc(t) : `<b>${esc(l)}:</b> ${esc(t)}`).join("<br>")}</td><td>${r.dl?`<b>${esc(r.dl)}</b><br>`:""}${esc(r.nbW||"")}</td></tr>`;
   });
   h += `</tbody></table><p class="uitleg">Gespreksmomenten gelden alleen als je het gespreksslot aanzet (standaard vóór les ${gatesStd.join(", ")}). Valt een les uit, pas dan de planning aan op de pagina Planning aanpassen in het mentorportaal.</p>` + gvPdfHTML();
   $("#print").innerHTML = h;
@@ -1729,7 +1772,7 @@ MPAGES.groepsvorming = () => {
   <div class="card"><h2>Werk je met de hele klas?</h2><p style="margin:0">Dan doe je elke week een werkvorm: in de eerste les van elk blok de werkvorm, in de tweede les de variant. Die staat hieronder steeds als tweede.</p></div>
   <h2 class="mper">Werkvormen per les</h2>`;
   GV.blokken.forEach(b => { const f = GV.fasen[b.fase];
-    h += `<div class="wkrow" style="border-left-color:var(--c-mentor)"><div class="wkcol"><b>les ${b.les.join(" en ")}</b><span>${esc(LES.find(l => l.les === b.les[0]).datum)}</span></div><div class="wkmain"><div class="wkgv" style="margin:0;border:0;padding:0;background:none"><span class="fase">${esc(f.naam)}</span></div><div class="wkhead">${esc(b.titel)}</div><div class="wkdo">${esc(b.hoe)}</div><div class="wkdo"><span class="lbl">Variant of tweede keer</span>${esc(b.variant)}</div></div></div>`; });
+    h += `<div class="wkrow" style="border-left-color:var(--c-mentor)"><div class="wkcol"><b>les ${b.les.join(" en ")}</b><span>${esc(lesDatumM(b.les[0]))}</span></div><div class="wkmain"><div class="wkgv" style="margin:0;border:0;padding:0;background:none"><span class="fase">${esc(f.naam)}</span></div><div class="wkhead">${esc(b.titel)}</div><div class="wkdo">${esc(b.hoe)}</div><div class="wkdo"><span class="lbl">Variant of tweede keer</span>${esc(b.variant)}</div></div></div>`; });
   h += `<div class="row" style="margin-top:12px"><button class="btn" data-act="gvPdf">PDF maken van de werkvormen</button></div>`;
   return h;
 };
@@ -1745,7 +1788,7 @@ function dezeWeek(){
   const volgende = CONFIG.momenten.filter(m => zichtbaar(m.id) && m.datum >= today && status(m.id) !== "klaar")[0];
   const laat = LES.filter(l => l.les < n && lesStatus(l.les) === "laat").slice(-3);
   const bg = blokGate();
-  let h = `<h1>Deze week</h1><div class="card dw"><div class="small">week ${esc(L.wk)} · ${esc(L.datum)}${mode ? " · " + esc(MODETXT[mode].toLowerCase()) : ""}</div>
+  let h = `<h1>Deze week</h1><div class="card dw"><div class="small">week ${esc(L.wk)} · ${esc(lesDatumL(n))}${mode ? " · " + esc(MODETXT[mode].toLowerCase()) : ""}</div>
     <h2 style="margin:4px 0 8px">Les ${n} · ${esc(lesBlok(L))}</h2>
     <p style="margin:0 0 12px">${isKort(n) ? "Korte les. " : ""}${esc(taakTekst(tk))}</p>${L.dl ? `<p class="small" style="margin:0 0 12px"><b>Deadline:</b> ${esc(L.dl)}</p>` : ""}
     <button class="btn groot" data-go="les:${n}">${st === "klaar" ? "Bekijk de les (ingeleverd)" : "Open de les"}</button></div>`;
@@ -1768,8 +1811,8 @@ MPAGES.week = () => {
   const i = Math.max(0, Math.min(rows.length - 1, i0 + ((S.ui && S.ui.mwoff) || 0))), r = rows[i];
   let h = `<h1>Deze week</h1><p class="lead">Wat je deze week in de mentorles doet. Eerste keer hier? Begin dan bij het <a href="#mentor/start">stappenplan</a> (tab Uitleg).</p>
   <div class="card mctrl"><div class="row" style="justify-content:space-between;gap:10px"><div class="row"><button class="btn small ghost" data-act="mwoff" data-d="-1" ${i === 0 ? "disabled" : ""}>← Vorige week</button><button class="btn small ghost" data-act="mwoff" data-d="0">Deze week</button><button class="btn small ghost" data-act="mwoff" data-d="1" ${i === rows.length - 1 ? "disabled" : ""}>Volgende week →</button></div>
-    <div class="radios cols2" role="radiogroup" style="margin:0;min-width:280px"><label class="opt"><input type="radio" name="mw" value="heel" ${w==="heel"?"checked":""}><span><b>Hele klas</b></span></label><label class="opt"><input type="radio" name="mw" value="half" ${w==="half"?"checked":""}><span><b>Halve klas</b></span></label></div></div></div>`;
-  h += `<h2 class="mper">Week ${esc(r.wk)} · ${esc(r.datum)}</h2>`;
+    <div class="radios cols2" role="radiogroup" style="margin:0;min-width:280px"><label class="opt"><input type="radio" name="mw" value="heel" ${w==="heel"?"checked":""}><span><b>Hele klas</b></span></label><label class="opt"><input type="radio" name="mw" value="half" ${w==="half"?"checked":""}><span><b>Halve klas</b></span></label></div></div>${dagRegel()}</div>`;
+  h += `<h2 class="mper">Week ${esc(r.wk)} · ${esc(r.les ? lesDatumM(r.les) : r.datum)}</h2>`;
   if (!r.les){ return h + `<div class="card"><h2>Geen mentorles: ${esc(r.titel)}</h2>${r.st ? `<p>${esc(r.st)}</p>` : ""}${r.nbW ? `<p class="small">${esc(r.nbW)}</p>` : ""}${r.dl ? `<p><b>${esc(r.dl)}</b></p>` : ""}</div>`; }
   const g = gvVan(r.les, w);
   h += `<div class="card"><div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start"><h2 style="margin:0">Les ${r.les} · ${esc(r.titel)}</h2><button class="btn small" data-bord="open" data-les="${r.les}" style="white-space:nowrap">▶ Start digibordles</button></div>${w === "half" ? `<p class="small" style="margin-top:-6px">In de klas: groep ${r.g}. Groep ${r.g === 1 ? 2 : 1} werkt thuis.</p>` : ""}
@@ -1824,7 +1867,7 @@ function jaarPlaat(o = {}){ /* o.sv, o.df: extra rij tonen; o.label: kop "Extra�
 function mentorPlaat(){
   const kol = (kop, kl, st) => `<div class="kol ${kl}"><h3>${kop}</h3><ol>${st.map(([t,u]) => `<li><b>${t}</b><span>${u}</span></li>`).join("")}</ol></div>`;
   return `<div class="kol3">
-    ${kol("Eén keer, voor les 1", "k1", [["Maak je klaslink","Tab Mijn klas. Kies je werkwijze. De eerste keer alleen de basis."],["Test de link","Open hem in een privévenster."],["Zet hem in Teams","Op een vaste plek, bijvoorbeeld bovenaan het kanaal van je klas."],["Les 1","Leerlingen openen de tool via de link, vullen hun naam in, vinken vakken aan en oefenen de back-up."]])}
+    ${kol("Eén keer, voor les 1", "k1", [["Maak je klaslink","Tab Mijn klas. Kies je werkwijze en je lesdag. De eerste keer alleen de basis."],["Test de link","Open hem in een privévenster."],["Zet hem in Teams","Op een vaste plek, bijvoorbeeld bovenaan het kanaal van je klas."],["Les 1","Leerlingen openen de tool via de link, vullen hun naam in, vinken vakken aan en oefenen de back-up."]])}
     ${kol("Elke week, in de les", "k2", [["Open Deze week","Start de digibordles en zet hem schermvullend (toets F). Met de pijltjes klik je door."],["Opener, 5 minuten","De werkvorm voor de groep."],["De les","Korte uitleg, leerlingen werken, jij voert drie à vier gesprekjes."],["Laatste 5 minuten","Leerlingen sluiten af en leveren hun PDF in via Teams."]])}
     ${kol("Na de les, 10 minuten", "k3", [["Bekijk de controlestrook","Bovenaan elke PDF: tijdstip, getypte tijd, afsluiting."],["Reageer op vier of vijf","Eén zin in Teams, steeds andere leerlingen."],["Mist er een PDF?","Die haalt de leerling de volgende les eerst in."]])}
   </div>
@@ -1902,7 +1945,7 @@ function gsKaart(les){
   const r = gsRonde(les); if (!r) return "";
   const Lg = LES.find(l => l.les === r.gate), nog = r.gate - les, pre = r.zeker ? "" : "Als je het gespreksslot gebruikt: ";
   if (les === r.gate) return `<div class="wkgate"><b>${pre ? pre + "vanaf" : "Vanaf"} deze les kunnen leerlingen zonder gesprek niet verder.</b> Spreek eerst wie je nog niet sprak en geef daarna de vrijgavecode (tab Mijn klas, <a href="#mentor/vrijgave">Vrijgavecode</a>). Houd je pincode bij de hand.</div>`;
-  return `<div class="wkgate"><b>${pre ? pre + "gespreksronde" : "Gespreksronde"} tot les ${r.gate}</b> (${esc(Lg ? Lg.datum : "")}). Spreek in deze les drie à vier leerlingen; nog ${nog} ${nog === 1 ? "les" : "lessen"} tot het slot. Leerlingen die al gesproken zijn, geef je meteen hun vrijgavecode.</div>`; }
+  return `<div class="wkgate"><b>${pre ? pre + "gespreksronde" : "Gespreksronde"} tot les ${r.gate}</b> (${esc(Lg ? lesDatumM(Lg.les) : "")}). Spreek in deze les drie à vier leerlingen; nog ${nog} ${nog === 1 ? "les" : "lessen"} tot het slot. Leerlingen die al gesproken zijn, geef je meteen hun vrijgavecode.</div>`; }
 /* ============================================================
    Digibordles per les: vaste opbouw van acht dia's plus uitlegdia's
    ============================================================ */
@@ -1977,7 +2020,7 @@ function bordDias(les, w){
   const kort = (S.ui.madj || {})[les] === "k", g = gvVan(les, w), rg = gsRonde(les), gsZeker = rg && rg.zeker && mentorGates().length;
   const vlg = LES.find(l => l.les === les + 1), vr = vlg && mentorRijen(w).find(x => x.les === vlg.les);
   const D = [], dia = (soort, html) => D.push({ soort, html });
-  const eyebrow = `Mentorles · les ${les} · ${esc(r.datum)}`;
+  const eyebrow = `Mentorles · les ${les} · ${esc(lesDatumM(les))}`;
   dia("start", `<p class="b-eye">${eyebrow}</p><h1 class="b-h1">${esc(r.titel)}</h1>
     <div class="b-groot">Open de tool en ga naar <b>Deze week</b>.</div>
     ${half && L.g ? `<p class="b-sub">In de klas: groep ${L.g}. Groep ${L.g === 1 ? 2 : 1} werkt deze week thuis.</p>` : ""}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}`);
@@ -1998,7 +2041,7 @@ function bordDias(les, w){
   dia("af", `<p class="b-eye">Afsluiten</p><h1 class="b-h1">Sluit af en lever in</h1>${flow(WEEKSTAPPEN.slice(3).concat([["Back-up","Zet de back-up uit je Downloads in je OneDrive."]]))}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}`);
   const terug = half && L.g ? LES.find(l => l.les > les && l.g === L.g) : vlg, tr = terug && mentorRijen(w).find(x => x.les === terug.les);
   dia("vooruit", `<p class="b-eye">Vooruitblik</p><h1 class="b-h1">${terug ? `Volgende keer in de klas: les ${terug.les}` : "Dit was de laatste mentorles in de klas"}</h1>
-    ${terug ? `<div class="b-groot">${esc(tr ? tr.titel : "")} · ${esc(terug.datum)}</div>` : ""}
+    ${terug ? `<div class="b-groot">${esc(tr ? tr.titel : "")} · ${esc(lesDatumM(terug.les))}</div>` : ""}
     ${half && L.g && vlg && vlg.thuis ? `<div class="b-kader"><span>Volgende week werk je thuis:</span>${esc(bordTaak(vlg.g === L.g ? vlg.klas : vlg.thuis))}</div>` : ""}
     <p class="b-sub">Heb je de PDF van vandaag ingeleverd? Dan ben je klaar.</p>`);
   return D; }
@@ -2153,6 +2196,8 @@ document.addEventListener("click", e => {
       if (!g.length){ toast("Vul minstens één lesnummer in voor het gespreksslot."); return; }
       q.set("g", g.join(",")); q.set("k", sleutelUitPin(pin)); }
     q.set("x", mods.join(","));
+    const dagen = leesDagKiezer("mk-dag"); if (dagen.some(Boolean)) q.set("d", dagen.join(","));
+    S.ui.mdagen = dagen.some(Boolean) ? dagen : null; S.ui.mklas = klas;
     S.ui.mgates = gsAan ? q.get("g").split(",").map(Number) : [];
     const b0 = $("#mk-base").value.trim(); if (!/^https:\/\//.test(b0)){ toast("Het adres moet beginnen met https:// (het adres op GitHub)."); return; }
     S.ui.mmods = mods; S.ui.mw = w; save();
@@ -2161,6 +2206,7 @@ document.addEventListener("click", e => {
   if (act === "mwoff"){ const d = Number(a.dataset.d); S.ui.mwoff = d === 0 ? 0 : (S.ui.mwoff || 0) + d; save(); render(); return; }
   if (act === "copyLink"){ const t = $("#mk-url"); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Link gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Link gekopieerd."); } }
   if (act === "mPlanPdf"){ mentorPlanPdf(); return; }
+  if (act === "lPlanPdf"){ leerlingPlanPdf(); return; }
   if (act === "posterMentor"){ posterPrint(`<h1>Stappenplan mentor · jaarlijn havo 4</h1>` + mentorPlaat() + `<h2 style="margin-top:12pt">Met gespreksslot</h2>` + gsFlow(), "Stappenplan mentor jaarlijn havo 4"); return; }
   if (act === "posterLeerling"){ posterPrint(`<h1>Zo werkt elke week · mentorles havo 4</h1>` + flow(WEEKSTAPPEN) + `<p style="margin-top:14pt;font-size:12pt">Open de tool altijd via de klaslink in Teams. Loop je vast? Klik op het vraagteken bij de opdracht.</p>`, "Weekposter jaarlijn havo 4"); return; }
   if (act === "posterJaar"){ posterPrint(`<h1>Het jaar in één beeld · havo 4 · ${CONFIG.schooljaar}</h1>` + jaarPlaat({ sv:true, df:true, label:true }), "Jaarplaat havo 4"); return; }
