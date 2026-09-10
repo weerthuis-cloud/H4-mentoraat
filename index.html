@@ -78,7 +78,7 @@ header.top{background:var(--card);border-bottom:1px solid var(--line);position:s
 nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 16px 12px;max-width:900px;margin:0 auto}
 nav.tabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 13px;font:inherit;font-size:14px;cursor:pointer}
 nav.tabs button[aria-current="page"]{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
-h1{font-size:26px;line-height:1.2;margin:26px 0 6px;letter-spacing:-.015em}
+h1{font-size:26px;line-height:1.2;margin:26px 0 6px;letter-spacing:-.015em;text-wrap:balance}
 h2{font-size:19px;margin:0 0 4px}
 h3{font-size:16px;margin:18px 0 6px}
 .lead{color:var(--muted);margin:0 0 18px}
@@ -181,7 +181,7 @@ details .ex{font-size:14px;color:var(--muted);margin:6px 0 0;padding-left:12px;b
 .status.bezig{background:var(--acc-soft);color:var(--ink)} .status.klaar{background:var(--ok-soft);color:var(--ok)}
 .klaarbox{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .fb{border:1px dashed var(--line);border-radius:10px;padding:12px;margin:0 0 12px}
-.small{font-size:13px;color:var(--muted)}
+.small:not(.btn){font-size:13px;color:var(--muted)}
 .muted{color:var(--muted)}
 .sr{position:absolute;left:-9999px}
 .pager{display:flex;justify-content:space-between;gap:10px;margin-top:22px;flex-wrap:wrap}
@@ -193,7 +193,7 @@ textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:30;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 /* ---------- digibordles (KSH-kleuren) ---------- */
-#bord{position:fixed;inset:0;z-index:70;background:#f7f5f0;color:#1f2328;display:flex;flex-direction:column;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#bord{color-scheme:light;--card:#fff;--ink:#1f2328;--muted:#5f6670;--line:#dcd9cf;--bg:#f7f5f0;--acc:#0a58a3;--acc-ink:#fff;--acc-soft:#e5eef8;position:fixed;inset:0;z-index:70;background:#f7f5f0;color:#1f2328;display:flex;flex-direction:column;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 #bord .b-dias{flex:1;position:relative;overflow:hidden}
 #bord .b-dia{position:absolute;inset:0;overflow:auto;padding:6vh 6vw 4vh;display:flex;flex-direction:column;gap:2.4vh;--a:#0a58a3}
 #bord .b-dia::before{content:"";position:absolute;left:0;right:0;top:0;height:1.3vh;background:linear-gradient(90deg,#0a58a3 0 20%,#2f7d32 20% 40%,#f0a800 40% 60%,#e8591a 60% 80%,#b3141c 80%)}
@@ -201,9 +201,9 @@ textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
 #bord .b-start{--a:#0a58a3} #bord .b-opener{--a:#2f7d32} #bord .b-terug{--a:#e8591a} #bord .b-vandaag{--a:#0a58a3} #bord .b-gesprek{--a:#c98a00} #bord .b-uitleg{--a:#b3141c} #bord .b-werk{--a:#2f7d32} #bord .b-af{--a:#0a58a3} #bord .b-vooruit{--a:#e8591a}
 #bord .b-start{background:linear-gradient(135deg,#fff 0 55%,#e5eef8 55%)} #bord .b-uitleg{background:linear-gradient(180deg,#fff 0,#f7f5f0 60%)}
 #bord .b-eye{align-self:flex-start;background:var(--a);color:#fff;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:clamp(14px,1.5vw,22px);padding:.45em 1.1em;border-radius:999px;margin:0;position:relative;z-index:1}
-#bord .b-h1{font-size:clamp(32px,4.4vw,74px);font-weight:900;line-height:1.05;margin:0;letter-spacing:-.02em;max-width:24ch;position:relative;z-index:1}
+#bord .b-h1{font-size:clamp(32px,4.4vw,74px);font-weight:900;line-height:1.08;margin:0;letter-spacing:-.01em;max-width:24ch;text-wrap:balance;position:relative;z-index:1}
 #bord .b-start .b-h1{font-size:clamp(40px,6vw,96px);color:#0a58a3}
-#bord .b-groot{align-self:flex-start;font-size:clamp(24px,3vw,48px);font-weight:600;background:#fff;border-left:.35em solid var(--a);padding:.35em .9em;border-radius:0 .4em .4em 0;box-shadow:0 8px 24px -16px rgba(0,0,0,.35);position:relative;z-index:1}
+#bord .b-groot{text-wrap:pretty;align-self:flex-start;font-size:clamp(24px,3vw,48px);font-weight:600;background:#fff;border-left:.35em solid var(--a);padding:.35em .9em;border-radius:0 .4em .4em 0;box-shadow:0 8px 24px -16px rgba(0,0,0,.35);position:relative;z-index:1}
 #bord .b-sub{font-size:clamp(18px,2vw,30px);color:#5f6670;margin:0;position:relative;z-index:1}
 #bord .b-kern{font-size:clamp(20px,2.2vw,34px);color:#4a4f57;margin:0;max-width:44ch}
 #bord .b-dl{align-self:flex-start;background:#fff4d6;border:3px solid #f0a800;font-weight:800;font-size:clamp(18px,2vw,30px);padding:.4em .9em;border-radius:.5em;position:relative;z-index:1}
@@ -231,7 +231,7 @@ textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
 #bord .b-knop{font:inherit;font-weight:700;font-size:15px;border:2px solid #1f2328;background:#fff;color:#1f2328;border-radius:999px;padding:.45em 1.05em;cursor:pointer}
 #bord .b-knop:hover{background:#1f2328;color:#fff}
 #bord .flow{position:relative;z-index:1;gap:2vw} #bord .flow .st{border-color:var(--a);border-width:3px;padding:1.2em 1.1em} #bord .flow .st .nr{background:var(--a);width:1.9em;height:1.9em;font-size:clamp(16px,1.6vw,26px)}
-#bord .flow .st b{font-size:clamp(20px,2.1vw,34px)} #bord .flow .st span:last-child{font-size:clamp(15px,1.5vw,24px);color:#4a4f57}
+#bord .flow{max-width:1500px} #bord .flow .st{background:#fff;color:#1f2328} #bord .flow .st b{font-size:clamp(20px,2.1vw,34px);color:#1f2328} #bord .flow .st .nr{color:#fff} #bord .flow .st span:last-child{font-size:clamp(15px,1.5vw,24px);color:#4a4f57}
 #bord .flow .st:not(:last-child)::after{color:var(--a);font-size:clamp(18px,2vw,30px);right:-2vw;top:40%}
 #bord .b-balk{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 18px;background:#fff;border-top:1px solid #dcd9cf}
 #bord .b-tel{font-size:14px;color:#5f6670;margin-right:auto}
@@ -1771,7 +1771,7 @@ MPAGES.week = () => {
   h += `<h2 class="mper">Week ${esc(r.wk)} · ${esc(r.datum)}</h2>`;
   if (!r.les){ return h + `<div class="card"><h2>Geen mentorles: ${esc(r.titel)}</h2>${r.st ? `<p>${esc(r.st)}</p>` : ""}${r.nbW ? `<p class="small">${esc(r.nbW)}</p>` : ""}${r.dl ? `<p><b>${esc(r.dl)}</b></p>` : ""}</div>`; }
   const g = gvVan(r.les, w);
-  h += `<div class="card"><div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start"><h2 style="margin:0">Les ${r.les} · ${esc(r.titel)}</h2><button class="btn groot" data-bord="open" data-les="${r.les}">▶ Start digibordles</button></div>${w === "half" ? `<p class="small" style="margin-top:-6px">In de klas: groep ${r.g}. Groep ${r.g === 1 ? 2 : 1} werkt thuis.</p>` : ""}
+  h += `<div class="card"><div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start"><h2 style="margin:0">Les ${r.les} · ${esc(r.titel)}</h2><button class="btn small" data-bord="open" data-les="${r.les}" style="white-space:nowrap">▶ Start digibordles</button></div>${w === "half" ? `<p class="small" style="margin-top:-6px">In de klas: groep ${r.g}. Groep ${r.g === 1 ? 2 : 1} werkt thuis.</p>` : ""}
     ${r.dl ? `<div class="note"><b>Deadline:</b> ${esc(r.dl)}</div>` : ""}${gsKaart(r.les)}
     <h3>1. Opener, 5 à 8 minuten</h3>${g ? `<p><b>${esc(g.titel)}.</b> ${esc(g.hoe)}</p>` : "<p>Geen werkvorm.</p>"}
     <h3>2. De les</h3><p>${esc(mkFilter(r.mkW))}</p>
