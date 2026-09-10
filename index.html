@@ -97,6 +97,7 @@ textarea,input[type=text],input[type=password],input[type=date],select{width:100
 textarea{resize:vertical;min-height:60px}
 textarea:focus,input:focus,select:focus,button:focus-visible,.opt input:focus-visible+span{outline:3px solid color-mix(in srgb,var(--acc) 45%,transparent);outline-offset:1px;border-color:var(--acc)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid2 > .f{display:flex;flex-direction:column} .grid2 > .f > input:not([type=date]),.grid2 > .f > select,.grid2 > .f > textarea{margin-top:auto}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px}
 @media (max-width:620px){.grid2,.grid3{grid-template-columns:1fr}}
 .radios{display:grid;gap:8px;margin:4px 0 14px}
