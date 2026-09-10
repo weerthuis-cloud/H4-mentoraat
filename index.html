@@ -192,6 +192,62 @@ details .ex{font-size:14px;color:var(--muted);margin:6px 0 0;padding-left:12px;b
 textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:30;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ---------- digibordles (KSH-kleuren) ---------- */
+#bord{position:fixed;inset:0;z-index:70;background:#f7f5f0;color:#1f2328;display:flex;flex-direction:column;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#bord .b-dias{flex:1;position:relative;overflow:hidden}
+#bord .b-dia{position:absolute;inset:0;overflow:auto;padding:6vh 6vw 4vh;display:flex;flex-direction:column;gap:2.4vh;--a:#0a58a3}
+#bord .b-dia::before{content:"";position:absolute;left:0;right:0;top:0;height:1.3vh;background:linear-gradient(90deg,#0a58a3 0 20%,#2f7d32 20% 40%,#f0a800 40% 60%,#e8591a 60% 80%,#b3141c 80%)}
+#bord .b-dia::after{content:"";position:absolute;right:-14vh;bottom:-14vh;width:46vh;height:46vh;border-radius:50%;background:conic-gradient(#0a58a3 0 20%,#2f7d32 0 40%,#f0a800 0 60%,#e8591a 0 80%,#b3141c 0);-webkit-mask:radial-gradient(circle,transparent 54%,#000 55%);mask:radial-gradient(circle,transparent 54%,#000 55%);opacity:.16;pointer-events:none}
+#bord .b-start{--a:#0a58a3} #bord .b-opener{--a:#2f7d32} #bord .b-terug{--a:#e8591a} #bord .b-vandaag{--a:#0a58a3} #bord .b-gesprek{--a:#c98a00} #bord .b-uitleg{--a:#b3141c} #bord .b-werk{--a:#2f7d32} #bord .b-af{--a:#0a58a3} #bord .b-vooruit{--a:#e8591a}
+#bord .b-start{background:linear-gradient(135deg,#fff 0 55%,#e5eef8 55%)} #bord .b-uitleg{background:linear-gradient(180deg,#fff 0,#f7f5f0 60%)}
+#bord .b-eye{align-self:flex-start;background:var(--a);color:#fff;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:clamp(14px,1.5vw,22px);padding:.45em 1.1em;border-radius:999px;margin:0;position:relative;z-index:1}
+#bord .b-h1{font-size:clamp(32px,4.4vw,74px);font-weight:900;line-height:1.05;margin:0;letter-spacing:-.02em;max-width:24ch;position:relative;z-index:1}
+#bord .b-start .b-h1{font-size:clamp(40px,6vw,96px);color:#0a58a3}
+#bord .b-groot{align-self:flex-start;font-size:clamp(24px,3vw,48px);font-weight:600;background:#fff;border-left:.35em solid var(--a);padding:.35em .9em;border-radius:0 .4em .4em 0;box-shadow:0 8px 24px -16px rgba(0,0,0,.35);position:relative;z-index:1}
+#bord .b-sub{font-size:clamp(18px,2vw,30px);color:#5f6670;margin:0;position:relative;z-index:1}
+#bord .b-kern{font-size:clamp(20px,2.2vw,34px);color:#4a4f57;margin:0;max-width:44ch}
+#bord .b-dl{align-self:flex-start;background:#fff4d6;border:3px solid #f0a800;font-weight:800;font-size:clamp(18px,2vw,30px);padding:.4em .9em;border-radius:.5em;position:relative;z-index:1}
+#bord .b-dl::before{content:"⏰ "}
+#bord .b-pillen{display:flex;flex-wrap:wrap;gap:.6em;align-items:center;font-size:clamp(18px,2vw,32px);position:relative;z-index:1} #bord .b-pillen span{color:#5f6670;font-weight:600} #bord .b-pillen b{background:var(--a);color:#fff;padding:.3em .8em;border-radius:.5em}
+#bord .b-stap{counter-reset:s;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:1.6vh;font-size:clamp(20px,2.4vw,40px);max-width:34ch;position:relative;z-index:1}
+#bord .b-stap li{counter-increment:s;display:flex;gap:.7em;align-items:flex-start;line-height:1.25}
+#bord .b-stap li::before{content:counter(s);flex:0 0 1.55em;height:1.55em;border-radius:50%;background:var(--a);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.8em;margin-top:.05em}
+#bord .b-kader{font-size:clamp(20px,2.3vw,38px);background:#fff;border:3px solid var(--a);border-radius:.6em;padding:.6em .9em;max-width:40ch;position:relative;z-index:1}
+#bord .b-kader span{display:block;font-size:.5em;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--a);margin-bottom:.3em}
+#bord .b-kol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:3vw;align-items:start;position:relative;z-index:1}
+#bord .b-stappen{background:#fff4d6;border:3px solid #f0a800;border-radius:.6em;padding:1em 1.3em;font-size:clamp(17px,1.75vw,28px)}
+#bord .b-stappen h3{margin:0 0 .5em;font-size:.6em;letter-spacing:.14em;text-transform:uppercase;color:#8a6400}
+#bord .b-stappen ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:.45em} #bord .b-stappen li::marker{color:#b3141c;font-weight:900}
+#bord .b-vb{display:flex;flex-direction:column;gap:1.4vh}
+#bord .b-zin{font-size:clamp(18px,2vw,32px);background:#fff;border:3px dashed #c9c4b5;border-radius:.5em;padding:.6em .9em;line-height:1.3}
+#bord .b-zin span{display:block;font-size:.5em;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#5f6670;margin-bottom:.3em}
+#bord .b-zin.sterk{border:3px solid #2f7d32;background:#f1f8ef} #bord .b-zin.sterk span{color:#2f7d32}
+#bord .b-vb:not(.toon) .b-zin.sterk em{visibility:hidden} #bord .b-zin.sterk em{font-style:normal;font-weight:600}
+#bord .b-pijl{color:var(--a);font-size:clamp(24px,2.6vw,42px);line-height:1;align-self:center;transform:rotate(90deg)}
+#bord .b-vb .b-knop{align-self:flex-start}
+#bord .b-timer{align-self:flex-start;display:flex;align-items:center;gap:1em;background:#fff;border:3px solid var(--a);border-radius:999px;padding:.3em .5em .3em 1.1em;position:relative;z-index:1}
+#bord .b-tijd{font-size:clamp(28px,3.4vw,56px);font-weight:900;font-variant-numeric:tabular-nums;color:var(--a)}
+#bord .b-timer.om{background:#b3141c;border-color:#b3141c} #bord .b-timer.om .b-tijd{color:#fff}
+#bord .b-knop{font:inherit;font-weight:700;font-size:15px;border:2px solid #1f2328;background:#fff;color:#1f2328;border-radius:999px;padding:.45em 1.05em;cursor:pointer}
+#bord .b-knop:hover{background:#1f2328;color:#fff}
+#bord .flow{position:relative;z-index:1;gap:2vw} #bord .flow .st{border-color:var(--a);border-width:3px;padding:1.2em 1.1em} #bord .flow .st .nr{background:var(--a);width:1.9em;height:1.9em;font-size:clamp(16px,1.6vw,26px)}
+#bord .flow .st b{font-size:clamp(20px,2.1vw,34px)} #bord .flow .st span:last-child{font-size:clamp(15px,1.5vw,24px);color:#4a4f57}
+#bord .flow .st:not(:last-child)::after{color:var(--a);font-size:clamp(18px,2vw,30px);right:-2vw;top:40%}
+#bord .b-balk{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 18px;background:#fff;border-top:1px solid #dcd9cf}
+#bord .b-tel{font-size:14px;color:#5f6670;margin-right:auto}
+#bord .b-punten{display:flex;gap:6px} #bord .b-punten button{width:13px;height:13px;border-radius:50%;border:0;background:#dcd9cf;cursor:pointer;padding:0} #bord .b-punten button.aan{background:#b3141c}
+#bord:fullscreen .b-balk{opacity:.15;transition:opacity .2s} #bord:fullscreen .b-balk:hover{opacity:1}
+@media (max-width:900px){ #bord .b-kol{grid-template-columns:1fr} #bord .b-dia{padding:5vh 5vw} }
+body.bord-open{overflow:hidden}
+@media print{
+  body.bord-print #print{display:none!important}
+  body.bord-print #bord{position:static;display:block}
+  body.bord-print #bord .b-balk{display:none}
+  body.bord-print #bord .b-dias{overflow:visible}
+  body.bord-print #bord .b-dia,body.bord-print #bord .b-dia[hidden]{display:flex!important;position:relative;inset:auto;width:297mm;height:209mm;break-after:page;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body.bord-print #bord .b-vb .b-zin.sterk em{visibility:visible} body.bord-print #bord .b-knop{display:none}
+}
+
 /* breder werkvlak, meer naar links; uitlegpaneel rechts */
 :root{--breed:1100px}
 .flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
@@ -1580,7 +1636,7 @@ function plLaad(){
   try { const u = new URL(raw); const q = u.searchParams;
     if (!q.has("w") && !q.has("klas")) throw 0;
     const adj = Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvz])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]]));
-    PL = { url: raw, base: u.origin + u.pathname, q, adj };
+    PL = { url: raw, base: u.origin + u.pathname, q, adj }; S.ui.madj = Object.assign({}, adj);
     S.ui.mgates = q.get("k") ? (q.get("g") || "").split(",").map(Number).filter(Boolean) : []; if (q.has("x")) S.ui.mmods = (q.get("x") || "").split(",").filter(Boolean); save(); render();
   } catch(e){ toast("Dit is geen klaslink. Plak de link die nu in Teams staat."); }
 }
@@ -1588,7 +1644,7 @@ function plMaak(){
   const q = new URLSearchParams(PL.q.toString());
   const a = Object.keys(PL.adj).map(Number).sort((x,y) => x-y).filter(n => PL.adj[n]).map(n => n + PL.adj[n]).join(",");
   if (a) q.set("a", a); else q.delete("a");
-  const url = PL.base + "?" + q.toString().replace(/%2C/g, ","); PL.url = url; PL.q = q;
+  const url = PL.base + "?" + q.toString().replace(/%2C/g, ","); S.ui.madj = Object.assign({}, PL.adj); save(); PL.url = url; PL.q = q;
   const n = Object.keys(PL.adj).length;
   $("#pl-out").innerHTML = `<label class="f"><span class="lab">Nieuwe klaslink${n?` (${n} ${n===1?"les":"lessen"} aangepast)`:""}</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Vervang de oude link in Teams door deze. Leerlingen zien de aanpassingen zodra ze de tool via de nieuwe link openen.</span>`;
 }
@@ -1627,7 +1683,7 @@ MPAGES.lessen = () => {
       h += `<div class="wkrow vrij"><div class="wkcol"><b>week ${esc(r.wk)}</b><span>${esc(r.datum)}</span></div><div class="wkmain"><b>${esc(r.titel)}</b>${r.st?`<div class="wkdo">${esc(r.st)}</div>`:""}${r.nbW?`<div class="small">${esc(r.nbW)}</div>`:""}</div>${r.dl?`<div class="wkside"><b>${esc(r.dl)}</b></div>`:""}</div>`;
       return;
     }
-    h += `<div class="wkrow s-${r.spoor}"><div class="wkcol"><b>week ${esc(r.wk)}</b><span>${esc(r.datum)}</span><span class="lesnr">les ${r.les}</span></div>
+    h += `<div class="wkrow s-${r.spoor}"><div class="wkcol"><b>week ${esc(r.wk)}</b><span>${esc(r.datum)}</span><span class="lesnr">les ${r.les}</span><button class="btn small ghost" style="margin-top:6px" data-bord="open" data-les="${r.les}">▶ Digibord</button></div>
       <div class="wkmain"><div class="wkhead">${esc(r.titel)}</div>
         <div class="wkdo"><span class="lbl">Jij als mentor</span>${esc(r.mkW)}</div>
         ${r.leerl.map(([l,t]) => `<div class="wkdo"><span class="lbl">${esc(l)}</span>${esc(t)}</div>`).join("")}
@@ -1715,7 +1771,7 @@ MPAGES.week = () => {
   h += `<h2 class="mper">Week ${esc(r.wk)} · ${esc(r.datum)}</h2>`;
   if (!r.les){ return h + `<div class="card"><h2>Geen mentorles: ${esc(r.titel)}</h2>${r.st ? `<p>${esc(r.st)}</p>` : ""}${r.nbW ? `<p class="small">${esc(r.nbW)}</p>` : ""}${r.dl ? `<p><b>${esc(r.dl)}</b></p>` : ""}</div>`; }
   const g = gvVan(r.les, w);
-  h += `<div class="card"><h2>Les ${r.les} · ${esc(r.titel)}</h2>${w === "half" ? `<p class="small" style="margin-top:-6px">In de klas: groep ${r.g}. Groep ${r.g === 1 ? 2 : 1} werkt thuis.</p>` : ""}
+  h += `<div class="card"><div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start"><h2 style="margin:0">Les ${r.les} · ${esc(r.titel)}</h2><button class="btn groot" data-bord="open" data-les="${r.les}">▶ Start digibordles</button></div>${w === "half" ? `<p class="small" style="margin-top:-6px">In de klas: groep ${r.g}. Groep ${r.g === 1 ? 2 : 1} werkt thuis.</p>` : ""}
     ${r.dl ? `<div class="note"><b>Deadline:</b> ${esc(r.dl)}</div>` : ""}${gsKaart(r.les)}
     <h3>1. Opener, 5 à 8 minuten</h3>${g ? `<p><b>${esc(g.titel)}.</b> ${esc(g.hoe)}</p>` : "<p>Geen werkvorm.</p>"}
     <h3>2. De les</h3><p>${esc(mkFilter(r.mkW))}</p>
@@ -1768,7 +1824,7 @@ function mentorPlaat(){
   const kol = (kop, kl, st) => `<div class="kol ${kl}"><h3>${kop}</h3><ol>${st.map(([t,u]) => `<li><b>${t}</b><span>${u}</span></li>`).join("")}</ol></div>`;
   return `<div class="kol3">
     ${kol("Eén keer, voor les 1", "k1", [["Maak je klaslink","Tab Mijn klas. Kies je werkwijze. De eerste keer alleen de basis."],["Test de link","Open hem in een privévenster."],["Zet hem in Teams","Op een vaste plek, bijvoorbeeld bovenaan het kanaal van je klas."],["Les 1","Leerlingen openen de tool via de link, vullen hun naam in, vinken vakken aan en oefenen de back-up."]])}
-    ${kol("Elke week, in de les", "k2", [["Open Deze week","Hier staat alles voor deze les."],["Opener, 5 minuten","De werkvorm voor de groep."],["De les","Korte uitleg, leerlingen werken, jij voert drie à vier gesprekjes."],["Laatste 5 minuten","Leerlingen sluiten af en leveren hun PDF in via Teams."]])}
+    ${kol("Elke week, in de les", "k2", [["Open Deze week","Start de digibordles en zet hem schermvullend (toets F). Met de pijltjes klik je door."],["Opener, 5 minuten","De werkvorm voor de groep."],["De les","Korte uitleg, leerlingen werken, jij voert drie à vier gesprekjes."],["Laatste 5 minuten","Leerlingen sluiten af en leveren hun PDF in via Teams."]])}
     ${kol("Na de les, 10 minuten", "k3", [["Bekijk de controlestrook","Bovenaan elke PDF: tijdstip, getypte tijd, afsluiting."],["Reageer op vier of vijf","Eén zin in Teams, steeds andere leerlingen."],["Mist er een PDF?","Die haalt de leerling de volgende les eerst in."]])}
   </div>
   <div class="soms"><b>Soms:</b> <span>ziek of les valt uit → <a href="#mentor/planning">Planning aanpassen</a></span><span>gesprek gehad → <a href="#mentor/vrijgave">Vrijgavecode</a> (alleen bij gespreksslot)</span><span>extra aanzetten → nieuwe <a href="#mentor/klaslink">klaslink</a></span><span>leerling loopt vast → <a href="#mentor/vragen">Vragen van leerlingen</a></span></div>`; }
@@ -1846,6 +1902,135 @@ function gsKaart(les){
   const Lg = LES.find(l => l.les === r.gate), nog = r.gate - les, pre = r.zeker ? "" : "Als je het gespreksslot gebruikt: ";
   if (les === r.gate) return `<div class="wkgate"><b>${pre ? pre + "vanaf" : "Vanaf"} deze les kunnen leerlingen zonder gesprek niet verder.</b> Spreek eerst wie je nog niet sprak en geef daarna de vrijgavecode (tab Mijn klas, <a href="#mentor/vrijgave">Vrijgavecode</a>). Houd je pincode bij de hand.</div>`;
   return `<div class="wkgate"><b>${pre ? pre + "gespreksronde" : "Gespreksronde"} tot les ${r.gate}</b> (${esc(Lg ? Lg.datum : "")}). Spreek in deze les drie à vier leerlingen; nog ${nog} ${nog === 1 ? "les" : "lessen"} tot het slot. Leerlingen die al gesproken zijn, geef je meteen hun vrijgavecode.</div>`; }
+/* ============================================================
+   Digibordles per les: vaste opbouw van acht dia's plus uitlegdia's
+   ============================================================ */
+const UITLEG = {
+  jaarlijn: { t:"Waarom een jaarlijn?", kern:"Je houdt zelf bij hoe het gaat. Dan zie je op tijd wat beter kan, en niet pas bij je rapport.",
+    st:["Plan: je actieplan met twee doelen.","Doe: elke week een les en een volgende stap.","Check: na elke toetsweek en in de spiegel.","Stuur bij: in de tussenbalans en de eindbalans."],
+    lz:"zonder jaarlijn", zwak:"Na toetsweek B merk ik pas dat het met wiskunde slecht gaat.", ls:"met jaarlijn", sterk:"In oktober zie ik in mijn toetsweekplan dat ik bij wiskunde achterloop, en ik plan extra oefenen." },
+  privacy: { t:"Jouw werk, jouw apparaat", kern:"Alles wat je invult, blijft op dit apparaat. Je mentor ziet alleen wat jij inlevert.",
+    st:["Open de tool altijd via de link in Teams, in dezelfde browser.","Gebruik geen privévenster.","Elke les eindigt met een PDF die je inlevert in Teams.","Zet de back-up die dan downloadt in je OneDrive."],
+    noot:"Plakken en kopiëren staan uit: je typt alles zelf. Spraakherkenning mag." },
+  swot: { t:"De mini-SWOT", kern:"Een foto van jouw situatie: wat helpt je dit jaar, en wat zit je in de weg?",
+    st:["Sterktes en zwaktes gaan over jou.","Kansen en bedreigingen komen van buiten: rooster, bijbaan, thuis.","Bouw je doelen op een sterkte.","Maak een als-dan-plan tegen een zwakte."],
+    lz:"vaag", zwak:"Sterkte: ik ben aardig.", ls:"bruikbaar", sterk:"Sterkte: als ik iets snap, kan ik het goed uitleggen aan anderen." },
+  smart: { t:"Een goed doel", kern:"Een doel werkt als het specifiek en meetbaar is, en als je weet wanneer het klaar is.",
+    st:["Specifiek: wat doe je precies?","Meetbaar: hoe zie je dat het gelukt is?","Haalbaar, en toch een uitdaging.","Relevant: waarom is dit belangrijk voor jou?","Tijd: wanneer is het klaar?"],
+    lz:"wens", zwak:"Ik ga beter mijn best doen voor wiskunde.", ls:"doel", sterk:"Tot februari maak ik elke week drie extra oefenopgaven wiskunde en kijk ik ze zelf na." },
+  alsdan: { t:"Het als-dan-plan", kern:"Bedenk vooraf wat je tegenhoudt, en wat je dan doet. Zo gebeurt het ook echt.",
+    st:["Wens: wat wil je bereiken?","Uitkomst: wat levert het je op?","Obstakel: wat houdt jou meestal tegen?","Plan: als …, dan …"],
+    lz:"zwak", zwak:"Als ik zin heb, ga ik leren.", ls:"sterk", sterk:"Als ik na het eten mijn telefoon pak, dan leg ik hem in de gang en werk ik eerst twintig minuten." },
+  mol: { t:"In het MOL-gesprek ben jij aan het woord", kern:"Je legt je plan voor en laat zien waarom het klopt. Je mentor en je ouders vragen door.",
+    st:["Je plan in één zin.","Twee argumenten, elk met bewijs.","Wat kan tegenzitten, en wat doe je dan?","Wat vraag je van je mentor en van thuis?","Oefen: lukt het in één minuut?"],
+    lz:"wens", zwak:"Ik wil beter plannen.", ls:"argument met bewijs", sterk:"Ik wil beter plannen, want in de eerste weken maakte ik bij drie vakken mijn huiswerk pas de avond ervoor." },
+  molna: { t:"Na het MOL-gesprek", kern:"Afspraken die je niet opschrijft, ben je na een week vergeten.",
+    st:["Wat hebben jullie afgesproken? Wat doe jij, wat doet je mentor, wat doet thuis?","Wie was er vooral aan het woord?","Wat doe je bij het volgende gesprek anders?"],
+    lz:"vaag", zwak:"We hebben afgesproken dat ik beter ga plannen.", ls:"concreet", sterk:"Ik zet elke zondag mijn toetsen in mijn agenda. Mijn moeder vraagt op zondagavond of dat gelukt is." },
+  lob1: { t:"Wat past bij jou?", kern:"Interesses, talenten en waarden zeggen samen iets over welke richting bij je past.",
+    st:["Interesse: wat doe je graag?","Talent: waar ben je goed in, volgens jezelf én anderen?","Waarde: wat vind je belangrijk in werk?","Zoek het verband: welke richting past bij alle drie?"],
+    lz:"algemeen", zwak:"Ik vind sport leuk.", ls:"concreet", sterk:"Ik geef elke zaterdag training aan de F-jes. Ik merk dat ik het leuk vind om iemand iets te leren." },
+  leren: { t:"Hoe leer je voor een toets?", kern:"Onderzoek laat zien: jezelf overhoren en gespreid leren werken het best.",
+    st:["Overhoor jezelf: boek dicht, zeggen of opschrijven wat je weet.","Leer gespreid: vaker kort, verdeeld over dagen.","Oefen opgaven door elkaar.","Werkt minder goed: herlezen en markeren."],
+    lz:"werkt slecht", zwak:"Ik lees het hoofdstuk drie keer door, de avond ervoor.", ls:"werkt goed", sterk:"Ik maak flitskaarten en overhoor mezelf op maandag, woensdag en zaterdag." },
+  terugplannen: { t:"Plan vanaf de toets terug", kern:"Begin bij de toetsdatum en reken terug. Dan weet je wanneer je moet beginnen.",
+    st:["Leg het toetsrooster naast je agenda.","Kies per vak een begindatum.","Zet de moeilijkste vakken vooraan.","Plan vaste leermomenten per week, plus een reservemoment."],
+    lz:"geen plan", zwak:"Ik begin wel als de toetsweek dichtbij is.", ls:"plan", sterk:"Voor geschiedenis begin ik drie weken vooraf, twee keer per week veertig minuten. Zaterdag is mijn reservemoment." },
+  terugblik: { t:"Terugkijken op een toetsweek", kern:"Kijk niet alleen naar je cijfer, maar vooral naar je aanpak.",
+    st:["Verwacht tegenover behaald: klopte je inschatting?","Wanneer begon je met leren?","Welke manier van leren werkte?","Wat doe je volgende keer anders?"],
+    lz:"zwak", zwak:"Het ging slecht, volgende keer beter.", ls:"sterk", sterk:"Bij biologie verwachtte ik een 7 en haalde ik een 5,4. Ik begon twee dagen vooraf. Volgende keer begin ik een week eerder en overhoor ik mezelf." },
+  feedback: { t:"Feedback vragen en gebruiken", kern:"Anderen zien dingen die jij niet ziet. Waar hun beeld verschilt van het jouwe, wordt het interessant.",
+    st:["Vraag het persoonlijk of via Teams, en leg uit waarom.","Luister, en verdedig je niet.","Schrijf het zo precies mogelijk op.","Vergelijk met je eigen beeld: waar zien ze je anders?"],
+    lz:"vage feedback", zwak:"Top: je doet het goed. Tip: beter je best doen.", ls:"bruikbare feedback", sterk:"Top: je stelt in de les goede vragen. Tip: begin een week eerder aan grote opdrachten." },
+  tussen: { t:"Tussenbalans: nieuwe doelen", kern:"Halverwege het jaar kijk je terug op je doelen van september en stel je nieuwe.",
+    st:["Meet opnieuw, zonder eerst te kijken wat je in september koos.","Is je doel gelukt? Wat hielp, wat zat in de weg?","Lukte een doel niet? Neem het over, maar maak het beter.","Gebruik je toetsweken en je spiegel."],
+    lz:"zwak", zwak:"Doel niet gelukt. Nieuw doel: hetzelfde.", ls:"sterk", sterk:"Ik plande wel, maar hield me er niet aan. Nieuw als-dan-plan: als ik een leermoment mis, dan haal ik het de volgende dag direct na school in." },
+  lob2: { t:"Opleidingen onderzoeken", kern:"Kijk verder dan de website: ga naar een open dag en praat met iemand die het werk doet.",
+    st:["Kies twee opleidingen die passen bij je interesses.","Bezoek een open dag en schrijf een kort verslag.","Interview iemand uit het beroep, met open vragen.","Vergelijk: wat past, wat niet, en waarom?"],
+    lz:"gesloten vraag", zwak:"Vindt u uw werk leuk?", ls:"open vraag", sterk:"Wat maakte uw laatste werkweek goed, of juist zwaar?" },
+  overgang: { t:"Hoe sta je ervoor met de overgang?", kern:"Kijk nu al naar je cijfers. Dan heb je toetsweek C en D nog om bij te sturen.",
+    st:["Zoek in Magister je cijfers per vak.","Welk vak is je grootste zorg?","Wat heb je nodig om daar voldoende te staan?","Wat doe je daarvoor in de komende weken?"],
+    lz:"zwak", zwak:"Het komt wel goed.", ls:"sterk", sterk:"Wiskunde staat op een 5,2. In toetsweek C heb ik een 6,5 nodig. Ik ga twee keer per week naar de huiswerkbegeleiding." },
+  pitch: { t:"Je pitch", kern:"Kort, persoonlijk en concreet: wie ben je, welke richting wil je op, en waarom?",
+    st:["Begin met wie je bent en wat je drijft.","Vertel welke richting je op wilt, en waarom.","Gebruik bewijs uit je LOB-dossier: een test, een open dag, een interview.","Eindig met wat je in havo 5 gaat doen.","Binnen vijf minuten, zonder voor te lezen."],
+    lz:"zwak", zwak:"Ik weet nog niet zo goed wat ik wil, misschien iets met economie.", ls:"sterk", sterk:"Op de open dag merkte ik dat ik het liefst met cijfers én met mensen werk. Daarom oriënteer ik me in havo 5 op bedrijfskunde." },
+  eind: { t:"Je eindbalans", kern:"Het jaar zit erop. Wat neem je mee naar havo 5?",
+    st:["Meet opnieuw en leg het naast september.","Evalueer je doelen van februari.","Welke aanpak neem je zeker mee?","Voor welke valkuil moet je oppassen?"],
+    lz:"zwak", zwak:"Het jaar ging wel goed.", ls:"sterk", sterk:"Ik ben het meest gegroeid in plannen: in september begon ik de avond voor een toets, nu een week vooraf." },
+  docentfb: { t:"Feedback van een docent", kern:"Kies één docent en kondig het een week vooraf aan. Het kost de docent twee minuten.", mod:"df",
+    st:["Kies een docent, bij voorkeur van je vakdoel.","Stuur het bericht uit de tool, een week vooraf.","Stel twee vragen: wat doe ik goed, en wat kan beter?","Schrijf op wat je ermee gaat doen."],
+    lz:"zwak", zwak:"Mag ik feedback?", ls:"sterk", sterk:"Volgende week wil ik u na de les twee minuten twee vragen stellen over mijn aanpak bij wiskunde." }
+};
+const BORDHALF = {1:["jaarlijn","privacy"],2:["jaarlijn","privacy"],3:["smart","alsdan","mol"],4:["molna","lob1"],5:["leren","terugplannen"],6:["leren"],7:["terugblik"],8:["terugblik","docentfb"],9:["lob1"],10:["lob1"],11:["leren","lob2"],12:["leren","lob2"],
+  15:["terugblik","feedback"],16:["feedback"],17:["tussen","mol"],18:["molna","lob2"],19:["lob2","docentfb"],20:["lob2"],21:["overgang","mol"],22:["molna","pitch"],23:["terugblik","pitch"],24:["pitch"],25:["pitch"],26:["pitch"],27:["pitch"],28:["pitch"],29:["eind"],30:["eind"]};
+const BORDHEEL = {1:["jaarlijn","privacy"],2:["swot","smart"],3:["alsdan","mol"],4:["molna","lob1"],5:["leren","terugplannen"],6:["leren"],7:["terugblik"],8:["terugblik","docentfb"],9:["lob1"],10:["lob1"],11:["leren","lob2"],12:["lob2"],14:["leren"],
+  15:["terugblik","feedback"],16:["feedback"],17:["tussen","mol"],18:["molna","lob2"],19:["lob2","docentfb"],20:["leren"],21:["overgang","mol"],22:["molna","terugblik"],23:["terugblik","pitch"],24:["pitch"],25:["pitch"],26:["pitch"],27:["pitch"],28:["pitch"],29:["eind"],30:["eind"]};
+function mMod(c){ const mm = mentorMods(); return !mm || mm.includes(c); }
+function bordTaak(tk){ return tk ? tk.t + (tk.x || []).filter(e => mMod(e.m)).map(e => " " + e.t).join("") : ""; }
+function bordOpen(tk){ return tk ? tk.open.concat(...(tk.x || []).filter(e => mMod(e.m)).map(e => e.open || [])) : []; }
+function bordDias(les, w){
+  const L = LES.find(l => l.les === les), r = mentorRijen(w).find(x => x.les === les); if (!L || !r) return [];
+  const half = w === "half", tk = L.g === 0 ? L.thuis : half ? (L.klas || L.thuis) : (L.g === 2 ? L.thuis : (L.klas || L.thuis));
+  const opens = bordOpen(tk), kern = Array.from(new Set(opens.map(id => id === "start" ? KERN.start : KERN[MOM[id].type]))).join(" ");
+  const titels = opens.map(id => id === "start" ? "Start: naam, groep en vakken" : MOM[id].titel);
+  const kort = (S.ui.madj || {})[les] === "k", g = gvVan(les, w), rg = gsRonde(les), gsZeker = rg && rg.zeker && mentorGates().length;
+  const vlg = LES.find(l => l.les === les + 1), vr = vlg && mentorRijen(w).find(x => x.les === vlg.les);
+  const D = [], dia = (soort, html) => D.push({ soort, html });
+  const eyebrow = `Mentorles · les ${les} · ${esc(r.datum)}`;
+  dia("start", `<p class="b-eye">${eyebrow}</p><h1 class="b-h1">${esc(r.titel)}</h1>
+    <div class="b-groot">Open de tool en ga naar <b>Deze week</b>.</div>
+    ${half && L.g ? `<p class="b-sub">In de klas: groep ${L.g}. Groep ${L.g === 1 ? 2 : 1} werkt deze week thuis.</p>` : ""}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}`);
+  if (g) dia("opener", `<p class="b-eye">Opener · ${esc(g.fase)}</p><h1 class="b-h1">${esc(g.titel)}</h1>
+    <ol class="b-stap">${g.hoe.split(/(?<=[.?!])\s+(?=[A-Z‘“])/).map(s => `<li>${esc(s)}</li>`).join("")}</ol>${bordTimer(5)}`);
+  dia("terug", `<p class="b-eye">Terugkijken</p><h1 class="b-h1">${les === 1 ? "Hoe gingen je eerste weken in havo 4?" : "Wat was je volgende stap van vorige keer?"}</h1>
+    <div class="b-groot">${les === 1 ? "Wat valt je op? Wat is anders dan in havo 3?" : "Is het gelukt? Wat hielp, of wat zat in de weg?"}</div><p class="b-sub">Twee leerlingen vertellen het hardop. Daarna schrijft iedereen het op bij stap 1 van de les.</p>`);
+  dia("vandaag", `<p class="b-eye">Vandaag</p><h1 class="b-h1">Wat doe je vandaag?</h1><div class="b-groot">${esc(bordTaak(tk))}</div>
+    ${kern ? `<div class="b-kader"><span>Aan het eind van de les heb je minstens:</span>${esc(kern)}</div>` : ""}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}${kort ? `<p class="b-sub">Korte les: alleen de kern.</p>` : ""}`);
+  if (gsZeker) dia("gesprek", `<p class="b-eye">Gespreksronde</p><h1 class="b-h1">${les === rg.gate ? "Vanaf vandaag: eerst een gesprek, dan verder" : `Vóór les ${rg.gate} spreek ik iedereen`}</h1>
+    <ol class="b-stap"><li>Ik roep je voor een gesprekje van vijf minuten.</li><li>Bereid het voor in de les: drie korte vragen.</li><li>Na het gesprek krijg je een vrijgavecode.</li></ol>`);
+  if (!kort) (half ? BORDHALF : BORDHEEL)[les]?.filter(k => !UITLEG[k].mod || mMod(UITLEG[k].mod)).slice(0, 3).forEach(k => { const U = UITLEG[k];
+    dia("uitleg", `<p class="b-eye">Uitleg</p><h1 class="b-h1">${esc(U.t)}</h1><p class="b-kern">${esc(U.kern)}</p>
+      <div class="b-kol"><div class="b-stappen"><h3>Stappenplan</h3><ol>${U.st.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>
+      ${U.zwak ? `<div class="b-vb"><div class="b-zin"><span>${esc(U.lz)}</span>${esc(U.zwak)}</div><div class="b-pijl">➜</div><div class="b-zin sterk"><span>${esc(U.ls)}</span><em>${esc(U.sterk)}</em></div><button class="b-knop" data-bord="toon">Toon het sterke voorbeeld</button></div>` : `<div class="b-vb"><div class="b-kader">${esc(U.noot)}</div></div>`}</div>`); });
+  dia("werk", `<p class="b-eye">Aan het werk</p><h1 class="b-h1">Aan de slag</h1>${titels.length ? `<div class="b-pillen"><span>Open in de les:</span>${titels.map(t => `<b>${esc(t)}</b>`).join("")}</div>` : ""}
+    <ol class="b-stap"><li>Open de les van deze week en kijk terug (stap 1).</li><li>Doe de opdracht (stap 2). Loop je vast? Klik op het vraagteken.</li><li>Ik roep een paar leerlingen voor een kort gesprekje.</li>${mMod("sv") ? `<li>Klaar? Werk aan studievaardigheden.</li>` : ""}</ol>${bordTimer(kort ? 10 : 20)}`);
+  dia("af", `<p class="b-eye">Afsluiten</p><h1 class="b-h1">Sluit af en lever in</h1>${flow(WEEKSTAPPEN.slice(3).concat([["Back-up","Zet de back-up uit je Downloads in je OneDrive."]]))}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}`);
+  const terug = half && L.g ? LES.find(l => l.les > les && l.g === L.g) : vlg, tr = terug && mentorRijen(w).find(x => x.les === terug.les);
+  dia("vooruit", `<p class="b-eye">Vooruitblik</p><h1 class="b-h1">${terug ? `Volgende keer in de klas: les ${terug.les}` : "Dit was de laatste mentorles in de klas"}</h1>
+    ${terug ? `<div class="b-groot">${esc(tr ? tr.titel : "")} · ${esc(terug.datum)}</div>` : ""}
+    ${half && L.g && vlg && vlg.thuis ? `<div class="b-kader"><span>Volgende week werk je thuis:</span>${esc(bordTaak(vlg.g === L.g ? vlg.klas : vlg.thuis))}</div>` : ""}
+    <p class="b-sub">Heb je de PDF van vandaag ingeleverd? Dan ben je klaar.</p>`);
+  return D; }
+function bordTimer(min){ return `<div class="b-timer" data-sec="${min*60}"><span class="b-tijd">${min}:00</span><button class="b-knop" data-bord="timer">Start timer</button></div>`; }
+let BORD = null;
+function openBord(les){
+  const w = mWerkwijze(), D = bordDias(les, w); if (!D.length){ toast("Voor deze les is er geen digibordles: het is een thuisles."); return; }
+  BORD = { les, i: 0, n: D.length, t: null };
+  let el = $("#bord"); if (!el){ el = document.createElement("div"); el.id = "bord"; el.setAttribute("role","dialog"); el.setAttribute("aria-label","Digibordles"); document.body.appendChild(el); }
+  el.innerHTML = `<div class="b-dias">${D.map((d, i) => `<section class="b-dia b-${d.soort}" ${i ? "hidden" : ""}>${d.html}</section>`).join("")}</div>
+    <div class="b-balk"><img src="${LOGO}" alt="KSH" style="height:22px"><span class="b-tel"></span><div class="b-punten">${D.map((d,i) => `<button data-bord="ga" data-i="${i}" aria-label="Dia ${i+1}"></button>`).join("")}</div>
+    <button class="b-knop" data-bord="vorige">← Vorige</button><button class="b-knop" data-bord="volgende">Volgende →</button><button class="b-knop" data-bord="vol">Schermvullend</button><button class="b-knop" data-bord="print">PDF</button><button class="b-knop" data-bord="dicht">Sluiten ✕</button></div>`;
+  el.hidden = false; document.body.classList.add("bord-open"); bordGa(0); }
+function bordGa(i){ if (!BORD) return; BORD.i = Math.max(0, Math.min(BORD.n - 1, i));
+  document.querySelectorAll("#bord .b-dia").forEach((s, k) => s.hidden = k !== BORD.i);
+  document.querySelectorAll("#bord .b-punten button").forEach((b, k) => b.classList.toggle("aan", k === BORD.i));
+  $("#bord .b-tel").textContent = `les ${BORD.les} · dia ${BORD.i + 1} van ${BORD.n}`; }
+function sluitBord(){ if (BORD && BORD.t) clearInterval(BORD.t); BORD = null; const el = $("#bord"); if (el) el.hidden = true; document.body.classList.remove("bord-open"); if (document.fullscreenElement) document.exitFullscreen(); }
+document.addEventListener("click", e => { const b = e.target.closest("[data-bord]"); if (!b) return; const a = b.dataset.bord;
+  if (a === "open") return openBord(Number(b.dataset.les));
+  if (!BORD) return;
+  if (a === "volgende") bordGa(BORD.i + 1); if (a === "vorige") bordGa(BORD.i - 1); if (a === "ga") bordGa(Number(b.dataset.i)); if (a === "dicht") sluitBord();
+  if (a === "vol"){ const el = $("#bord"); if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen(); }
+  if (a === "toon"){ const v = b.closest(".b-vb"); v.classList.toggle("toon"); b.textContent = v.classList.contains("toon") ? "Verberg het sterke voorbeeld" : "Toon het sterke voorbeeld"; }
+  if (a === "print"){ const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:0}"; document.head.appendChild(st); document.body.classList.add("bord-print"); window.print(); document.body.classList.remove("bord-print"); st.remove(); }
+  if (a === "timer"){ const tw = b.closest(".b-timer"), sp = tw.querySelector(".b-tijd"); if (BORD.t){ clearInterval(BORD.t); BORD.t = null; b.textContent = "Start timer"; return; }
+    let s = Number(tw.dataset.sec); b.textContent = "Stop"; tw.classList.remove("om");
+    BORD.t = setInterval(() => { s--; sp.textContent = Math.floor(s/60) + ":" + String(s % 60).padStart(2, "0"); if (s <= 0){ clearInterval(BORD.t); BORD.t = null; tw.classList.add("om"); sp.textContent = "Tijd!"; b.textContent = "Start timer"; } }, 1000); } }, true);
+document.addEventListener("keydown", e => { if (!BORD) return;
+  if (["ArrowRight","PageDown"," "].includes(e.key)){ e.preventDefault(); bordGa(BORD.i + 1); }
+  else if (["ArrowLeft","PageUp"].includes(e.key)){ e.preventDefault(); bordGa(BORD.i - 1); }
+  else if (e.key === "f" || e.key === "F"){ const el = $("#bord"); if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen(); }
+  else if (e.key === "Escape" && !document.fullscreenElement) sluitBord(); });
 
 function renderMentor(){
   document.body.dataset.thema = "mentor";
