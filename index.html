@@ -1534,15 +1534,19 @@ const MPAGES = {
     <p class="sub"><b>Advies:</b> begin met alleen de basis. Zet in periode 2 één extra aan als de basis loopt.</p>
     ${MODS.map(([c,t,u]) => `<label class="check"><input type="checkbox" class="mk-mod" value="${c}"><span><b>${esc(t)}</b><br><span class="small">${esc(u)}</span></span></label>`).join("")}
     <label class="check"><input type="checkbox" id="mk-gs"><span><b>Gespreksslot</b><br><span class="small">Leerlingen kunnen op gekozen lessen pas verder na een gesprek met jou. Je hebt een pincode nodig en maakt na elk gesprek een vrijgavecode.</span></span></label>
-    <div id="mk-gsv" hidden class="card soft" style="margin-top:8px"><div class="grid2"><label class="f"><span class="lab">Pincode (4 tot 8 cijfers)</span><span class="hint">Alleen jij kent hem. Hij staat niet in de link. Schrijf hem goed op.</span><input type="password" id="mk-pin" inputmode="numeric" autocomplete="off"></label>
+    <div id="mk-gsv" hidden class="card soft" style="margin-top:8px"><p style="margin:0 0 4px"><b>Zo werkt het gespreksslot</b></p>${gsFlow("klein")}<div style="height:12px"></div><div class="grid2"><label class="f"><span class="lab">Pincode (4 tot 8 cijfers)</span><span class="hint">Alleen jij kent hem. Hij staat niet in de link. Schrijf hem goed op.</span><input type="password" id="mk-pin" inputmode="numeric" autocomplete="off"></label>
     <label class="f"><span class="lab">Gesprek verplicht vóór les</span><span class="hint">Lesnummers met komma’s. Standaard 9, 17 en 25.</span><input type="text" id="mk-g" value="9, 17, 25"></label></div></div></div>
     <div class="card"><h2>3. Maak de link</h2><details style="margin-bottom:12px"><summary>Adres van de tool (hoef je meestal niet te veranderen)</summary><label class="f" style="margin-top:8px"><span class="lab">Adres van de tool</span><span class="hint">Voor alle mentoren hetzelfde.</span><input type="text" id="mk-base" value="${esc(base)}"></label></details>
     <button class="btn" data-act="mkLink">Maak klaslink</button><div id="mk-out" style="margin-top:12px"></div></div>`; },
-  vrijgave: () => `<h1>Vrijgavecode na een gesprek</h1><p class="lead">De leerling laat zijn aanvraagcode zien, bijvoorbeeld 9-K7F3. Jij typt die hier in met je pincode en geeft de leerling de vrijgavecode. Die werkt alleen voor die leerling.</p>
-    <div class="card"><div class="grid2"><label class="f"><span class="lab">Pincode</span><input type="password" id="vg-pin" inputmode="numeric" autocomplete="off"></label>
+  vrijgave: () => { const mg = mentorGates(), datum = n => { const L = LES.find(l => l.les === n); return L ? L.datum : ""; };
+    const status = mg ? (mg.length ? `<div class="note"><b>In jouw klaslink:</b> gesprek vóór ${mg.map(n => `les ${n} (${esc(datum(n))})`).join(", ")}.</div>` : `<div class="note">Je laatste klaslink heeft <b>geen gespreksslot</b>. Deze pagina heb je dan niet nodig.</div>`)
+      : `<div class="note">Het gespreksslot werkt alleen als je bij het maken van je klaslink het vinkje <i>Gespreksslot</i> aanzette. Standaard liggen de gesprekken vóór ${gatesStd.map(n => `les ${n} (${esc(datum(n))})`).join(", ")}.</div>`;
+    return `<h1>Gesprek en vrijgavecode</h1><p class="lead">Met het gespreksslot kunnen leerlingen vanaf een paar vaste lessen pas verder in de tool als ze een kort gesprek met jou hebben gehad. Zo weet je zeker dat je iedereen spreekt.</p>
+    <div class="card"><h2>Zo werkt het</h2>${gsFlow()}</div>${status}
+    <div class="card"><h2>Vrijgavecode maken</h2><p class="sub">Na het gesprek laat de leerling zijn aanvraagcode zien, bijvoorbeeld 9-K7F3. De vrijgavecode die je hier maakt, werkt alleen voor die leerling.</p><div class="grid2"><label class="f"><span class="lab">Pincode</span><input type="password" id="vg-pin" inputmode="numeric" autocomplete="off"></label>
     <label class="f"><span class="lab">Aanvraagcode van de leerling</span><input type="text" id="vg-code" placeholder="9-K7F3" autocomplete="off"></label></div>
     <button class="btn" data-act="mkVrij">Maak vrijgavecode</button><div id="vg-out" style="margin-top:12px"></div></div>
-    <p class="small">Tip: zet deze pagina op je telefoon als bladwijzer, dan heb je hem bij elk gesprek bij de hand.</p>`
+    <p class="small">Tip: zet deze pagina op je telefoon als bladwijzer, dan heb je hem bij elk gesprek bij de hand. Een leerling mag het gesprek ook eerder hebben: hij ziet zijn aanvraagcode al in de lessen ervoor.</p>`; }
 };
 const gatesStd = [9, 17, 25];
 let PL = null;   /* geladen klaslink op de pagina Planning aanpassen */
@@ -1576,7 +1580,8 @@ function plLaad(){
   try { const u = new URL(raw); const q = u.searchParams;
     if (!q.has("w") && !q.has("klas")) throw 0;
     const adj = Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvz])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]]));
-    PL = { url: raw, base: u.origin + u.pathname, q, adj }; render();
+    PL = { url: raw, base: u.origin + u.pathname, q, adj };
+    S.ui.mgates = q.get("k") ? (q.get("g") || "").split(",").map(Number).filter(Boolean) : []; if (q.has("x")) S.ui.mmods = (q.get("x") || "").split(",").filter(Boolean); save(); render();
   } catch(e){ toast("Dit is geen klaslink. Plak de link die nu in Teams staat."); }
 }
 function plMaak(){
@@ -1709,9 +1714,9 @@ MPAGES.week = () => {
     <div class="radios cols2" role="radiogroup" style="margin:0;min-width:280px"><label class="opt"><input type="radio" name="mw" value="heel" ${w==="heel"?"checked":""}><span><b>Hele klas</b></span></label><label class="opt"><input type="radio" name="mw" value="half" ${w==="half"?"checked":""}><span><b>Halve klas</b></span></label></div></div></div>`;
   h += `<h2 class="mper">Week ${esc(r.wk)} · ${esc(r.datum)}</h2>`;
   if (!r.les){ return h + `<div class="card"><h2>Geen mentorles: ${esc(r.titel)}</h2>${r.st ? `<p>${esc(r.st)}</p>` : ""}${r.nbW ? `<p class="small">${esc(r.nbW)}</p>` : ""}${r.dl ? `<p><b>${esc(r.dl)}</b></p>` : ""}</div>`; }
-  const g = gvVan(r.les, w), gate = gatesStd.includes(r.les);
+  const g = gvVan(r.les, w);
   h += `<div class="card"><h2>Les ${r.les} · ${esc(r.titel)}</h2>${w === "half" ? `<p class="small" style="margin-top:-6px">In de klas: groep ${r.g}. Groep ${r.g === 1 ? 2 : 1} werkt thuis.</p>` : ""}
-    ${r.dl ? `<div class="note"><b>Deadline:</b> ${esc(r.dl)}</div>` : ""}${gate ? `<div class="wkgate">Staat het gespreksslot aan? Dan kunnen leerlingen vanaf les ${r.les} pas verder na een gesprek. Houd je pincode bij de hand (tab Mijn klas, Vrijgavecode).</div>` : ""}
+    ${r.dl ? `<div class="note"><b>Deadline:</b> ${esc(r.dl)}</div>` : ""}${gsKaart(r.les)}
     <h3>1. Opener, 5 à 8 minuten</h3>${g ? `<p><b>${esc(g.titel)}.</b> ${esc(g.hoe)}</p>` : "<p>Geen werkvorm.</p>"}
     <h3>2. De les</h3><p>${esc(mkFilter(r.mkW))}</p>
     ${r.leerl.map(([l,t]) => `<p><span class="lbl" style="display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase">${esc(l)}</span>${esc(t)}</p>`).join("")}
@@ -1770,13 +1775,14 @@ function mentorPlaat(){
 
 /* ---------- mentorportaal: nieuwe indeling ---------- */
 const MGROEP = [["week","Deze week",["week"]],["klaslink","Mijn klas",["klaslink","planning","vrijgave"]],["lessen","Jaaroverzicht",["lessen","groepsvorming"]],["start","Uitleg",["start","handleiding","vragen"]],["voorbeeld","Bekijk leerlingprogramma",["voorbeeld"]]];
-const SUBNAAM = { klaslink:"Klaslink maken", planning:"Planning aanpassen", vrijgave:"Vrijgavecode (bij gespreksslot)", lessen:"Lessen per week", groepsvorming:"Groepsvorming", start:"Stappenplan", handleiding:"Handleiding", vragen:"Vragen van leerlingen" };
+const SUBNAAM = { klaslink:"Klaslink maken", planning:"Planning aanpassen", vrijgave:"Gesprek en vrijgavecode (bij gespreksslot)", lessen:"Lessen per week", groepsvorming:"Groepsvorming", start:"Stappenplan", handleiding:"Handleiding", vragen:"Vragen van leerlingen" };
 const MALIAS = { klas:"klaslink", jaar:"lessen", uitleg:"start" };
 function subNav(sub){ const g = MGROEP.find(x => x[2].includes(sub)); if (!g || g[2].length < 2) return "";
   return `<nav class="subnav" aria-label="${esc(g[1])}">${g[2].map(s => `<a href="#mentor/${s}" ${s === sub ? 'aria-current="page"' : ""}>${SUBNAAM[s]}</a>`).join("")}</nav>`; }
 
 MPAGES.start = () => `<h1>Stappenplan</h1><p class="lead">Zo werk je met de jaarlijn. Meer dan dit hoeft niet; de rest van het portaal gebruik je als het nodig is.</p>
   ${mentorPlaat()}
+  <div class="card" style="margin-top:14px"><h2>Gebruik je het gespreksslot?</h2><p class="sub">Dan kunnen leerlingen vanaf een paar vaste lessen pas verder als ze een kort gesprek met jou hebben gehad. Standaard vóór les 9, 17 en 25.</p>${gsFlow()}</div>
   <div class="row" style="margin:14px 0 22px"><button class="btn ghost" data-act="posterMentor">Print als poster (A4)</button><button class="btn ghost" data-act="posterLeerling">Print de weekposter voor leerlingen</button></div>
   <div class="card"><h2>Het jaar in één beeld</h2><p class="sub">De vaste momenten van havo 4. De onderste rij geldt alleen als je die extra’s aanzet.</p>${jaarPlaat({ sv:true, df:true, label:true })}<div class="row" style="margin-top:10px"><button class="btn small ghost" data-act="posterJaar">Print de jaarplaat (A4)</button></div></div>
   <div class="card"><h2>Basis en extra’s</h2>
@@ -1822,6 +1828,24 @@ MPAGES.handleiding = () => `<h1>Handleiding</h1><p class="lead">Wat je elke week
   <details class="card"><summary>Gespreksslot</summary><p style="margin-top:10px">Vanaf de gekozen lessen kan een leerling pas verder na een gesprek met jou. Hij ziet het gesprek in de lessen ervoor aankomen en bereidt het voor. Na het gesprek maak je met je pincode een vrijgavecode (tab Mijn klas). Met vier gesprekjes per les spreek je in acht lessen ongeveer dertig leerlingen, dus houd minstens acht lessen tussen twee momenten. Een MOL-gesprek mag meetellen.</p></details>`;
 
 function posterPrint(html, titel){ $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt">` + html; const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st); const oud = document.title; document.title = titel; window.print(); document.title = oud; st.remove(); }
+/* ---------- gespreksslot: uitleg als stappenplan ---------- */
+function mentorGates(){ const g = S.ui && S.ui.mgates; return Array.isArray(g) ? g : null; } /* null = onbekend (geen klaslink op dit apparaat gemaakt) */
+function gsFlow(cls = ""){ return flow([
+  ["Jij zet het aan", "Bij het maken van je klaslink: vinkje <i>Gespreksslot</i>, een pincode en de lessen (standaard 9, 17 en 25)."],
+  ["Leerling bereidt voor", "In de lessen ervoor ziet de leerling het gesprek aankomen en beantwoordt drie korte vragen."],
+  ["De les gaat op slot", "Vanaf die les kan de leerling niet verder. Hij ziet een aanvraagcode, bijvoorbeeld 9-K7F3."],
+  ["Jullie praten", "Een gesprekje van vijf minuten in de les. Een MOL-gesprek mag meetellen."],
+  ["Jij geeft vrij", "Hier typ je je pincode en de aanvraagcode. De leerling typt de vrijgavecode in en kan verder."]
+], cls); }
+function gsRonde(les){ /* lopende gespreksronde voor deze les: { gate, start } of null */
+  const gs = mentorGates() || gatesStd; const g = gs.find(x => x >= les); if (!g) return null;
+  const i = gs.indexOf(g), start = i > 0 ? gs[i-1] : 1; return (les >= start) ? { gate: g, start, zeker: !!mentorGates() } : null; }
+function gsKaart(les){
+  if (mentorGates() && !mentorGates().length) return "";
+  const r = gsRonde(les); if (!r) return "";
+  const Lg = LES.find(l => l.les === r.gate), nog = r.gate - les, pre = r.zeker ? "" : "Als je het gespreksslot gebruikt: ";
+  if (les === r.gate) return `<div class="wkgate"><b>${pre ? pre + "vanaf" : "Vanaf"} deze les kunnen leerlingen zonder gesprek niet verder.</b> Spreek eerst wie je nog niet sprak en geef daarna de vrijgavecode (tab Mijn klas, <a href="#mentor/vrijgave">Vrijgavecode</a>). Houd je pincode bij de hand.</div>`;
+  return `<div class="wkgate"><b>${pre ? pre + "gespreksronde" : "Gespreksronde"} tot les ${r.gate}</b> (${esc(Lg ? Lg.datum : "")}). Spreek in deze les drie à vier leerlingen; nog ${nog} ${nog === 1 ? "les" : "lessen"} tot het slot. Leerlingen die al gesproken zijn, geef je meteen hun vrijgavecode.</div>`; }
 
 function renderMentor(){
   document.body.dataset.thema = "mentor";
@@ -1943,6 +1967,7 @@ document.addEventListener("click", e => {
       if (!g.length){ toast("Vul minstens één lesnummer in voor het gespreksslot."); return; }
       q.set("g", g.join(",")); q.set("k", sleutelUitPin(pin)); }
     q.set("x", mods.join(","));
+    S.ui.mgates = gsAan ? q.get("g").split(",").map(Number) : [];
     const b0 = $("#mk-base").value.trim(); if (!/^https:\/\//.test(b0)){ toast("Het adres moet beginnen met https:// (het adres op GitHub)."); return; }
     S.ui.mmods = mods; S.ui.mw = w; save();
     const url = b0 + "?" + q.toString().replace(/%2C/g, ",");
@@ -1950,7 +1975,7 @@ document.addEventListener("click", e => {
   if (act === "mwoff"){ const d = Number(a.dataset.d); S.ui.mwoff = d === 0 ? 0 : (S.ui.mwoff || 0) + d; save(); render(); return; }
   if (act === "copyLink"){ const t = $("#mk-url"); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Link gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Link gekopieerd."); } }
   if (act === "mPlanPdf"){ mentorPlanPdf(); return; }
-  if (act === "posterMentor"){ posterPrint(`<h1>Stappenplan mentor · jaarlijn havo 4</h1>` + mentorPlaat(), "Stappenplan mentor jaarlijn havo 4"); return; }
+  if (act === "posterMentor"){ posterPrint(`<h1>Stappenplan mentor · jaarlijn havo 4</h1>` + mentorPlaat() + `<h2 style="margin-top:12pt">Met gespreksslot</h2>` + gsFlow(), "Stappenplan mentor jaarlijn havo 4"); return; }
   if (act === "posterLeerling"){ posterPrint(`<h1>Zo werkt elke week · mentorles havo 4</h1>` + flow(WEEKSTAPPEN) + `<p style="margin-top:14pt;font-size:12pt">Open de tool altijd via de klaslink in Teams. Loop je vast? Klik op het vraagteken bij de opdracht.</p>`, "Weekposter jaarlijn havo 4"); return; }
   if (act === "posterJaar"){ posterPrint(`<h1>Het jaar in één beeld · havo 4 · ${CONFIG.schooljaar}</h1>` + jaarPlaat({ sv:true, df:true, label:true }), "Jaarplaat havo 4"); return; }
   if (act === "gvPdf"){ $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Groepsvorming · jaarlijn havo 4</h1><div class="pmeta">${CONFIG.school} · ${CONFIG.schooljaar}</div>` + gvPdfHTML().replace('class="newpage"', ""); const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st); window.print(); st.remove(); return; }
