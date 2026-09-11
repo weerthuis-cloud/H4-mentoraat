@@ -269,6 +269,7 @@ body.bord-open{overflow:hidden}
 .kol3 li b{display:block;font-size:15px} .kol3 li span{font-size:13.5px;color:var(--muted);line-height:1.4}
 .soms{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--geel-soft);font-size:14px} .soms span{display:inline-flex;align-items:center;gap:6px} .soms .ik{width:18px;height:18px;color:var(--c-studie)}
 .jaarkaart{margin-bottom:14px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:var(--geel-soft);padding:1px 6px;border-radius:5px;word-break:break-all}
 .route-wrap{margin:6px 0 14px;overflow-x:auto} .route{width:100%;min-width:560px;height:auto;display:block} .route .rt-l{font-size:14px;font-weight:600;fill:var(--ink)} .route .rt-cur .rt-l{font-weight:800} .route .rt-n{fill:var(--c-leerling);font-weight:800} .route .rt-mark{display:none} .route .rt-cur .rt-mark{display:block} .route .rt-nu{font-size:12px;font-weight:800;fill:var(--c-mentor)} .route g:hover circle:first-of-type{filter:brightness(1.08)}
 .plaat-wrap{overflow-x:auto} .plaat{width:100%;min-width:820px;height:auto;display:block}
 .plaat .pl-m{font-size:19px;font-weight:700;fill:var(--ink)} .plaat .pl-r{font-size:17px;font-weight:700} .plaat .pl-s{font-size:11.5px;font-weight:500;opacity:.9} .plaat .pl-l{font-size:13.5px;font-weight:600;fill:var(--ink)} .plaat .pl-k{font-size:12px;font-weight:600;letter-spacing:.06em;fill:var(--muted)}
@@ -989,16 +990,16 @@ const PAGES = {
     h += backupWaarschuwing();
     if (!storageOk) h += `<div class="alert">Deze browser staat opslaan niet toe (misschien een privévenster). Open de pagina in een gewoon venster, of maak tussendoor steeds een back-up.</div>`;
     if (opgezet) h += dezeWeek();
-    else if (S.ui.privacyOk){ const n0 = huidigeLes(), L0 = LES.find(l => l.les === n0);
-      h += `<h1>Nog even instellen</h1><p class="lead">Vul je naam in${CFG().werkwijze==="half" ? ", kies je groep" : ""} en vink je vakken aan. Daarna zie je hier elke week je les.</p>
-      <div class="card soft dw"><div class="small">De les van deze week · week ${esc(L0.wk)} · ${esc(lesDatumL(n0))}</div><h2 style="margin:4px 0 8px">Les ${n0} · ${esc(lesBlok(L0))}</h2><p class="small" style="margin:0 0 10px">Je kunt hem alvast bekijken. Vul eerst hieronder je naam${CFG().werkwijze==="half" ? ", je groep" : ""} en je vakken in, anders weet de les niet wat jouw opdracht is.</p><button class="btn ghost" data-go="les:${n0}">Bekijk les ${n0}</button></div>`; }
+    else if (S.ui.privacyOk) h += `<h1>Nog even instellen</h1><p class="lead">Vul je naam in${CFG().werkwijze==="half" ? ", kies je groep" : ""} en vink je vakken aan. Daarna zie je hier elke week je les.</p>`;
     const inst = `<div class="card"><h2>Over jou</h2><div class="grid2">${inp("leerling.voornaam","Voornaam","Komt op je PDF, zodat je mentor weet van wie hij is.")}${inp("leerling.klas","Klas","","text","H4E")}</div>${inp("leerling.profiel","Profiel","","text","bijvoorbeeld Economie en Maatschappij")}
       ${CFG().werkwijze==="half" ? `<span class="lab">In welke groep zit je?</span><span class="hint">Je mentor vertelt je dit. De ene groep is om de week in de klas, de andere werkt dan thuis.</span>${radios("leerling.groep", [{v:"1",t:"Groep 1"},{v:"2",t:"Groep 2"}], "cols2")}` : ""}
       ${S.cfg ? `<p class="small" style="margin:6px 0 0">Ingesteld door je mentor: ${esc([S.cfg.klas, S.cfg.werkwijze==="heel"?"hele klas elke week":"halve klas om de week", gates().length?"gesprek vóór les "+gates().join(", "):""].filter(Boolean).join(" · "))}</p>` : `<p class="small" style="margin:6px 0 0">Open de tool bij voorkeur via de link die je mentor in Teams zet. Dan staan de lessen goed voor jouw klas.</p>`}</div>
     <div class="card"><h2>Jouw vakken</h2><p class="sub">Vink de vakken aan die je dit jaar hebt.</p><div class="radios cols3">${Array.from(new Set([...CONFIG.vakken, ...S.vakken])).map(v => `<label class="opt"><input type="checkbox" data-vak="${esc(v)}" ${S.vakken.includes(v)?"checked":""}><span><b>${esc(v)}</b></span></label>`).join("")}</div>
       <div class="row"><input type="text" id="nieuwVak" placeholder="Ander vak toevoegen" style="flex:1;min-width:180px"><button class="btn ghost" data-act="addVak">Toevoegen</button></div></div>
     <div class="card soft"><h2>Zo lever je in</h2><p style="margin:0 0 8px">Elke week sluit je een les af en lever je die in als PDF via Teams. In die PDF staat wanneer je hem maakte en hoe lang je aan elke opdracht hebt <b>getypt</b>. Pauzes tellen niet mee.</p><p style="margin:0">Kopiëren en plakken in de invulvelden staan uit: je typt alles zelf. Gebruik je spraakherkenning, dan kan dat gewoon. In de PDF staat dan dat die tekst ingesproken is.</p></div>`;
-    if (S.ui.privacyOk) h += opgezet ? `<details class="card"><summary>Je naam, groep en vakken aanpassen</summary><div style="margin-top:12px">${inst}</div></details>` : inst + (S.leerling.voornaam && S.vakken.length ? `<button class="btn" data-go="start">Klaar, naar deze week</button>` : "");
+    if (S.ui.privacyOk){ const n0 = huidigeLes(), L0 = LES.find(l => l.les === n0), half = CFG().werkwijze === "half";
+      h += opgezet ? `<details class="card"><summary>Je naam, groep en vakken aanpassen</summary><div style="margin-top:12px">${inst}</div></details>`
+        : inst + `<div class="card soft dw"><div class="small">De les van deze week · week ${esc(L0.wk)} · ${esc(lesDatumL(n0))}</div><h2 style="margin:4px 0 8px">Les ${n0} · ${esc(lesBlok(L0))}</h2>${S.leerling.voornaam && S.vakken.length && (!half || S.leerling.groep) ? `<p class="small" style="margin:0 0 10px">Alles is ingesteld.</p><button class="btn groot" data-go="les:${n0}">Open les ${n0}</button>` : `<p class="small" style="margin:0 0 10px">Vul eerst hierboven je naam${half ? ", je groep" : ""} en je vakken in. Wil je de les alvast bekijken? Dat kan, maar de opdracht past pas bij jou als alles is ingesteld.</p><button class="btn ghost" data-go="les:${n0}">Bekijk les ${n0} alvast</button>`}</div>`; }
     return h;
   },
   jaarlijn: () => `<h1>Jaarlijn</h1><p class="lead">Je jaar in één beeld. Daaronder alle onderdelen in volgorde: klik erop om ze te openen.</p><div class="card">${jaarPlaat({ sv: mod("sv"), df: mod("df") })}</div>` + jaarlijn(),
@@ -1017,8 +1018,8 @@ const PAGES = {
     <div class="card"><h2>PDF van een onderdeel</h2><p class="sub">Je wekelijkse PDF maak je bij <b>Alle lessen</b>, onderaan elke les. Hier kun je ook een los onderdeel of alles samen als PDF maken. ${esc(CONFIG.inleveren)} Kies bij het afdrukken <b>Opslaan als PDF</b>. Hoe het met je gaat, komt er alleen in als je dat per onderdeel hebt aangevinkt.</p>
       <label class="f"><span class="lab">Wat wil je in de PDF?</span><select id="pdfSel"><option value="alles">Alles wat ik tot nu toe invulde</option>${CONFIG.momenten.filter(m => zichtbaar(m.id)).map(m=>`<option value="${m.id}">${esc(m.titel)} (week ${esc(m.week)})</option>`).join("")}${mod("sv") ? `<option value="studie">Studievaardigheden</option>` : ""}</select></label>
       <button class="btn" data-act="pdf">PDF maken</button></div>
-    <div class="card"><h2>Back-up</h2><p class="sub">Bij elke les-PDF maakt de tool automatisch een back-up in je map Downloads. Zet die in je OneDrive van school, dan ben je nooit meer dan een week werk kwijt.${S.ui.lastBackup ? " Laatste back-up: " + fmtTs(S.ui.lastBackup) + "." : ""} Op een ander apparaat zet je hem hier terug. Let op: de back-up bevat álles, ook wat je privé hield. Deel hem dus niet.</p>
-      <div class="row"><button class="btn" data-act="backup">Back-up downloaden</button><button class="btn ghost" data-act="restore">Back-up terugzetten</button></div></div>
+    <div class="card"><h2>Back-up</h2><p class="sub">Bij elke les-PDF maakt de tool automatisch een back-up. Zet die in je OneDrive van school, dan ben je nooit meer dan een week werk kwijt. Op een ander apparaat zet je hem hier terug. Let op: de back-up bevat álles, ook wat je privé hield. Deel hem dus niet.</p>
+      ${backupInfo()}<div class="row" style="margin-top:10px"><button class="btn" data-act="backup">Back-up downloaden</button><button class="btn ghost" data-act="restore">Back-up terugzetten</button></div></div>
     <div class="card"><h2>Opnieuw beginnen</h2><p class="sub">Wist alles op dit apparaat. Maak eerst een back-up als je twijfelt.</p><button class="btn danger" data-act="wipe">Alles wissen</button></div>`
 };
 
@@ -1623,7 +1624,7 @@ function lesView(n){
   const d = S.lessen[n] || {};
   h += `<div class="card soft" id="r-pdf"><h2>4. Check en inleveren</h2>
     <span class="lab">Check je werk</span>${KWALITEIT.map(([k,t]) => chk(`${b}.check.${k}`, t)).join("")}
-    <p class="sub" style="color:inherit;margin-top:8px">Maak een PDF van deze les en lever hem in via de Teams-opdracht van deze week. Na het maken van de PDF gaat de les op slot. Tegelijk downloadt de tool een back-up van al je werk: zet die in je OneDrive.</p>
+    <p class="sub" style="color:inherit;margin-top:8px">Maak een PDF van deze les en lever hem in via de Teams-opdracht van deze week. Na het maken van de PDF gaat de les op slot. Tegelijk downloadt de tool een back-up van al je werk (een bestand <code>jaarlijn-jouwnaam-les${n}-datum.json</code> in ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}): zet die in je OneDrive.</p>
     ${d.locked ? `<div class="note"><b>Ingeleverd en vergrendeld.</b> Wil je toch nog iets aanpassen? Heropen de les en maak daarna een nieuwe PDF. In je PDF staat dan dat je de les hebt heropend.</div><button class="btn ghost" data-act="heropen" data-les="${n}">Les heropenen</button>`
       : `<button class="btn" data-act="lesPdf" data-les="${n}">PDF maken van les ${n}</button>`}
     ${d.pdf && d.pdf.length ? `<p class="small" style="margin:10px 0 0">PDF gemaakt: ${d.pdf.map(fmtTs).join(", ")}${d.heropend && d.heropend.length ? ` · heropend: ${d.heropend.map(fmtTs).join(", ")}` : ""}</p>` : ""}</div>`;
@@ -1875,6 +1876,7 @@ function dezeWeek(){
   if (laat.length) h += `<div class="alert" style="margin-bottom:12px">Nog niet ingeleverd: ${laat.map(l => `<button class="btn small ghost" data-go="les:${l.les}">les ${l.les}</button>`).join(" ")} Haal die eerst in.</div>`;
   if (bg && bg >= n && n >= gateVenster(bg)) h += `<div class="note"><b>Gesprek met je mentor</b> vóór les ${bg}. Bereid het voor in de les.</div>`;
   if (volgende) h += `<div class="note"><b>Eerstvolgende deadline:</b> ${esc(volgende.titel)}, ${fmtDate(volgende.datum)}.</div>`;
+  if (S.ui.lastBackup) h += backupInfo();
   h += weekStappen();
   if (mod("sv")){ const sh = svHuidig(); if (sh) h += `<div class="note">Klaar met je les? Werk aan <button class="btn small ghost" data-go="studie">Studievaardigheden</button> (nu: ${esc(sh.kort)}).</div>`; }
   return h; }
@@ -2242,15 +2244,20 @@ document.addEventListener("change", e => { if (e.target.id === "mk-gs"){ const v
 /* ---------- back-up en blijvende opslag ---------- */
 function maakBackup(extra){
   try {
-    S.ui.lastBackup = Date.now(); save();
+    const naam = (S.leerling.voornaam || "leerling").toLowerCase().replace(/[^a-z0-9]+/g,"-"), bestand = `jaarlijn-${naam}${extra ? "-" + extra : ""}-${new Date().toISOString().slice(0,10)}.json`;
+    S.ui.lastBackup = Date.now(); S.ui.lastBackupNaam = bestand; save();
     const blob = new Blob([JSON.stringify(S, null, 2)], {type:"application/json"}), url = URL.createObjectURL(blob), link = document.createElement("a");
-    const naam = (S.leerling.voornaam || "leerling").toLowerCase().replace(/[^a-z0-9]+/g,"-");
-    link.href = url; link.download = `jaarlijn-${naam}${extra ? "-" + extra : ""}-${new Date().toISOString().slice(0,10)}.json`;
+    link.href = url; link.download = bestand;
     document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
   } catch(e){ toast("De back-up kon niet worden gemaakt. Probeer het bij Opslaan en delen."); }
 }
 function vraagBlijvendeOpslag(){ try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().then(ok => { S.ui.persist = !!ok; }); } catch(e){} }
 const IS_SAFARI = /Safari/.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|Edg|FxiOS|Firefox/.test(navigator.userAgent);
+const IS_IPAD = /iPad|iPhone/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+function backupInfo(){ /* laatste back-up: naam, tijdstip en waar hij staat */
+  const waar = IS_IPAD ? "in de app Bestanden, map Downloads" : "in je map Downloads";
+  if (!S.ui.lastBackup) return `<div class="note klaarbox"><div>${ikon("cloud")} <b>Nog geen back-up gemaakt.</b> Bij elke les-PDF maakt de tool er automatisch een; hij komt ${waar} te staan.</div><button class="btn small ghost" data-act="backup">Nu een back-up maken</button></div>`;
+  return `<div class="note klaarbox"><div>${ikon("cloud")} <b>Laatste back-up:</b> <code>${esc(S.ui.lastBackupNaam || "jaarlijn-….json")}</code><br><span class="small">Gemaakt op ${fmtTs(S.ui.lastBackup)}. Het bestand staat ${waar}. Zet het in je OneDrive van school; daar is het veilig als dit apparaat gewist wordt.</span></div></div>`; }
 function backupWaarschuwing(){
   const heeftWerk = hasContent(S.m) || hasContent(S.lessen) || hasContent(S.doelenA);
   let h = "";
@@ -2326,7 +2333,7 @@ document.addEventListener("click", e => {
     if (!((isKort(n) || get(`${b}.afsl.gedaan`)) && get(`${b}.afsl.volgende`)) && !confirm("Je afsluiting is nog niet helemaal ingevuld. Toch een PDF maken?")) return;
     const html = buildLesReport(n);
     S.lessen[n] = S.lessen[n] || {}; S.lessen[n].pdf = (S.lessen[n].pdf || []).concat(Date.now()); S.lessen[n].snap = snapshot(); S.lessen[n].locked = true; save();
-    $("#print").innerHTML = html; document.title = `Les ${n} - ${S.leerling.voornaam || "leerling"}`; window.print(); document.title = "Mijn jaarlijn havo 4"; maakBackup("les" + n); toast("PDF gemaakt. Je back-up staat in Downloads: zet hem in je OneDrive."); render(); }
+    $("#print").innerHTML = html; document.title = `Les ${n} - ${S.leerling.voornaam || "leerling"}`; window.print(); document.title = "Mijn jaarlijn havo 4"; maakBackup("les" + n); toast(`PDF gemaakt. Je back-up ${S.ui.lastBackupNaam || ""} staat in ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}: zet hem in je OneDrive.`); render(); }
   if (act === "heropen"){ const n = Number(a.dataset.les); if (!confirm("Les heropenen? Maak daarna een nieuwe PDF en lever die opnieuw in. In de PDF staat dat je de les hebt heropend.")) return;
     S.lessen[n].locked = false; S.lessen[n].heropend = (S.lessen[n].heropend || []).concat(Date.now()); save(); render(); }
   if (act === "ontgrendel"){ const g = Number(a.dataset.g), inv = ($("#vrij-"+g).value || "").trim(), gs = S.gesprek[g] || {};
@@ -2365,7 +2372,7 @@ document.addEventListener("click", e => {
   if (act === "copyDocent"){ const t = document.getElementById("dv-" + a.dataset.id); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Bericht gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Bericht gekopieerd."); } return; }
   if (act === "spiek"){ const id = a.dataset.id; $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Spiekkaart ${esc(MOM[id].gesprek.split("·")[0].trim())} · ${esc(S.leerling.voornaam||"")}</h1>` + spiekHTML(id); const oud = document.title; document.title = "Spiekkaart " + MOM[id].gesprek.split("·")[0].trim(); window.print(); document.title = oud; return; }
   if (act === "pdf"){ $("#print").innerHTML = buildReport($("#pdfSel").value); window.print(); }
-  if (act === "backup"){ maakBackup(""); render(); }
+  if (act === "backup"){ maakBackup(""); toast(`Back-up ${S.ui.lastBackupNaam || ""} gedownload naar ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}. Zet hem in je OneDrive.`); render(); }
   if (act === "restore") $("#importFile").click();
   if (act === "wipe"){ if (confirm("Weet je het zeker? Alles op dit apparaat wordt gewist.")){ try { localStorage.removeItem(KEY); } catch(_){} S = blank(); render(true); } }
 });
