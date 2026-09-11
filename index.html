@@ -269,7 +269,7 @@ body.bord-open{overflow:hidden}
 .kol3 li b{display:block;font-size:15px} .kol3 li span{font-size:13.5px;color:var(--muted);line-height:1.4}
 .soms{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--geel-soft);font-size:14px} .soms span{display:inline-flex;align-items:center;gap:6px} .soms .ik{width:18px;height:18px;color:var(--c-studie)}
 .jaarkaart{margin-bottom:14px}
-.route-wrap{margin:6px 0 14px;overflow-x:auto} .route{width:100%;min-width:560px;height:auto;display:block} .route .rt-l{font-size:14px;font-weight:600;fill:var(--ink)} .route .rt-l.nu{font-weight:800} .route .rt-nu{font-size:12px;font-weight:800;fill:var(--c-mentor)} .route g:hover circle:first-of-type{filter:brightness(1.08)}
+.route-wrap{margin:6px 0 14px;overflow-x:auto} .route{width:100%;min-width:560px;height:auto;display:block} .route .rt-l{font-size:14px;font-weight:600;fill:var(--ink)} .route .rt-cur .rt-l{font-weight:800} .route .rt-n{fill:var(--c-leerling);font-weight:800} .route .rt-mark{display:none} .route .rt-cur .rt-mark{display:block} .route .rt-nu{font-size:12px;font-weight:800;fill:var(--c-mentor)} .route g:hover circle:first-of-type{filter:brightness(1.08)}
 .plaat-wrap{overflow-x:auto} .plaat{width:100%;min-width:820px;height:auto;display:block}
 .plaat .pl-m{font-size:19px;font-weight:700;fill:var(--ink)} .plaat .pl-r{font-size:17px;font-weight:700} .plaat .pl-s{font-size:11.5px;font-weight:500;opacity:.9} .plaat .pl-l{font-size:13.5px;font-weight:600;fill:var(--ink)} .plaat .pl-k{font-size:12px;font-weight:600;letter-spacing:.06em;fill:var(--muted)}
 .subnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;width:fit-content;max-width:100%}
@@ -1560,11 +1560,11 @@ function lesRoute(n, huidig){ /* huidig: "terug" | moment-id | "afsl" | "pdf" | 
   s += `<line x1="${X0}" y1="${Y}" x2="${X1}" y2="${Y}" stroke="${c}" stroke-width="9" stroke-linecap="round" opacity=".28"/>`;
   const doneTo = H.map((h, i) => h.klaar ? i : -1).filter(i => i >= 0); if (doneTo.length) s += `<line x1="${X0}" y1="${Y}" x2="${xs(Math.max(...doneTo))}" y2="${Y}" stroke="${c}" stroke-width="9" stroke-linecap="round"/>`;
   H.forEach((h, i) => { const x = xs(i), isCur = h.k === cur, fill = h.klaar ? c : "var(--card)", ikc = h.klaar ? "#fff" : c;
-    s += `<g data-route="${esc(h.r)}" data-les="${n}" style="cursor:pointer"><title>${esc(h.lab)}</title>`;
-    if (isCur) s += `<circle cx="${x}" cy="${Y}" r="27" fill="none" stroke="var(--c-mentor)" stroke-width="3"/><path d="M${x} 24l-8-12h16z" fill="var(--c-mentor)"/><text x="${x}" y="9" text-anchor="middle" class="rt-nu">je bent hier</text>`;
+    s += `<g class="rt-h ${isCur ? "rt-cur" : ""}" data-route="${esc(h.r)}" data-les="${n}" data-halte="${esc(h.k)}" style="cursor:pointer"><title>${esc(h.lab)}</title>`;
+    s += `<g class="rt-mark"><circle cx="${x}" cy="${Y}" r="27" fill="none" stroke="var(--c-mentor)" stroke-width="3"/><path d="M${x} 24l-8-12h16z" fill="var(--c-mentor)"/><text x="${x}" y="9" text-anchor="middle" class="rt-nu">je bent hier</text></g>`;
     s += `<circle cx="${x}" cy="${Y}" r="21" fill="${fill}" stroke="${c}" stroke-width="3"/><g transform="translate(${x},${Y}) scale(1.35)">${IKON[h.ik](ikc)}</g>`;
-    if (h.klaar) s += `<circle cx="${x+15}" cy="${Y-15}" r="8" fill="var(--c-lob)" stroke="var(--card)" stroke-width="2"/><g transform="translate(${x+15},${Y-15}) scale(.6)">${IKON.check("#fff")}</g>`;
-    s += `<text x="${x}" y="${Y+42}" text-anchor="middle" class="rt-l ${isCur ? "nu" : ""}">${esc(h.lab)}</text></g>`; });
+    if (h.klaar) s += `<circle class="rt-done" cx="${x+15}" cy="${Y-15}" r="8" fill="var(--c-lob)" stroke="var(--card)" stroke-width="2"/><g transform="translate(${x+15},${Y-15}) scale(.6)">${IKON.check("#fff")}</g>`;
+    s += `<text x="${x}" y="${Y+42}" text-anchor="middle" class="rt-l"><tspan class="rt-n">${i+1}</tspan> ${esc(h.lab)}</text></g>`; });
   return `<div class="route-wrap">${s}</svg></div>`; }
 function lesView(n){
   const L = LES.find(l => l.les === n); if (!L) return PAGES.lessen();
@@ -1598,7 +1598,7 @@ function lesView(n){
   h += ta(`${b}.terug.tekst`, prev ? "Wat heb je sinds de vorige les gedaan? Hoe ging het met je doelen en je als-dan-plan?" : "Hoe zijn je eerste weken in havo 4 gegaan? Wat valt je op?", kort ? "Eén zin is genoeg." : "Twee of drie zinnen is genoeg, maar maak het concreet.", kort ? 2 : 3) + `</div>`;
   // 2 opdracht
   const taken = (taak || !L.klas) ? lesTaken(n).map(x => ({ ...x.taak, van: x.k })) : [L.klas, L.thuis].filter(Boolean);
-  h += `<div class="card"><h2>2. Je opdracht</h2>`;
+  h += `<div class="card" id="r-opdr"><h2>2. Je opdracht</h2>`;
   const alGetoond = new Set();
   taken.forEach(tk => {
     const kop = tk.van && tk.van !== n ? `<b>Uit les ${tk.van}:</b> ` : (!taak && L.klas ? `<b>${tk===L.klas?"In de klas":"Thuis"}:</b> ` : "");
@@ -1631,7 +1631,19 @@ function lesView(n){
   h += `<div class="pager">${pv?`<button class="btn ghost" data-go="les:${pv.les}">← Les ${pv.les}</button>`:"<span></span>"}${nl?`<button class="btn ghost" data-go="les:${nl.les}">Les ${nl.les} →</button>`:""}</div>`;
   return h;
 }
+function routeVolg(){ /* markering in de routebalk volgt het onderdeel dat in beeld is */
+  const rt = document.querySelector("#app .route"); if (!rt) return;
+  const secs = [["#r-terug","terug"],["#r-opdr","opdr"],["#r-afsl","afsl"],["#r-pdf","pdf"]].map(([q,k]) => [document.querySelector(q), k]).filter(x => x[0]);
+  const mid = window.innerHeight * .4; let cur = null;
+  secs.forEach(([el, k]) => { if (el.getBoundingClientRect().top <= mid) cur = k; });
+  if (!cur) cur = secs.length ? secs[0][1] : null; if (!cur) return;
+  const haltes = Array.from(rt.querySelectorAll(".rt-h")), keys = haltes.map(g => g.dataset.halte);
+  let key = cur;
+  if (cur === "opdr"){ const open = keys.filter(k => !["terug","afsl","pdf"].includes(k)); key = open.find(k => { const g = haltes[keys.indexOf(k)]; return !g.querySelector(".rt-done"); }) || open[0] || "afsl"; }
+  haltes.forEach(g => g.classList.toggle("rt-cur", g.dataset.halte === key)); }
+window.addEventListener("scroll", () => { if (String(S.ui.tab).startsWith("les:")) routeVolg(); }, { passive:true });
 function naLesRender(n){
+  routeVolg();
   const d = S.lessen[n]; if (!d || !d.locked) return;
   document.querySelectorAll(`#app [data-p^="lessen.${n}."]`).forEach(el => { el.disabled = true; });
 }
