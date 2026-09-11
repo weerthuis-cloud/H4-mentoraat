@@ -265,8 +265,8 @@ body.bord-open{overflow:hidden}
 .kol3 li{counter-increment:k;position:relative;padding:0 0 12px 42px} .kol3 li::before{content:counter(k);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--card);font-weight:800;display:flex;align-items:center;justify-content:center}
 .kol3 li b{display:block;font-size:15px} .kol3 li span{font-size:13.5px;color:var(--muted);line-height:1.4}
 .soms{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--geel-soft);font-size:14px}
-.plaat-wrap{overflow-x:auto} .plaat{width:100%;min-width:760px;height:auto;display:block}
-.plaat .pl-m{font-size:12px;fill:var(--muted)} .plaat .pl-r{font-size:13px;font-weight:700} .plaat .pl-l{font-size:11px;fill:var(--ink)} .plaat .pl-k{font-size:10.5px;fill:var(--muted)}
+.plaat-wrap{overflow-x:auto} .plaat{width:100%;min-width:820px;height:auto;display:block}
+.plaat .pl-m{font-size:12.5px;font-weight:600;fill:var(--muted)} .plaat .pl-r{font-size:15px;font-weight:700} .plaat .pl-l{font-size:13px;font-weight:600;fill:var(--ink)} .plaat .pl-k{font-size:12px;fill:var(--muted)} .plaat .pl-p{font-size:14px;font-weight:700;fill:#fff}
 .subnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;width:fit-content;max-width:100%}
 .subnav a{padding:6px 12px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:14px} .subnav a[aria-current="page"]{background:var(--acc-soft);color:var(--acc);font-weight:700}
 details.vraag summary{font-size:16px} ul.kort{margin:0 0 10px;padding-left:20px} ul.kort li{margin-bottom:4px}
@@ -1841,28 +1841,46 @@ function weekStappen(){ return `<div class="card"><h2>Zo werkt elke week</h2>${f
 /* jaarplaat: het schooljaar in één beeld (SVG) */
 function jaarPlaat(o = {}){ /* o.sv, o.df: extra rij tonen; o.label: kop "Extra’s" (mentor) */
   const extra = (o.sv || o.df) ? (o.label ? "label" : "aan") : "uit";
-  const t0 = new Date("2026-08-31T12:00:00"), t1 = new Date("2027-07-10T12:00:00"), X0 = 150, W = 830;
+  const t0 = new Date("2026-08-31T12:00:00"), t1 = new Date("2027-07-10T12:00:00"), X0 = 200, W = 976;
   const x = d => X0 + (new Date(d + "T12:00:00") - t0) / (t1 - t0) * W;
-  const rij = [["Toetsweken","--c-toets"],["MOL-gesprekken","--c-mentor"],["Mijn ontwikkeling","--c-leerling"],["LOB","--c-lob"]];
-  if (extra !== "uit") rij.push([extra === "label" ? "Extra’s" : "Extra", "--c-studie"]);
-  const Y = i => 70 + i * 46, H = 70 + rij.length * 46 + 10;
-  let s = `<svg class="plaat" viewBox="0 0 1000 ${H + 26}" role="img" aria-label="Het schooljaar in één beeld" xmlns="http://www.w3.org/2000/svg">`;
+  const IC = {
+    doel: c => `<circle r="7" fill="none" stroke="${c}" stroke-width="2"/><circle r="2.6" fill="${c}"/>`,
+    gesprek: c => `<g fill="${c}"><circle cx="-4" cy="-2.5" r="2.6"/><circle cx="4" cy="-2.5" r="2.6"/><path d="M-8 6c0-3 2-4.5 4-4.5s4 1.5 4 4.5zM0 6c0-3 2-4.5 4-4.5s4 1.5 4 4.5z"/></g>`,
+    toets: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><rect x="-6" y="-7.5" width="12" height="15" rx="2"/><path d="M-3 -2h6M-3 2h6M-3 6h3"/></g>`,
+    lob: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M0 7.5c-3-3.5-6-5.5-6-9a6 6 0 0 1 12 0c0 3.5-3 5.5-6 9z"/><circle cx="0" cy="-2" r="2"/></g>`,
+    spiegel: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-7 -6l7 4 7-4M-7 6l7-4 7 4M0 -7v14"/></g>`,
+    pitch: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-7 -5h8l6 -3v16l-6 -3h-8zM-7 8v-13"/></g>`,
+    docent: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-7 -6h14v9h-14zM-3 7h6M0 3v4"/></g>`,
+    studie: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-8 -2l8 -4 8 4 -8 4zM-4 0v5c0 1.5 8 1.5 8 0v-5"/></g>`,
+    balans: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M0 -7v14M-7 7h14M-6 -3l-3 6h6zM6 -3l-3 6h6zM-7 -3h14"/></g>`,
+    zon: c => `<g fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"><circle r="3.5"/><path d="M0 -8v2M0 6v2M-8 0h2M6 0h2M-5.7 -5.7l1.4 1.4M4.3 4.3l1.4 1.4M-5.7 5.7l1.4-1.4M4.3-4.3l1.4-1.4"/></g>` };
+  const ico = (k, cx, cy, c) => `<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)})">${IC[k](c)}</g>`;
+  const rij = [["Toetsweken","var(--c-toets)","toets"],["MOL-gesprekken","var(--c-mentor)","gesprek"],["Mijn ontwikkeling","var(--c-leerling)","doel"],["LOB","var(--c-lob)","lob"]];
+  if (extra !== "uit") rij.push([extra === "label" ? "Extra’s" : "Extra", "var(--c-studie)", "studie"]);
+  const RH = 62, Y0 = 96, Y = i => Y0 + i * RH + RH / 2, XR = extra !== "uit" ? 22 : 0, H = Y0 + rij.length * RH + XR;
+  let s = `<svg class="plaat" viewBox="0 0 1200 ${H + 52}" role="img" aria-label="Het schooljaar in één beeld" xmlns="http://www.w3.org/2000/svg">
+  <defs><pattern id="jp-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="var(--line)" opacity=".55"/><line x1="0" y1="0" x2="0" y2="8" stroke="var(--muted)" stroke-width="2.5" opacity=".35"/></pattern></defs>`;
+  const PER = [["2026-08-31","2026-11-08","Periode 1","var(--c-leerling)"],["2026-11-09","2027-01-24","Periode 2","var(--c-lob)"],["2027-01-25","2027-04-04","Periode 3","var(--c-geel)"],["2027-04-05","2027-07-10","Periode 4","var(--c-toets)"]];
+  PER.forEach(([a,b,n,c]) => s += `<rect x="${x(a)}" y="30" width="${x(b)-x(a)-3}" height="26" rx="6" fill="${c}"/><text x="${(x(a)+x(b))/2}" y="48" text-anchor="middle" class="pl-p">${n}</text>`);
+  rij.forEach(([n,c,k], i) => { const last = i === rij.length - 1 && extra !== "uit";
+    s += `<rect x="${X0-6}" y="${Y0+i*RH+4}" width="${W+12}" height="${last ? RH+XR-8 : RH-8}" rx="10" fill="${c}" opacity="${i%2 ? .06 : .09}"/>`;
+    s += `<rect x="8" y="${Y(i)-19}" width="${X0-26}" height="38" rx="10" fill="${c}" opacity=".13"/>${ico(k, 30, Y(i), c)}<text x="48" y="${Y(i)+5}" class="pl-r" style="fill:${c}">${n}</text>`; });
   [["2026-10-10","2026-10-18","herfst"],["2026-12-19","2027-01-03","kerst"],["2027-02-20","2027-02-28","voorjaar"],["2027-04-24","2027-05-09","mei"]].forEach(([a,b,n]) =>
-    s += `<rect x="${x(a)}" y="40" width="${x(b)-x(a)}" height="${H-40}" style="fill:var(--line);opacity:.45"/><text x="${(x(a)+x(b))/2}" y="${H+16}" text-anchor="middle" class="pl-k">${n}</text>`);
+    s += `<rect x="${x(a)}" y="${Y0}" width="${x(b)-x(a)}" height="${H-Y0}" fill="url(#jp-hatch)"/>${ico("zon", (x(a)+x(b))/2, H+16, "var(--muted)")}<text x="${(x(a)+x(b))/2}" y="${H+40}" text-anchor="middle" class="pl-k">${n}</text>`);
   ["2026-09-01","2026-10-01","2026-11-01","2026-12-01","2027-01-01","2027-02-01","2027-03-01","2027-04-01","2027-05-01","2027-06-01","2027-07-01"].forEach(d => {
     const m = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"][Number(d.slice(5,7)) - 1];
-    s += `<line x1="${x(d)}" y1="34" x2="${x(d)}" y2="${H}" style="stroke:var(--line)"/><text x="${x(d)+4}" y="30" class="pl-m">${m}</text>`; });
-  rij.forEach(([n,c], i) => s += `<text x="10" y="${Y(i)+5}" class="pl-r" style="fill:var(${c})">${n}</text><line x1="${X0}" y1="${Y(i)}" x2="${X0+W}" y2="${Y(i)}" style="stroke:var(${c});opacity:.35;stroke-width:2"/>`);
-  const blok = (i, a, b, lab, c) => `<rect x="${x(a)}" y="${Y(i)-9}" width="${Math.max(6, x(b)-x(a))}" height="18" rx="5" style="fill:var(${c})"/><text x="${(x(a)+x(b))/2}" y="${Y(i)-14}" text-anchor="middle" class="pl-l">${lab}</text>`;
-  const punt = (i, d, lab, c, onder) => `<circle cx="${x(d)}" cy="${Y(i)}" r="7" style="fill:var(${c});stroke:var(--card);stroke-width:2"/><text x="${x(d)}" y="${onder ? Y(i)+22 : Y(i)-13}" text-anchor="middle" class="pl-l">${lab}</text>`;
-  Object.entries(CONFIG.toetsweken).forEach(([k,v]) => s += blok(0, v.van, v.tot, "toetsweek " + k, "--c-toets"));
-  s += punt(1, "2026-09-30", "MOL 1", "--c-mentor") + punt(1, "2027-02-16", "MOL 2", "--c-mentor") + punt(1, "2027-03-31", "MOL 3", "--c-mentor");
-  s += punt(2, "2026-09-25", "actieplan", "--c-leerling") + punt(2, "2027-02-05", "spiegel", "--c-leerling", true) + punt(2, "2027-02-12", "tussenbalans", "--c-leerling") + punt(2, "2027-07-02", "eindbalans", "--c-leerling");
-  s += punt(3, "2026-12-04", "LOB 1", "--c-lob") + punt(3, "2027-03-19", "LOB 2", "--c-lob") + blok(3, "2027-05-24", "2027-06-04", "pitch", "--c-lob");
+    s += `<line x1="${x(d)}" y1="${Y0}" x2="${x(d)}" y2="${H}" stroke="var(--card)" stroke-width="2"/><text x="${x(d)+5}" y="${Y0-12}" class="pl-m">${m}</text>`; });
+  const pil = (i, a, b, lab, c, k, stip) => { const w = Math.max(x(b)-x(a), lab.length*7.8+44), cx = (x(a)+x(b))/2, x1 = cx - w/2;
+    return `<rect x="${x1}" y="${Y(i)-15}" width="${w}" height="30" rx="15" fill="${c}"${stip ? ' opacity=".85"' : ""}/>${ico(k, x1+16, Y(i), "#fff")}<text x="${x1+30}" y="${Y(i)+5}" class="pl-l" style="fill:#fff;font-weight:700">${lab}</text>`; };
+  const punt = (i, d, lab, c, k, onder) => `<circle cx="${x(d)}" cy="${Y(i)}" r="13" fill="var(--card)" stroke="${c}" stroke-width="2.5"/>${ico(k, x(d), Y(i), c)}<text x="${x(d)}" y="${onder ? Y(i)+29 : Y(i)-19}" text-anchor="middle" class="pl-l">${lab}</text>`;
+  Object.entries(CONFIG.toetsweken).forEach(([k,v]) => s += pil(0, v.van, v.tot, "toetsweek " + k, "var(--c-toets)", "toets"));
+  s += punt(1, "2026-09-30", "MOL 1", "var(--c-mentor)", "gesprek") + punt(1, "2027-02-16", "MOL 2", "var(--c-mentor)", "gesprek") + punt(1, "2027-03-31", "MOL 3", "var(--c-mentor)", "gesprek");
+  s += punt(2, "2026-09-25", "actieplan", "var(--c-leerling)", "doel") + punt(2, "2027-02-03", "spiegel", "var(--c-leerling)", "spiegel", true) + punt(2, "2027-02-13", "tussenbalans", "var(--c-leerling)", "balans") + punt(2, "2027-07-02", "eindbalans", "var(--c-leerling)", "balans");
+  s += punt(3, "2026-12-04", "LOB 1 · wie ben ik?", "var(--c-lob)", "lob") + punt(3, "2027-03-19", "LOB 2 · wat past?", "var(--c-lob)", "lob") + pil(3, "2027-05-24", "2027-06-04", "eindpitch", "var(--c-lob)", "pitch");
   if (extra !== "uit"){ const r = 4;
-    if (o.sv) s += `<rect x="${x("2026-09-21")}" y="${Y(r)+4}" width="${x("2027-04-23")-x("2026-09-21")}" height="6" rx="3" style="fill:var(--c-studie);opacity:.5"/><text x="${x("2026-12-20")}" y="${Y(r)+24}" text-anchor="middle" class="pl-l">studievaardigheden: nulmeting, rondes, keuze</text>`;
-    if (o.df) s += blok(r, "2026-11-16", "2026-12-04", "docentfeedback 1", "--c-studie") + blok(r, "2027-03-01", "2027-03-12", "docentfeedback 2", "--c-studie"); }
-  const nu = new Date(); if (nu > t0 && nu < t1){ const xn = X0 + (nu - t0) / (t1 - t0) * W; s += `<line x1="${xn}" y1="36" x2="${xn}" y2="${H}" style="stroke:var(--c-mentor);stroke-width:2;stroke-dasharray:4 3"/><text x="${xn}" y="${H+16}" text-anchor="middle" class="pl-k" style="fill:var(--c-mentor);font-weight:700">nu</text>`; }
+    if (o.sv) s += `<rect x="${x("2026-09-21")}" y="${Y(r)+24}" width="${x("2027-04-23")-x("2026-09-21")}" height="7" rx="3.5" fill="var(--c-studie)" opacity=".4"/><text x="${x("2026-09-21")}" y="${Y(r)+42}" class="pl-l" style="fill:var(--c-studie);font-weight:600">studievaardigheden: nulmeting → rondes → keuze</text>`;
+    if (o.df) s += pil(r, "2026-11-16", "2026-12-04", "docentfeedback 1", "var(--c-studie)", "docent", true) + pil(r, "2027-03-01", "2027-03-12", "docentfeedback 2", "var(--c-studie)", "docent", true); }
+  const nu = new Date(); if (nu > t0 && nu < t1){ const xn = X0 + (nu - t0) / (t1 - t0) * W; s += `<line x1="${xn}" y1="${Y0-4}" x2="${xn}" y2="${H}" stroke="var(--c-mentor)" stroke-width="2" stroke-dasharray="5 4"/><rect x="${xn-15}" y="${H+4}" width="30" height="18" rx="9" fill="var(--c-mentor)"/><text x="${xn}" y="${H+17}" text-anchor="middle" class="pl-k" style="fill:#fff;font-weight:700">nu</text>`; }
   return `<div class="plaat-wrap">${s}</svg></div>`; }
 
 /* mentor: stappenplan als infographic */
