@@ -268,6 +268,7 @@ body.bord-open{overflow:hidden}
 .kol3 li{counter-increment:k;position:relative;padding:0 0 12px 42px} .kol3 li::before{content:counter(k);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
 .kol3 li b{display:block;font-size:15px} .kol3 li span{font-size:13.5px;color:var(--muted);line-height:1.4}
 .soms{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--geel-soft);font-size:14px} .soms span{display:inline-flex;align-items:center;gap:6px} .soms .ik{width:18px;height:18px;color:var(--c-studie)}
+.jaarkaart{margin-bottom:14px}
 .route-wrap{margin:6px 0 14px;overflow-x:auto} .route{width:100%;min-width:560px;height:auto;display:block} .route .rt-l{font-size:14px;font-weight:600;fill:var(--ink)} .route .rt-l.nu{font-weight:800} .route .rt-nu{font-size:12px;font-weight:800;fill:var(--c-mentor)} .route g:hover circle:first-of-type{filter:brightness(1.08)}
 .plaat-wrap{overflow-x:auto} .plaat{width:100%;min-width:820px;height:auto;display:block}
 .plaat .pl-m{font-size:19px;font-weight:700;fill:var(--ink)} .plaat .pl-r{font-size:17px;font-weight:700} .plaat .pl-s{font-size:11.5px;font-weight:500;opacity:.9} .plaat .pl-l{font-size:13.5px;font-weight:600;fill:var(--ink)} .plaat .pl-k{font-size:12px;font-weight:600;letter-spacing:.06em;fill:var(--muted)}
@@ -1363,7 +1364,7 @@ function leesKlaslink(){
     if (q.has("w") || q.has("klas")){
       S.cfg = { klas: q.get("klas") || "", werkwijze: q.get("w") === "heel" ? "heel" : "half",
                 gates: (q.get("g") || "").split(",").map(Number).filter(n => n > 1 && n <= 31).sort((a,b) => a-b), key: q.get("k") || "",
-                adj: Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvz])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]])) };
+                adj: Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvzs])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]])) };
       if (q.has("x")) S.cfg.mods = (q.get("x") || "").split(",").filter(Boolean);
       if (q.has("d")) S.cfg.dagen = (q.get("d") || "").split(",").map(Number).slice(0, 4);
       if (S.cfg.klas && !S.leerling.klas) S.leerling.klas = S.cfg.klas;
@@ -1474,6 +1475,16 @@ function adjOf(n){ const a = CFG().adj || {}; return (n < LES.length) ? (a[n] ||
 function samenIn(n){ let k = n; while (adjOf(k) === "v" && k < LES.length) k++; return k; }
 function samenVan(n){ const r = []; let k = n - 1; while (k >= 1 && adjOf(k) === "v"){ r.unshift(k); k--; } return r; }
 function isKort(n){ return adjOf(n) === "k" || samenVan(n).length > 0; }
+let VOORUIT_DAGEN = 14;   /* leerlingen kunnen maximaal twee weken vooruit werken */
+function lesSlot(n){ /* null = open; anders { type:"mentor" } of { type:"tijd", vanaf } */
+  const L = LES.find(l => l.les === n); if (!L) return null;
+  if (adjOf(n) === "s") return { type:"mentor" };
+  if (MENTOR) return null;
+  const open = new Date(L.ma + "T00:00:00"); open.setDate(open.getDate() - VOORUIT_DAGEN);
+  return new Date() < open ? { type:"tijd", vanaf: open.toISOString().slice(0,10) } : null; }
+function slotKaart(n){ const sl = lesSlot(n); if (!sl) return "";
+  return sl.type === "mentor" ? `<div class="card warn">${ikon("slot")} <b>Je mentor heeft deze les op slot gezet.</b> Je kunt hem nu niet maken. Vraag je mentor wanneer hij opengaat.</div>`
+    : `<div class="card soft">${ikon("slot")} <b>Deze les gaat open op ${fmtDate(sl.vanaf)}.</b> Je kunt maximaal twee weken vooruit werken, zodat je les past bij wat er op dat moment speelt. Kijk alvast in de <button class="btn small ghost" data-go="jaarlijn">Jaarlijn</button> wat eraan komt.</div>`; }
 const KERN = { start:"Kies je vakken (en je groep).", actieplan:"Vul in ieder geval ‘Waar sta ik nu’ en je twee doelen in.", toetsVoor:"Vink je toetsen aan en vul per vak ‘klaar nu’ en je verwachte cijfer in.",
   toetsNa:"Vul je cijfers in en schrijf op wat je bij de volgende toetsweek anders doet.", lob1:"Vul je drie interesses, talenten en waarden in.", lob2:"Vul je twee opleidingen in en welke richting je nu aanspreekt.",
   lob3:"Schrijf je richting in één zin en wat je in havo 5 gaat doen.", spiegel:"Vul je eigen beeld in en de feedback van minstens één persoon.", tussen:"Doe de meting en stel je twee nieuwe doelen.", eind:"Doe de eindmeting en vul ‘Op naar havo 5’ in.", mol:"Schrijf je plan in één zin en twee argumenten met bewijs. Na het gesprek: de afspraken.", docentfb:"Kies een docent en kondig het aan; of noteer de feedback en wat je ermee doet." };
@@ -1535,6 +1546,11 @@ function routeHaltes(n){
   H.push({ k:"afsl", ik:"check", lab:"Afsluiten", klaar: !!get(`${b}.afsl.volgende`) && (kort || !!get(`${b}.afsl.gedaan`)), r:"#r-afsl" });
   H.push({ k:"pdf", ik:"pdf", lab:"PDF inleveren", klaar: !!(d.pdf && d.pdf.length), r:"#r-pdf" });
   return H; }
+function jaarKaart(n){ /* korte aansporing aan het begin van elke les: kijk in de Jaarlijn */
+  const L = LES.find(l => l.les === n); if (!L) return "";
+  const items = [...CONFIG.momenten.filter(m => zichtbaar(m.id) && m.type !== "mol").map(m => ({ d:m.datum, t:`${m.titel} af (${fmtDate(m.datum)})` })), ...CONFIG.gebeurtenissen.map(g => ({ d:g.datum, t:g.t }))]
+    .filter(x => x.d >= L.ma).sort((a,b) => a.d.localeCompare(b.d)).slice(0, 2);
+  return `<div class="note jaarkaart" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between"><span>${ikon("start")} <b>Kijk eerst even in de Jaarlijn:</b> daar zie je waar je bent en wat eraan komt.${items.length ? ` Binnenkort: ${items.map(x => esc(x.t)).join(" · ")}.` : ""}</span><button class="btn small ghost" data-go="jaarlijn">Open de Jaarlijn</button></div>`; }
 function lesRoute(n, huidig){ /* huidig: "terug" | moment-id | "afsl" | "pdf" | null (= eerste open halte) */
   const H = routeHaltes(n); if (!H.length) return "";
   const cur = huidig || (H.find(h => !h.klaar) || H[H.length - 1]).k;
@@ -1561,7 +1577,8 @@ function lesView(n){
   h += kort ? `<span class="pill geel">Korte les${samenVan(n).length ? " · samen met les " + samenVan(n).join(" en ") : ""}</span>` : "";
   h += L.dl ? `<span class="pill lob">deadline: ${esc(L.dl)}</span>` : "";
   h += `</div>`;
-  if (!(bg && n >= bg) && mode) h += lesRoute(n);
+  if (lesSlot(n)) return h + slotKaart(n) + `<div class="pager"><button class="btn ghost" data-go="lessen">← Naar het overzicht</button></div>`;
+  if (!(bg && n >= bg) && mode) h += lesRoute(n) + jaarKaart(n);
   if (bg && n >= bg){
     return h + gesprekKaart(bg, true) + `<div class="pager"><button class="btn ghost" data-go="lessen">← Naar het overzicht</button></div>`;
   }
@@ -1625,7 +1642,7 @@ PAGES.lessen = () => {
   h += `<div class="tl">`;
   LES.forEach(L => { const { mode } = lesInfo(L), st = lesStatus(L.les), slot = bg && L.les >= bg && st !== "samen", aj = adjOf(L.les);
     if (gates().includes(L.les)) h += `<div class="ev"><span></span><span><b>Gesprek met je mentor</b> vóór les ${L.les}${gesprekVrij(L.les)?" · gehad":""}</span></div>`;
-    h += `<button class="it ${mode==="thuis"?"toets":""} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(lesDatumL(L.les))} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}</small></span><span class="status ${slot?"slot":st}">${slot?"op slot":st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
+    h += `<button class="it ${mode==="thuis"?"toets":""} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(lesDatumL(L.les))} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}</small></span><span class="status ${slot||lesSlot(L.les)?"slot":st}">${slot?"op slot":lesSlot(L.les)?(lesSlot(L.les).type==="mentor"?"op slot":"vanaf "+fmtDate(lesSlot(L.les).vanaf)):st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
   return h + `</div>`;
 };
 function buildLesReport(n){
@@ -1701,6 +1718,7 @@ MPAGES.planning = () => {
     <p><b>Kort.</b> De les blijft, maar leerlingen doen alleen de kern: één zin terugkijken, het belangrijkste deel van de opdracht en hun volgende stap. Ongeveer tien minuten. Kies dit voor lessen met een deadline, zoals een toetsweekplan of de tussenbalans.</p>
     <p><b>Samenvoegen met de volgende les.</b> De les valt uit; het werk schuift door naar de volgende les, die dan automatisch kort wordt en de kern van beide lessen bevat. Een gespreksmoment op een vervallen les schuift mee.</p>
     <p><b>Zelfstandig.</b> De les gaat door zonder mentor. Leerlingen zien dat je er niet bent en werken de les zelf af.</p>
+    <p><b>Op slot.</b> Leerlingen kunnen de les niet openen tot jij hem weer op Normaal zet. Handig als je een les wilt bewaren voor een later moment. Los daarvan kunnen leerlingen nooit verder dan twee weken vooruit werken; dat regelt de tool zelf.</p>
     <p class="small" style="margin:0">Onverwacht ziek? Dan hoef je niets te doen: elke les is zelfstandig te maken. Laat een collega of invaller zeggen: open de les van deze week en werk hem af. Pas de planning daarna aan als dat nodig is.</p></div>
   <div class="card"><h2>1. Plak je huidige klaslink</h2><p class="sub">De link die nu in Teams staat. Je pincode is niet nodig.</p>
     <textarea id="pl-link" rows="3" placeholder="https://weerthuis-cloud.github.io/H4-mentoraat/?klas=...">${PL ? esc(PL.url) : ""}</textarea>
@@ -1712,7 +1730,7 @@ MPAGES.planning = () => {
   h += `<div class="card"><h2>3. Kies per les</h2><p class="sub">Klas ${esc(PL.q.get("klas")||"–")} · ${w==="heel"?"hele klas elke week":"halve klas om de week"}${g.length?" · gesprek vóór les "+g.join(", "):""}</p>
     <div class="tbl-wrap"><table class="gap"><thead><tr><th>Les</th><th>Week</th><th>Onderdeel</th><th style="min-width:210px">Aanpassing</th></tr></thead><tbody>`;
   LES.forEach(L => { const cur = PL.adj[L.les] || "";
-    const opts = [["","Normaal"],["k","Kort"],["v","Samenvoegen met volgende les"],["z","Zelfstandig (zonder mentor)"]].filter(o => !(o[0]==="v" && L.les === LES.length));
+    const opts = [["","Normaal"],["k","Kort"],["v","Samenvoegen met volgende les"],["z","Zelfstandig (zonder mentor)"],["s","Op slot (leerlingen kunnen er niet in)"]].filter(o => !(o[0]==="v" && L.les === LES.length));
     h += `<tr><td><b>${L.les}</b>${g.includes(L.les)?' <span class="pill geel" style="font-size:11px">gesprek</span>':""}</td><td>${esc(L.wk)}<br><span class="small">${esc(lesDatumM(L.les))}</span></td><td>${esc(w==="heel" ? (L.bh||L.blok) : L.blok)}${L.dl?`<br><span class="small">deadline: ${esc(L.dl)}</span>`:""}</td>
       <td><select data-pl="${L.les}">${opts.map(([v,t]) => `<option value="${v}" ${cur===v?"selected":""}>${t}</option>`).join("")}</select>${L.dl?`<div class="small" data-plw="${L.les}" ${cur==="v"?"":"hidden"} style="color:var(--c-toets);margin-top:4px">Deze les heeft een deadline. Kies liever Kort.</div>`:""}</td></tr>`; });
   h += `</tbody></table></div><div class="row" style="margin-top:12px"><button class="btn" data-act="plMake">Maak nieuwe klaslink</button><button class="btn ghost" data-act="plReset">Alles terug naar normaal</button></div><div id="pl-out" style="margin-top:12px"></div></div>`;
@@ -1726,7 +1744,7 @@ function plLaad(){
   const raw = ($("#pl-link").value || "").trim();
   try { const u = new URL(raw); const q = u.searchParams;
     if (!q.has("w") && !q.has("klas")) throw 0;
-    const adj = Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvz])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]]));
+    const adj = Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvzs])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]]));
     PL = { url: raw, base: u.origin + u.pathname, q, adj }; S.ui.madj = Object.assign({}, adj); S.ui.mdagen = q.get("d") ? q.get("d").split(",").map(Number) : S.ui.mdagen; S.ui.mklas = q.get("klas") || S.ui.mklas; S.ui.mw = q.get("w") === "heel" ? "heel" : "half";
     S.ui.mgates = q.get("k") ? (q.get("g") || "").split(",").map(Number).filter(Boolean) : []; if (q.has("x")) S.ui.mmods = (q.get("x") || "").split(",").filter(Boolean); save(); render();
   } catch(e){ toast("Dit is geen klaslink. Plak de link die nu in Teams staat."); }
@@ -1839,7 +1857,7 @@ function dezeWeek(){
   let h = `<h1>Deze week</h1><div class="card dw"><div class="small">week ${esc(L.wk)} · ${esc(lesDatumL(n))}${mode ? " · " + esc(MODETXT[mode].toLowerCase()) : ""}</div>
     <h2 style="margin:4px 0 8px">Les ${n} · ${esc(lesBlok(L))}</h2>
     <p style="margin:0 0 12px">${isKort(n) ? "Korte les. " : ""}${esc(taakTekst(tk))}</p>${L.dl ? `<p class="small" style="margin:0 0 12px"><b>Deadline:</b> ${esc(L.dl)}</p>` : ""}
-    <button class="btn groot" data-go="les:${n}">${st === "klaar" ? "Bekijk de les (ingeleverd)" : "Open de les"}</button></div>`;
+    ${lesSlot(n) ? slotKaart(n) : `<button class="btn groot" data-go="les:${n}">${st === "klaar" ? "Bekijk de les (ingeleverd)" : "Open de les"}</button>`}</div>`;
   if (laat.length) h += `<div class="alert" style="margin-bottom:12px">Nog niet ingeleverd: ${laat.map(l => `<button class="btn small ghost" data-go="les:${l.les}">les ${l.les}</button>`).join(" ")} Haal die eerst in.</div>`;
   if (bg && bg >= n && n >= gateVenster(bg)) h += `<div class="note"><b>Gesprek met je mentor</b> vóór les ${bg}. Bereid het voor in de les.</div>`;
   if (volgende) h += `<div class="note"><b>Eerstvolgende deadline:</b> ${esc(volgende.titel)}, ${fmtDate(volgende.datum)}.</div>`;
@@ -2140,13 +2158,14 @@ function bordDias(les, w){
     <p class="b-sub">Heb je de PDF van vandaag ingeleverd? Dan ben je klaar.</p>`);
   return D; }
 /* jaarstrook: waar in het jaar zit deze les (voor de startdia van het bord) */
-function jaarStrook(iso){
+function jaarStrook(iso, app){
   const t0 = new Date("2026-08-31T12:00:00"), t1 = new Date("2027-07-10T12:00:00"), X0 = 30, W = 1140;
   const x = d => X0 + (new Date(d + "T12:00:00") - t0) / (t1 - t0) * W;
   const PER = [["2026-08-31","2026-11-08","Periode 1","#0a58a3"],["2026-11-09","2027-01-24","Periode 2","#2f7d32"],["2027-01-25","2027-04-04","Periode 3","#f0a800"],["2027-04-05","2027-07-10","Periode 4","#b35400"]];
-  let s = `<svg class="b-strook" viewBox="0 0 1200 96" aria-label="Waar in het jaar" xmlns="http://www.w3.org/2000/svg">`;
+  const ink = app ? "var(--ink)" : "#1f2328", card = app ? "var(--card)" : "#fff";
+  let s = `<svg class="${app ? "strook" : "b-strook"}" viewBox="0 0 1200 96" aria-label="Waar in het jaar" xmlns="http://www.w3.org/2000/svg">`;
   PER.forEach(([a,b,n,c]) => s += `<rect x="${x(a)}" y="38" width="${x(b)-x(a)-3}" height="22" rx="7" fill="${c}"/>`);
-  [["2026-10-10","2026-10-18"],["2026-12-19","2027-01-03"],["2027-02-20","2027-02-28"],["2027-04-24","2027-05-09"]].forEach(([a,b]) => s += `<rect x="${x(a)}" y="38" width="${x(b)-x(a)}" height="22" fill="#fff" opacity=".6"/>`);
+  [["2026-10-10","2026-10-18"],["2026-12-19","2027-01-03"],["2027-02-20","2027-02-28"],["2027-04-24","2027-05-09"]].forEach(([a,b]) => s += `<rect x="${x(a)}" y="38" width="${x(b)-x(a)}" height="22" fill="${card}" opacity=".6"/>`);
   PER.forEach(([a,b,n,c]) => s += `<text x="${(x(a)+x(b))/2}" y="54" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" style="paint-order:stroke;stroke:${c};stroke-width:3px">${n.toUpperCase()}</text>`);
   Object.entries(CONFIG.toetsweken).forEach(([k,v]) => s += `<rect x="${x(v.van)}" y="64" width="${x(v.tot)-x(v.van)}" height="6" rx="3" fill="#b35400"/><text x="${(x(v.van)+x(v.tot))/2}" y="86" text-anchor="middle" font-size="12" font-weight="700" fill="#b35400">toetsweek ${k}</text>`);
   const xn = Math.max(X0, Math.min(X0 + W, x(iso)));
