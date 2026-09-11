@@ -95,6 +95,8 @@ h3{font-size:16px;margin:18px 0 6px}
 .f{display:block;margin:0 0 14px}
 .lab{display:block;font-weight:600;margin-bottom:2px}
 .hint{display:block;color:var(--muted);font-size:14px;margin-bottom:6px}
+.zinhint{display:block;color:var(--c-toets);font-size:13px;margin-top:4px}
+textarea.zinfout{border-color:var(--c-toets)}
 textarea,input[type=text],input[type=password],input[type=date],select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
 textarea{resize:vertical;min-height:60px}
 textarea:focus,input:focus,select:focus,button:focus-visible,.opt input:focus-visible+span{outline:3px solid color-mix(in srgb,var(--acc) 45%,transparent);outline-offset:1px;border-color:var(--acc)}
@@ -551,8 +553,42 @@ function hasContent(o){ if (o == null) return false; if (typeof o !== "object") 
 function num(v){ if (v == null || v === "") return null; const n = parseFloat(String(v).replace(",", ".")); return isNaN(n) ? null : n; }
 function nl(n, d=1){ return n == null ? "–" : n.toFixed(d).replace(".", ","); }
 
+/* Volledige zinnen: alle open vragen, behalve losse delen (als/dan), korte logboeknotities, feedbackkreten van anderen, vragenlijsten en bewijsnotities. */
+const ZINVRIJ = [/\.(als|dan)$/, /\.log\.\d+\.wat$/, /\.fb\.\d+\.(top|tip)$/, /\.interview$/, /\.arg\.\d+\.bewijs$/];
+function zinVeld(p){ return !ZINVRIJ.some(r => r.test(p)); }
+const AFK = /(?:^|\s)(?:bijv|bv|enz|etc|ca|nl|blz|min|max|o\.a|d\.w\.z|m\.b\.t|i\.p\.v|t\.o\.v|dr|mr|dhr|mevr|jr|sr|st|nr|evt|incl|excl)$/i;
+function zinFouten(t){
+  const f = new Set();
+  String(t || "").split(/\n/).map(r => r.trim()).filter(Boolean).forEach(r => {
+    const kop = r.replace(/^[\s"'‘’“”(\[«»-]+/, ""), staart = r.replace(/[\s"'‘’“”)\]«»]+$/, "");
+    if (/^\p{Ll}/u.test(kop)) f.add("hoofdletter");
+    if (staart && !/[.!?…]$/.test(staart)) f.add("punt");
+    const re = /([^\s.!?]*)[.!?]+\s+["'‘“«]?\p{Ll}/gu; let m;
+    while ((m = re.exec(r))){ if (m[1].length > 1 && !AFK.test(" " + m[1])) { f.add("hoofdletter"); break; } }
+  });
+  return [...f];
+}
+function zinTekst(f){ if (!f.length) return "";
+  return "Volledige zinnen graag: " + [f.includes("hoofdletter") ? "begin elke zin met een hoofdletter" : "", f.includes("punt") ? "sluit elke zin af met een punt" : ""].filter(Boolean).join(" en ") + ".";
+}
+function zinCheck(el, alleenAls){ const hint = el.parentElement && el.parentElement.querySelector(".zinhint"); if (!hint) return false;
+  if (alleenAls && hint.hidden) return false;
+  const f = zinFouten(el.value), fout = f.length > 0;
+  hint.hidden = !fout; hint.textContent = zinTekst(f); el.classList.toggle("zinfout", fout); return fout;
+}
+const STAP_HTML = {};
+function zinStappen(id){ /* welke stappen van dit onderdeel bevatten antwoorden die geen volledige zinnen zijn? */
+  const htmls = STAP_HTML[id]; if (!htmls) return null;
+  const t = document.createElement("template"), uit = [];
+  htmls.forEach((h, j) => { t.innerHTML = h; if ([...t.content.querySelectorAll("textarea[data-zin]")].some(el => el.value.trim() && zinFouten(el.value).length)) uit.push(j + 1); });
+  return uit;
+}
+function zinCheckAlles(){ let n = 0; document.querySelectorAll("textarea[data-zin]").forEach(el => { if (el.value.trim() && zinCheck(el)) n++; }); return n; }
+document.addEventListener("focusout", e => { if (e.target.matches && e.target.matches("textarea[data-zin]")) zinCheck(e.target); });
+document.addEventListener("input", e => { if (e.target.matches && e.target.matches("textarea[data-zin]")) zinCheck(e.target, true); });
 function ta(p, label, hint="", rows=3, ph=""){
-  return `<label class="f"><span class="lab">${label}</span>${hint?`<span class="hint">${hint}</span>`:""}<textarea data-p="${p}" rows="${rows}" placeholder="${esc(ph)}">${esc(get(p))}</textarea></label>`; }
+  const zin = zinVeld(p);
+  return `<label class="f"><span class="lab">${label}</span>${hint?`<span class="hint">${hint}</span>`:""}<textarea data-p="${p}"${zin ? ' data-zin="1"' : ""} rows="${rows}" placeholder="${esc(ph)}" spellcheck="true" lang="nl" autocapitalize="sentences">${esc(get(p))}</textarea>${zin ? '<span class="zinhint" hidden></span>' : ""}</label>`; }
 function inp(p, label, hint="", type="text", ph=""){
   return `<label class="f"><span class="lab">${label}</span>${hint?`<span class="hint">${hint}</span>`:""}<input type="${type}" data-p="${p}" value="${esc(get(p))}" placeholder="${esc(ph)}"></label>`; }
 function sel(p, label, opts, hint=""){ const cur = get(p) ?? "";
@@ -897,7 +933,7 @@ const stepIdx = {};
 function stapGevuld(html){ const ps = Array.from(html.matchAll(/data-p="([^"]+)"/g)).map(m => m[1]); return ps.length > 0 && ps.some(p => filled(get(p))); }
 function stepped(id, steps){
   const i = Math.min(stepIdx[id] || 0, steps.length-1), n = S.ui.fromLes, dl = (n && MOM[id]) ? lesStappen(n, id) : null;
-  const htmls = steps.map(s => s.html());
+  const htmls = steps.map(s => s.html()); STAP_HTML[id] = htmls;
   let h = `<div class="stapper-kop"><b>${MOM[id] ? esc(routeKort(id)) : "Studievaardigheden"} in ${steps.length} stappen</b>${dl ? ` <span class="small">· in les ${n} doe je ${dl[0] === dl[1] ? "stap " + dl[0] : "stap " + dl[0] + " tot en met " + dl[1]}</span>` : ""}</div>
     <ol class="stapper">${steps.map((s,j) => { const cur = j === i, ok = stapGevuld(htmls[j]), inLes = dl && j+1 >= dl[0] && j+1 <= dl[1];
       return `<li class="${cur ? "cur" : ""} ${ok ? "ok" : ""} ${inLes ? "dezeles" : ""}"><button data-step="${id}:${j}" ${cur ? 'aria-current="step"' : ""}><span class="nr">${ok ? ikon("check", "#fff") : j+1}</span><span class="t">${s.t}</span>${inLes ? `<span class="tag">les ${n}</span>` : ""}</button></li>`; }).join("")}</ol>`;
@@ -1469,10 +1505,10 @@ function trackTyping(e){
   m.last = now;
 }
 document.addEventListener("input", trackTyping, true);
-function toast(msg){
+function toast(msg, ms=2600){
   let t = document.getElementById("toast");
   if (!t){ t = document.createElement("div"); t.id = "toast"; t.setAttribute("role","status"); document.body.appendChild(t); }
-  t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2600);
+  t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), ms);
 }
 function blokkeer(e){ if (isTextField(e.target)){ e.preventDefault(); toast(e.type === "copy" || e.type === "cut" ? "Kopiëren staat uit in deze tool." : "Plakken staat uit. Typ je antwoord zelf."); } }
 ["paste","drop","copy","cut"].forEach(ev => document.addEventListener(ev, blokkeer, true));
@@ -2346,7 +2382,7 @@ function render(top){
   if (String(t).startsWith("les:")){ const n = Number(t.slice(4)); $("#app").innerHTML = lesView(n); naLesRender(n); }
   else if (MOM[t] && momentGeblokkeerd(t)) $("#app").innerHTML = `<h1>${esc(MOM[t].titel)}</h1>` + gesprekKaart(blokGate(), true);
   else $("#app").innerHTML = MOM[t] ? rt + TYPES[MOM[t].type](t) + pager(t) + back : t === "studie" ? back + PAGES.studie() + back : (PAGES[t] || PAGES.start)();
-  voegHulpToe();
+  voegHulpToe(); zinCheckAlles();
   if (top) window.scrollTo({top:0});
 }
 function go(tab){ sluitHulp(); if (String(tab).startsWith("studie:")){ stepIdx.studie = Number(tab.slice(7)); tab = "studie"; } if (!MOM[tab]) S.ui.fromLes = null; S.ui.tab = tab; save(); render(true); }
@@ -2378,7 +2414,10 @@ document.addEventListener("click", e => {
   const act = a.dataset.act;
   if (act === "privacyOk"){ S.ui.privacyOk = true; vraagBlijvendeOpslag(); save(); render(); }
   if (act === "addVak"){ const v = $("#nieuwVak").value.trim(); if (v && !S.vakken.includes(v)){ S.vakken.push(v); save(); render(); } }
-  if (act === "klaar"){ const id = a.dataset.id; S.m[id] = S.m[id] || {}; S.m[id].klaar = S.m[id].klaar ? null : new Date().toISOString(); save(); render(); }
+  if (act === "klaar"){ const id = a.dataset.id; S.m[id] = S.m[id] || {}; const wordtKlaar = !S.m[id].klaar; S.m[id].klaar = wordtKlaar ? new Date().toISOString() : null; save(); render();
+    if (wordtKlaar){ const st = zinStappen(id), n = zinCheckAlles();
+      if (st && st.length) toast(`Let op: in stap ${st.join(", ")} staan antwoorden die nog geen volledige zinnen zijn (hoofdletter, punt). Kijk ze nog even na.`, 6000);
+      else if (n){ toast(`Let op: ${n === 1 ? "1 antwoord is" : n + " antwoorden zijn"} nog geen volledige zinnen. Kijk ze nog even na (oranje rand).`, 6000); const el = document.querySelector("textarea.zinfout"); if (el) el.scrollIntoView({ behavior:"smooth", block:"center" }); } } }
   if (act === "addFb"){ const fb = get("m.spiegel.fb") || []; fb.push({}); set("m.spiegel.fb", fb); render(); }
   if (act === "delFb"){ const fb = get("m.spiegel.fb") || []; fb.splice(+a.dataset.i, 1); set("m.spiegel.fb", fb); render(); }
   if (act === "copyVraag"){ const t = $("#fbVraag"), done = () => $("#copied").textContent = "Gekopieerd.";
