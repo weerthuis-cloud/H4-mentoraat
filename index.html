@@ -234,7 +234,7 @@ textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
 #bord .b-timer.om{background:#b3141c;border-color:#b3141c} #bord .b-timer.om .b-tijd{color:#fff}
 #bord .b-knop{font:inherit;font-weight:700;font-size:15px;border:2px solid #1f2328;background:#fff;color:#1f2328;border-radius:999px;padding:.45em 1.05em;cursor:pointer}
 #bord .b-knop:hover{background:#1f2328;color:#fff}
-#bord .flow{position:relative;z-index:1;gap:2vw} #bord .flow .st{border-color:var(--a);border-width:3px;padding:1.2em 1.1em} #bord .flow .st .nr{background:var(--a);width:1.9em;height:1.9em;font-size:clamp(16px,1.6vw,26px)}
+#bord .flow{position:relative;z-index:1;gap:2vw} #bord .flow .st{border-color:var(--a);border-top-width:8px;padding:1.2em 1.1em} #bord .flow .st .ikb{background:var(--a);width:3.4em;height:3.4em;font-size:clamp(14px,1.4vw,22px)} #bord .flow .st .ikb .ik{width:1.9em;height:1.9em} #bord .flow .st .sth .nr{width:1.8em;height:1.8em;font-size:clamp(14px,1.4vw,22px);border-color:var(--a)}
 #bord .flow{max-width:1500px} #bord .flow .st{background:#fff;color:#1f2328} #bord .flow .st b{font-size:clamp(20px,2.1vw,34px);color:#1f2328} #bord .flow .st .nr{color:#fff} #bord .flow .st span:last-child{font-size:clamp(15px,1.5vw,24px);color:#4a4f57}
 #bord .flow .st:not(:last-child)::after{color:var(--a);font-size:clamp(18px,2vw,30px);right:-2vw;top:40%}
 #bord .b-balk{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 18px;background:#fff;border-top:1px solid #dcd9cf}
@@ -255,21 +255,21 @@ body.bord-open{overflow:hidden}
 /* breder werkvlak, meer naar links; uitlegpaneel rechts */
 :root{--breed:1100px}
 .flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
-.flow .st{position:relative;background:var(--card);border:2px solid var(--acc);border-radius:14px;padding:12px 12px 12px;display:flex;flex-direction:column;gap:4px}
+.flow .st{position:relative;background:var(--card);border:1px solid var(--line);border-top:6px solid var(--acc);border-radius:14px;padding:12px 12px 12px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .flow .st .nr{width:32px;height:32px;border-radius:50%;background:var(--acc);color:var(--acc-ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
-.ik{width:1.25em;height:1.25em;vertical-align:-.3em;flex:0 0 auto} .flow .st .sth{display:flex;align-items:center;gap:8px;color:var(--acc)} .flow .st .sth .ik{width:26px;height:26px} .flow.klein .st .sth .ik{display:none}
+.ik{width:1.25em;height:1.25em;vertical-align:-.3em;flex:0 0 auto} .flow .st .sth{display:flex;align-items:center;gap:8px} .flow .st .ikb{width:44px;height:44px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;flex:0 0 auto} .flow .st .ikb .ik{width:26px;height:26px} .flow .st .sth .nr{width:26px;height:26px;font-size:13px;background:var(--geel-soft);color:var(--ink);border:2px solid var(--acc)} .flow.klein .st .ikb{display:none} .flow.klein .st .sth .nr{width:30px;height:30px;font-size:14px;background:var(--acc);color:var(--acc-ink);border:0}
 .flow .st b{font-size:15.5px} .flow .st b:empty{display:none} .flow .st span:last-child{font-size:13.5px;color:var(--muted);line-height:1.4}
 @media (min-width:700px){ .flow:not(.klein) .st:not(:last-child)::after{content:"➜";position:absolute;right:-15px;top:22px;color:var(--acc);font-size:16px;z-index:1} }
 .flow.klein{grid-template-columns:1fr;gap:8px;margin-top:10px} .flow.klein .st{flex-direction:row;align-items:center;gap:10px;border-width:1px;padding:8px 10px} .flow.klein .st span:last-child{color:var(--ink);font-size:14.5px}
 .kol3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
-.kol3 .kol{background:var(--card);border:1px solid var(--line);border-top:8px solid var(--c-leerling);border-radius:14px;padding:12px 16px 14px}
-.kol3 .kol.k2{border-top-color:var(--c-mentor)} .kol3 .kol.k3{border-top-color:var(--c-lob)} .kol3 .kol.k2 li::before{background:var(--c-mentor)} .kol3 .kol.k3 li::before{background:var(--c-lob)}
-.kol3 h3{margin:4px 0 10px;font-size:17px;display:flex;align-items:center;gap:8px;color:var(--c-leerling)} .kol3 .kol.k2 h3{color:var(--c-mentor)} .kol3 .kol.k3 h3{color:var(--c-lob)} .kol3 h3 .ik{width:24px;height:24px} .kol3 li b .ik{width:18px;height:18px;margin-right:5px;color:var(--muted)} .kol3 ol{margin:0;padding:0;list-style:none;counter-reset:k}
-.kol3 li{counter-increment:k;position:relative;padding:0 0 12px 42px} .kol3 li::before{content:counter(k);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--c-leerling);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.kol3 .kol{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0 16px 14px;overflow:hidden;--kc:var(--c-leerling)}
+.kol3 .kol.k2{--kc:var(--c-mentor)} .kol3 .kol.k3{--kc:var(--c-lob)} .kol3 li::before{background:var(--kc)}
+.kol3 h3{margin:0 -16px 14px;padding:10px 16px;font-size:17px;display:flex;align-items:center;gap:10px;color:#fff;background:var(--kc)} .kol3 h3 .ikb{width:36px;height:36px;border-radius:50%;background:#fff;color:var(--kc);display:flex;align-items:center;justify-content:center;flex:0 0 auto} .kol3 h3 .ik{width:22px;height:22px} .kol3 li b .ik{width:18px;height:18px;margin-right:5px;color:var(--muted)} .kol3 ol{margin:0;padding:0;list-style:none;counter-reset:k}
+.kol3 li{counter-increment:k;position:relative;padding:0 0 12px 42px} .kol3 li::before{content:counter(k);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
 .kol3 li b{display:block;font-size:15px} .kol3 li span{font-size:13.5px;color:var(--muted);line-height:1.4}
 .soms{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--geel-soft);font-size:14px} .soms span{display:inline-flex;align-items:center;gap:6px} .soms .ik{width:18px;height:18px;color:var(--c-studie)}
 .plaat-wrap{overflow-x:auto} .plaat{width:100%;min-width:820px;height:auto;display:block}
-.plaat .pl-m{font-size:12.5px;font-weight:600;fill:var(--muted)} .plaat .pl-r{font-size:15px;font-weight:700} .plaat .pl-l{font-size:13px;font-weight:600;fill:var(--ink)} .plaat .pl-k{font-size:12px;fill:var(--muted)} .plaat .pl-p{font-size:14px;font-weight:700;fill:#fff}
+.plaat .pl-m{font-size:19px;font-weight:700;fill:var(--ink)} .plaat .pl-r{font-size:17px;font-weight:700} .plaat .pl-s{font-size:11.5px;font-weight:500;opacity:.9} .plaat .pl-l{font-size:13.5px;font-weight:600;fill:var(--ink)} .plaat .pl-k{font-size:12px;font-weight:600;letter-spacing:.06em;fill:var(--muted)}
 .subnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;width:fit-content;max-width:100%}
 .subnav a{padding:6px 12px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:14px} .subnav a[aria-current="page"]{background:var(--acc-soft);color:var(--acc);font-weight:700}
 details.vraag summary{font-size:16px} ul.kort{margin:0 0 10px;padding-left:20px} ul.kort li{margin-bottom:4px}
@@ -1831,7 +1831,7 @@ MPAGES.week = () => {
 /* ============================================================
    Stappenplannen en infographics
    ============================================================ */
-function flow(stappen, cls = ""){ return `<ol class="flow ${cls}">${stappen.map(([t,u,ik], i) => `<li class="st"><span class="sth"><span class="nr">${i+1}</span>${ik ? ikon(ik) : ""}</span><b>${t}</b><span>${u}</span></li>`).join("")}</ol>`; }
+function flow(stappen, cls = ""){ return `<ol class="flow ${cls}">${stappen.map(([t,u,ik], i) => `<li class="st"><span class="sth">${ik ? `<span class="ikb">${ikon(ik, "#fff")}</span>` : ""}<span class="nr">${i+1}</span></span><b>${t}</b><span>${u}</span></li>`).join("")}</ol>`; }
 const WEEKSTAPPEN = [
   ["Open Deze week", "Klik op <i>Open de les</i>. Alles van deze week staat daar.", "start"],
   ["Kijk terug", "Wat was je volgende stap van vorige keer? Is het gelukt?", "terug"],
@@ -1879,40 +1879,38 @@ const IKON = {
 function ikon(k, c = "currentColor", cls = "ik"){ return IKON[k] ? `<svg class="${cls}" viewBox="-10 -10 20 20" aria-hidden="true"><g>${IKON[k](c)}</g></svg>` : ""; }
 function jaarPlaat(o = {}){ /* o.sv, o.df: extra rij tonen; o.label: kop "Extra’s" (mentor) */
   const extra = (o.sv || o.df) ? (o.label ? "label" : "aan") : "uit";
-  const t0 = new Date("2026-08-31T12:00:00"), t1 = new Date("2027-07-10T12:00:00"), X0 = 200, W = 976;
+  const t0 = new Date("2026-08-31T12:00:00"), t1 = new Date("2027-07-10T12:00:00"), X0 = 268, W = 914;
   const x = d => X0 + (new Date(d + "T12:00:00") - t0) / (t1 - t0) * W;
-  const ico = (k, cx, cy, c) => `<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)})">${IKON[k](c)}</g>`;
-  const rij = [["Toetsweken","var(--c-toets)","toets"],["MOL-gesprekken","var(--c-mentor)","gesprek"],["Mijn ontwikkeling","var(--c-leerling)","doel"],["LOB","var(--c-lob)","lob"]];
-  if (extra !== "uit") rij.push([extra === "label" ? "Extra’s" : "Extra", "var(--c-studie)", "studie"]);
-  const RH = 62, Y0 = 96, Y = i => Y0 + i * RH + RH / 2, XR = extra !== "uit" ? 22 : 0, H = Y0 + rij.length * RH + XR;
-  let s = `<svg class="plaat" viewBox="0 0 1200 ${H + 52}" role="img" aria-label="Het schooljaar in één beeld" xmlns="http://www.w3.org/2000/svg">
-  <defs><pattern id="jp-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="var(--line)" opacity=".55"/><line x1="0" y1="0" x2="0" y2="8" stroke="var(--muted)" stroke-width="2.5" opacity=".35"/></pattern></defs>`;
-  const PER = [["2026-08-31","2026-11-08","Periode 1","var(--c-leerling)"],["2026-11-09","2027-01-24","Periode 2","var(--c-lob)"],["2027-01-25","2027-04-04","Periode 3","var(--c-geel)"],["2027-04-05","2027-07-10","Periode 4","var(--c-toets)"]];
-  PER.forEach(([a,b,n,c]) => s += `<rect x="${x(a)}" y="30" width="${x(b)-x(a)-3}" height="26" rx="6" fill="${c}"/><text x="${(x(a)+x(b))/2}" y="48" text-anchor="middle" class="pl-p">${n}</text>`);
-  rij.forEach(([n,c,k], i) => { const last = i === rij.length - 1 && extra !== "uit";
-    s += `<rect x="${X0-6}" y="${Y0+i*RH+4}" width="${W+12}" height="${last ? RH+XR-8 : RH-8}" rx="10" fill="${c}" opacity="${i%2 ? .06 : .09}"/>`;
-    s += `<rect x="8" y="${Y(i)-19}" width="${X0-26}" height="38" rx="10" fill="${c}" opacity=".13"/>${ico(k, 30, Y(i), c)}<text x="48" y="${Y(i)+5}" class="pl-r" style="fill:${c}">${n}</text>`; });
+  const ico = (k, cx, cy, c, sc = 1) => `<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${sc})">${IKON[k](c)}</g>`;
+  const rij = [["Toetsweken","","var(--c-toets)","toets"],["MOL-gesprekken","","var(--c-mentor)","gesprek"],["Mijn ontwikkeling","","var(--c-leerling)","doel"],["LOB","loopbaanoriëntatie","var(--c-lob)","lob"]];
+  if (extra !== "uit") rij.push([extra === "label" ? "Extra’s" : "Extra", "alleen als aangezet", "var(--c-studie)", "studie"]);
+  const RH = 86, Y0 = 92, Y = i => Y0 + i * RH + RH / 2 - 8, H = Y0 + rij.length * RH + (o.sv && extra !== "uit" ? 28 : 0);
+  let s = `<svg class="plaat" viewBox="0 0 1200 ${H + 14}" role="img" aria-label="Het schooljaar in één beeld" xmlns="http://www.w3.org/2000/svg">`;
   [["2026-10-10","2026-10-18","herfst"],["2026-12-19","2027-01-03","kerst"],["2027-02-20","2027-02-28","voorjaar"],["2027-04-24","2027-05-09","mei"]].forEach(([a,b,n]) =>
-    s += `<rect x="${x(a)}" y="${Y0}" width="${x(b)-x(a)}" height="${H-Y0}" fill="url(#jp-hatch)"/>${ico("zon", (x(a)+x(b))/2, H+16, "var(--muted)")}<text x="${(x(a)+x(b))/2}" y="${H+40}" text-anchor="middle" class="pl-k">${n}</text>`);
-  ["2026-09-01","2026-10-01","2026-11-01","2026-12-01","2027-01-01","2027-02-01","2027-03-01","2027-04-01","2027-05-01","2027-06-01","2027-07-01"].forEach(d => {
-    const m = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"][Number(d.slice(5,7)) - 1];
-    s += `<line x1="${x(d)}" y1="${Y0}" x2="${x(d)}" y2="${H}" stroke="var(--card)" stroke-width="2"/><text x="${x(d)+5}" y="${Y0-12}" class="pl-m">${m}</text>`; });
-  const pil = (i, a, b, lab, c, k, stip) => { const w = Math.max(x(b)-x(a), lab.length*7.8+44), cx = (x(a)+x(b))/2, x1 = cx - w/2;
-    return `<rect x="${x1}" y="${Y(i)-15}" width="${w}" height="30" rx="15" fill="${c}"${stip ? ' opacity=".85"' : ""}/>${ico(k, x1+16, Y(i), "#fff")}<text x="${x1+30}" y="${Y(i)+5}" class="pl-l" style="fill:#fff;font-weight:700">${lab}</text>`; };
-  const punt = (i, d, lab, c, k, onder) => `<circle cx="${x(d)}" cy="${Y(i)}" r="13" fill="var(--card)" stroke="${c}" stroke-width="2.5"/>${ico(k, x(d), Y(i), c)}<text x="${x(d)}" y="${onder ? Y(i)+29 : Y(i)-19}" text-anchor="middle" class="pl-l">${lab}</text>`;
-  Object.entries(CONFIG.toetsweken).forEach(([k,v]) => s += pil(0, v.van, v.tot, "toetsweek " + k, "var(--c-toets)", "toets"));
+    s += `<rect x="${x(a)}" y="30" width="${x(b)-x(a)}" height="${H-30}" fill="var(--muted)" opacity=".13"/><text x="${(x(a)+x(b))/2}" y="22" text-anchor="middle" class="pl-k">${n.toUpperCase()}</text>`);
+  ["2026-09-01","2026-10-01","2026-11-01","2026-12-01","2027-01-01","2027-02-01","2027-03-01","2027-04-01","2027-05-01","2027-06-01","2027-07-01"].forEach((d, i, A) => {
+    const m = ["JAN","FEB","MRT","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"][Number(d.slice(5,7)) - 1], xe = i < A.length - 1 ? x(A[i+1]) : X0 + W;
+    s += `<text x="${(x(d)+xe)/2}" y="62" text-anchor="middle" class="pl-m">${m}</text>`; });
+  rij.forEach(([n,sub,c,k], i) => { const y = Y(i);
+    s += `<path d="M20 ${y-30}h${X0-20}v60H40a20 20 0 0 1-20-20v-20a20 20 0 0 1 20-20z" fill="${c}"/><circle cx="60" cy="${y}" r="21" fill="var(--card)"/>${ico(k, 60, y, c, 1.5)}`;
+    s += `<text x="94" y="${y + (sub ? -2 : 6)}" class="pl-r" style="fill:#fff">${n}</text>${sub ? `<text x="94" y="${y+16}" class="pl-s" style="fill:#fff">${sub}</text>` : ""}`;
+    s += `<line x1="${X0}" y1="${y}" x2="${X0+W}" y2="${y}" stroke="${c}" stroke-width="9" stroke-linecap="round"/>`; });
+  const pil = (i, a, b, lab, c, k) => { const w = Math.max(x(b)-x(a), 44), cx = (x(a)+x(b))/2;
+    return `<rect x="${cx-w/2}" y="${Y(i)-22}" width="${w}" height="44" rx="12" fill="${c}"/>${ico(k, cx, Y(i), "#fff", 1.4)}<text x="${cx}" y="${Y(i)+40}" text-anchor="middle" class="pl-l">${lab}</text>`; };
+  const punt = (i, d, lab, c, k, dx = 0) => `<circle cx="${x(d)}" cy="${Y(i)}" r="22" fill="${c}"/>${ico(k, x(d), Y(i), "#fff", 1.4)}<text x="${x(d)+dx}" y="${Y(i)+40}" text-anchor="middle" class="pl-l">${lab}</text>`;
+  Object.entries(CONFIG.toetsweken).forEach(([k,v]) => s += pil(0, v.van, v.tot, "Toetsweek " + k, "var(--c-toets)", "toets"));
   s += punt(1, "2026-09-30", "MOL 1", "var(--c-mentor)", "gesprek") + punt(1, "2027-02-16", "MOL 2", "var(--c-mentor)", "gesprek") + punt(1, "2027-03-31", "MOL 3", "var(--c-mentor)", "gesprek");
-  s += punt(2, "2026-09-25", "actieplan", "var(--c-leerling)", "doel") + punt(2, "2027-02-03", "spiegel", "var(--c-leerling)", "spiegel", true) + punt(2, "2027-02-13", "tussenbalans", "var(--c-leerling)", "balans") + punt(2, "2027-07-02", "eindbalans", "var(--c-leerling)", "balans");
-  s += punt(3, "2026-12-04", "LOB 1 · wie ben ik?", "var(--c-lob)", "lob") + punt(3, "2027-03-19", "LOB 2 · wat past?", "var(--c-lob)", "lob") + pil(3, "2027-05-24", "2027-06-04", "eindpitch", "var(--c-lob)", "pitch");
+  s += punt(2, "2026-09-25", "Actieplan", "var(--c-leerling)", "doel") + punt(2, "2027-02-02", "Spiegel", "var(--c-leerling)", "spiegel", -22) + punt(2, "2027-02-14", "Tussenbalans", "var(--c-leerling)", "balans", 30) + punt(2, "2027-07-02", "Eindbalans", "var(--c-leerling)", "balans", -14);
+  s += punt(3, "2026-12-04", "LOB 1 · wie ben ik?", "var(--c-lob)", "lob") + punt(3, "2027-03-19", "LOB 2 · wat past?", "var(--c-lob)", "lob") + pil(3, "2027-05-24", "2027-06-04", "Eindpitch", "var(--c-lob)", "pitch");
   if (extra !== "uit"){ const r = 4;
-    if (o.sv) s += `<rect x="${x("2026-09-21")}" y="${Y(r)+24}" width="${x("2027-04-23")-x("2026-09-21")}" height="7" rx="3.5" fill="var(--c-studie)" opacity=".4"/><text x="${x("2026-09-21")}" y="${Y(r)+42}" class="pl-l" style="fill:var(--c-studie);font-weight:600">studievaardigheden: nulmeting → rondes → keuze</text>`;
-    if (o.df) s += pil(r, "2026-11-16", "2026-12-04", "docentfeedback 1", "var(--c-studie)", "docent", true) + pil(r, "2027-03-01", "2027-03-12", "docentfeedback 2", "var(--c-studie)", "docent", true); }
-  const nu = new Date(); if (nu > t0 && nu < t1){ const xn = X0 + (nu - t0) / (t1 - t0) * W; s += `<line x1="${xn}" y1="${Y0-4}" x2="${xn}" y2="${H}" stroke="var(--c-mentor)" stroke-width="2" stroke-dasharray="5 4"/><rect x="${xn-15}" y="${H+4}" width="30" height="18" rx="9" fill="var(--c-mentor)"/><text x="${xn}" y="${H+17}" text-anchor="middle" class="pl-k" style="fill:#fff;font-weight:700">nu</text>`; }
+    if (o.sv) s += `<rect x="${x("2026-09-21")}" y="${Y(r)+50}" width="${x("2027-04-23")-x("2026-09-21")}" height="8" rx="4" fill="var(--c-studie)" opacity=".45"/>${ico("studie", x("2026-09-21")-14, Y(r)+54, "var(--c-studie)", .9)}<text x="${x("2026-09-21")+4}" y="${Y(r)+74}" class="pl-l" style="fill:var(--c-studie);font-weight:700">Studievaardigheden: nulmeting → rondes → keuze</text>`;
+    if (o.df) s += pil(r, "2026-11-16", "2026-12-04", "Docentfeedback 1", "var(--c-studie)", "docent") + pil(r, "2027-03-01", "2027-03-12", "Docentfeedback 2", "var(--c-studie)", "docent"); }
+  const nu = new Date(); if (nu > t0 && nu < t1){ const xn = X0 + (nu - t0) / (t1 - t0) * W; s += `<line x1="${xn}" y1="70" x2="${xn}" y2="${H}" stroke="var(--c-mentor)" stroke-width="2" stroke-dasharray="5 4"/><rect x="${xn-15}" y="${H-4}" width="30" height="18" rx="9" fill="var(--c-mentor)"/><text x="${xn}" y="${H+9}" text-anchor="middle" class="pl-k" style="fill:#fff;font-weight:700">nu</text>`; }
   return `<div class="plaat-wrap">${s}</svg></div>`; }
 
 /* mentor: stappenplan als infographic */
 function mentorPlaat(){
-  const kol = (kop, kl, ik, st) => `<div class="kol ${kl}"><h3>${ikon(ik)}${kop}</h3><ol>${st.map(([t,u,i2]) => `<li><b>${i2 ? ikon(i2) : ""}${t}</b><span>${u}</span></li>`).join("")}</ol></div>`;
+  const kol = (kop, kl, ik, st) => `<div class="kol ${kl}"><h3><span class="ikb">${ikon(ik, "currentColor")}</span>${kop}</h3><ol>${st.map(([t,u,i2]) => `<li><b>${i2 ? ikon(i2) : ""}${t}</b><span>${u}</span></li>`).join("")}</ol></div>`;
   return `<div class="kol3">
     ${kol("Eén keer, voor les 1", "k1", "start", [["Maak je klaslink","Tab Mijn klas. Kies je werkwijze en je lesdag. De eerste keer alleen de basis.","link"],["Test de link","Open hem in een privévenster.","check"],["Zet hem in Teams","Op een vaste plek, bijvoorbeeld bovenaan het kanaal van je klas. Maak ook per les een Teams-opdracht om de PDF in te leveren; plan ze vooruit.","teams"],["Halve klas? Deel in","Groep 1 en 2. Groep 2 werkt in week 37 al thuis: stuur ze de klaslink en zeg dat ze bij Start groep 2 kiezen.","groep"],["Informeer vooraf","Leg de werkwijze voor aan de privacyfunctionaris en informeer ouders vóór les 1.","schild"],["Les 1","Leerlingen openen de tool via de link, vullen hun naam in, vinken vakken aan en oefenen de back-up.","start"]])}
     ${kol("Elke week, in de les", "k2", "bord", [["Open Deze week","Start de digibordles en zet hem schermvullend (toets F). Met de pijltjes klik je door.","bord"],["Opener, 5 à 8 minuten","De werkvorm voor de groep; in een grote groep in viertallen.","opener"],["De les","Korte uitleg, leerlingen werken, jij voert drie à vier gesprekjes.","laptop"],["Laatste 5 minuten","Leerlingen sluiten af en leveren hun PDF in via Teams.","klok"]])}
