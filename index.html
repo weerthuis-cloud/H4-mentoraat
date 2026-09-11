@@ -1555,6 +1555,11 @@ function jaarKaart(n){ /* korte aansporing aan het begin van elke les: kijk in d
   const items = [...CONFIG.momenten.filter(m => zichtbaar(m.id) && m.type !== "mol").map(m => ({ d:m.datum, t:`${m.titel} af (${fmtDate(m.datum)})` })), ...CONFIG.gebeurtenissen.map(g => ({ d:g.datum, t:g.t }))]
     .filter(x => x.d >= L.ma).sort((a,b) => a.d.localeCompare(b.d)).slice(0, 2);
   return `<div class="note jaarkaart" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between"><span>${ikon("start")} <b>Kijk eerst even in de Jaarlijn:</b> daar zie je waar je bent en wat eraan komt.${items.length ? ` Binnenkort: ${items.map(x => esc(x.t)).join(" · ")}.` : ""}</span><button class="btn small ghost" data-go="jaarlijn">Open de Jaarlijn</button></div>`; }
+function overgeslagen(n, id){ /* eerdere haltes van deze les die nog niet af zijn */
+  const H = routeHaltes(n), i = H.findIndex(h => h.k === id); if (i < 1) return "";
+  const open = H.slice(0, i).filter(h => !h.klaar); if (!open.length) return "";
+  const h0 = open[0], knop = h0.k === "terug" ? `<button class="btn small ghost" data-route="#r-terug" data-les="${n}">Naar terugkijken</button>` : `<button class="btn small ghost" data-route="${esc(h0.r)}" data-les="${n}">Open: ${esc(h0.lab)}</button>`;
+  return `<div class="note" style="margin-top:-4px">${ikon("terug")} <b>Je slaat halte ${H.indexOf(h0) + 1} over:</b> ${esc(h0.lab)} is nog niet af. Doe die eerst, dan klopt de rest van de les. ${knop}</div>`; }
 function lesRoute(n, huidig){ /* huidig: "terug" | moment-id | "afsl" | "pdf" | null (= eerste open halte) */
   const H = routeHaltes(n); if (!H.length) return "";
   const cur = huidig || (H.find(h => !h.klaar) || H[H.length - 1]).k;
@@ -2285,7 +2290,7 @@ function render(top){
   renderNav();
   const t = S.ui.tab;
   const back = ((MOM[t] || t === "studie") && S.ui.fromLes) ? `<div style="margin-top:16px"><button class="btn small ghost" data-go="les:${S.ui.fromLes}">← Terug naar les ${S.ui.fromLes}</button></div>` : "";
-  const rt = (MOM[t] && S.ui.fromLes && LES.find(l => l.les === S.ui.fromLes)) ? `<p class="small" style="margin:0 0 -6px">Les ${S.ui.fromLes} · <button class="btn small ghost" data-go="les:${S.ui.fromLes}">← naar de les</button></p>` + lesRoute(S.ui.fromLes, t) : "";
+  const rt = (MOM[t] && S.ui.fromLes && LES.find(l => l.les === S.ui.fromLes)) ? `<p class="small" style="margin:0 0 -6px">Les ${S.ui.fromLes} · <button class="btn small ghost" data-go="les:${S.ui.fromLes}">← naar de les</button></p>` + lesRoute(S.ui.fromLes, t) + overgeslagen(S.ui.fromLes, t) : "";
   if (String(t).startsWith("les:")){ const n = Number(t.slice(4)); $("#app").innerHTML = lesView(n); naLesRender(n); }
   else if (MOM[t] && momentGeblokkeerd(t)) $("#app").innerHTML = `<h1>${esc(MOM[t].titel)}</h1>` + gesprekKaart(blokGate(), true);
   else $("#app").innerHTML = MOM[t] ? rt + TYPES[MOM[t].type](t) + pager(t) + back : t === "studie" ? back + PAGES.studie() + back : (PAGES[t] || PAGES.start)();
