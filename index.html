@@ -267,6 +267,7 @@ body.bord-open{overflow:hidden}
 .flow .st b{font-size:15.5px} .flow .st b:empty{display:none} .flow .st span:last-child{font-size:13.5px;color:var(--muted);line-height:1.4}
 @media (min-width:700px){ .flow:not(.klein) .st:not(:last-child)::after{content:"➜";position:absolute;right:-15px;top:22px;color:var(--acc);font-size:16px;z-index:1} }
 .flow.klein{grid-template-columns:1fr;gap:8px;margin-top:10px} .flow.klein .st{flex-direction:row;align-items:center;gap:10px;border-width:1px;padding:8px 10px} .flow.klein .st span:last-child{color:var(--ink);font-size:14.5px}
+.tabbtn.dicht{opacity:.45} .tabtag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:var(--c-geel);color:#1f2328;padding:1px 6px;border-radius:999px;margin-left:4px;vertical-align:middle}
 .kol3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
 .kol3 .kol{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0 16px 14px;overflow:hidden;--kc:var(--c-leerling)}
 .kol3 .kol.k2{--kc:var(--c-mentor)} .kol3 .kol.k3{--kc:var(--c-lob)} .kol3 li::before{background:var(--kc)}
@@ -859,7 +860,7 @@ const LIVE = {
 };
 LIVE.lesStart = () => { const n0 = huidigeLes(), L0 = LES.find(l => l.les === n0), half = CFG().werkwijze === "half";
   const mist = [!S.leerling.voornaam ? "je voornaam" : "", half && !S.leerling.groep ? "je groep" : "", !S.vakken.length ? "je vakken" : ""].filter(Boolean);
-  return `<div class="card soft dw"><div class="small">De les van deze week · week ${esc(L0.wk)} · ${esc(lesDatumL(n0))}</div><h2 style="margin:4px 0 8px">Les ${n0} · ${esc(lesBlok(L0))}</h2>${mist.length ? `<p class="small" style="margin:0 0 10px">${ikon("slot")} Nog invullen: <b>${mist.join(", ")}</b>. Daarna kun je de les starten.</p><button class="btn groot" disabled>Start les ${n0}</button>` : `<p class="small" style="margin:0 0 10px">${ikon("check")} Alles is ingesteld.</p><button class="btn groot" data-go="les:${n0}">Start les ${n0}</button>`}</div>`; };
+  return `<div class="card soft dw"><div class="small">De les van deze week · week ${esc(L0.wk)} · ${esc(lesDatumL(n0))}</div><h2 style="margin:4px 0 8px">Les ${n0} · ${esc(lesBlok(L0))}</h2>${mist.length ? `<p class="small" style="margin:0 0 10px">${ikon("slot")} Nog invullen: <b>${mist.join(", ")}</b>. Daarna kun je de les starten.</p><button class="btn groot" data-act="startCheck" data-les="${n0}">Start les ${n0}</button>` : `<p class="small" style="margin:0 0 10px">${ikon("check")} Alles is ingesteld.</p><button class="btn groot" data-go="les:${n0}">Start les ${n0}</button>`}</div>`; };
 function refreshLive(){ document.querySelectorAll("[data-live]").forEach(el => { el.innerHTML = LIVE[el.dataset.live](el.dataset.arg); }); }
 
 function chartHTML(){
@@ -1425,9 +1426,9 @@ function lesDatumM(n){ return lesDatum(LES.find(l => l.les === n), mentorDagen()
 function dagKiezer(prefix, dagen){ const PN = ["Periode 1 (sep–okt)","Periode 2 (nov–jan)","Periode 3 (jan–mrt)","Periode 4 (apr–jul)"];
   return `<div class="dagkies">${PN.map((p, i) => `<label class="f"><span class="lab">${p}</span><select id="${prefix}-${i}">${[0,1,2,3,4,5].map(d => `<option value="${d}" ${((dagen && dagen[i]) || (i === 0 && !dagen ? 5 : 0)) === d ? "selected" : ""}>${d ? DAGVOL[d] : "nog onbekend"}</option>`).join("")}</select></label>`).join("")}</div>`; }
 function leesDagKiezer(prefix){ return [0,1,2,3].map(i => Number(($("#" + prefix + "-" + i) || {}).value || 0)); }
-function dagRegel(){ const md = mentorDagen();
-  return md ? `<p class="small" style="margin:6px 0 0">Jouw lesdag: ${md.map((d, i) => `P${i+1} ${d ? DAGKORT[d] : "?"}`).join(" · ")}. Wijzigen: <a href="#mentor/planning">Planning aanpassen</a>.</p>`
-    : `<p class="small" style="margin:6px 0 0">Stel je lesdag in bij <a href="#mentor/klaslink">Klaslink maken</a>; tot die tijd staan hier weken in plaats van data.</p>`; }
+function dagRegel(){ const md = mentorDagen(), u = S.ui || {}, mm = mentorMods(), mg = mentorGates();
+  const delen = [u.mklas ? `klas ${esc(u.mklas)}` : "", u.mw ? (u.mw === "heel" ? "hele klas" : "halve klas") : "", md ? "lesdag " + md.map((d, i) => `P${i+1} ${d ? DAGKORT[d] : "?"}`).join(" ") : "lesdag nog niet ingesteld", mm ? (mm.length ? "extra’s: " + mm.join(", ") : "alleen de basis") : "", mg && mg.length ? "gespreksslot vóór les " + mg.join(", ") : ""].filter(Boolean);
+  return `<p class="small" style="margin:6px 0 0">${ikon("cloud")} Jouw instellingen: ${delen.join(" · ")}. Wijzigen: <a href="#mentor/planning">Planning aanpassen</a>.</p>`; }
 function leerlingPlanPdf(){
   const w = mWerkwijze(), klas = (S.ui && S.ui.mklas) || "";
   let h = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Jaarplanner mentorles${klas ? " · " + esc(klas) : ""}</h1><div class="pmeta">${w==="heel"?"Hele klas elke week":"Halve klas om de week"} · ${CONFIG.school} · ${CONFIG.schooljaar}</div>
@@ -2092,6 +2093,13 @@ MPAGES.handleiding = () => `<h1>Handleiding</h1><p class="lead">Wat je elke week
 
 function posterPrint(html, titel){ $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt">` + html; const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st); const oud = document.title; document.title = titel; window.print(); document.title = oud; st.remove(); }
 /* ---------- gespreksslot: uitleg als stappenplan ---------- */
+function markeer(els, msg){ /* laat ontbrekende velden oplichten en scrol naar het eerste */
+  const lijst = els.filter(Boolean); if (!lijst.length) return false;
+  lijst.forEach(el => { el.classList.add("flits"); setTimeout(() => el.classList.remove("flits"), 2200); });
+  lijst[0].scrollIntoView({ behavior:"smooth", block:"center" }); const f = lijst[0].matches("input,select,textarea") ? lijst[0] : lijst[0].querySelector("input,select,textarea"); if (f) f.focus({ preventScroll:true });
+  if (msg) toast(msg); return true; }
+function mentorKlaar(){ return !!(S.ui && S.ui.mlink); }
+function mentorEerst(){ return `<div class="card warn"><h2>${ikon("start")} Eerst je klas instellen</h2><p style="margin:0 0 8px">Voordat je verder kunt, maak je één keer je klaslink: klas, werkwijze, lesdag en de extra’s die je wilt. Daarna gaan Deze week, het jaaroverzicht en de digibordlessen open en staan ze klaar voor jouw klas.</p><p class="small" style="margin:0">Heb je al een klaslink van een ander apparaat? Plak die dan bij <a href="#mentor/planning">Planning aanpassen</a> en klik op Laden.</p></div>`; }
 function mentorInstellingen(){ /* wat het portaal op dit apparaat onthoudt, met back-up */
   const u = S.ui || {}, md = mentorDagen(), mg = mentorGates(), mm = mentorMods();
   const regels = [u.mklas ? `klas ${esc(u.mklas)}` : "", u.mw ? (u.mw === "heel" ? "hele klas" : "halve klas") : "", md ? "lesdag " + md.map((d, i) => `P${i+1} ${d ? DAGKORT[d] : "?"}`).join(" ") : "", mm ? (mm.length ? "extra’s: " + mm.map(c => (MODS.find(m => m[0] === c) || [c,c])[1].toLowerCase()).join(", ") : "alleen de basis") : "", mg ? (mg.length ? "gespreksslot vóór les " + mg.join(", ") : "geen gespreksslot") : "", Object.keys(u.madj || {}).length ? Object.keys(u.madj).length + " aangepaste les(sen)" : ""].filter(Boolean);
@@ -2269,9 +2277,12 @@ function renderMentor(){
   const sub = mentorSub();
   $("#brandTitel").textContent = "Mentorportaal jaarlijn havo 4";
   $("#who").textContent = "KSH Haarlemmermeer · voor mentoren";
-  $("#save").textContent = "";
+  try { $("#save").innerHTML = saveTekst(); } catch(_){}
   $("#pvbar").hidden = true;
-  $("#nav").innerHTML = MGROEP.map(([id,t,subs]) => `<a href="#mentor/${id}" class="tabbtn" ${subs.includes(sub)?'aria-current="page"':""}>${t}</a>`).join("");
+  const klaar = mentorKlaar(), vrij = ["klaslink","planning","start","handleiding","vragen"];
+  $("#nav").innerHTML = MGROEP.map(([id,t,subs]) => { const dicht = !klaar && !subs.some(x => vrij.includes(x));
+    return `<a href="#mentor/${id}" class="tabbtn ${dicht ? "dicht" : ""}" ${subs.includes(sub)?'aria-current="page"':""}>${t}${id === "klaslink" && !klaar ? ' <span class="tabtag">eerst</span>' : ""}</a>`; }).join("");
+  if (!klaar && !vrij.includes(sub)){ $("#app").innerHTML = mentorEerst() + subNav("klaslink") + MPAGES.klaslink(); return; }
   $("#app").innerHTML = subNav(sub) + (MPAGES[sub] || MPAGES.week)();
 }
 function voorbeeldBalk(){
@@ -2386,10 +2397,13 @@ document.addEventListener("click", e => {
     else toast("Deze code klopt niet. Vraag je mentor om de vrijgavecode."); }
   if (act === "mkLink"){ const klas = $("#mk-klas").value.trim(), w = (document.querySelector('input[name="mk-w"]:checked')||{}).value || "half";
     const mods = Array.from(document.querySelectorAll(".mk-mod:checked")).map(x => x.value), gsAan = $("#mk-gs").checked;
+    const mist = [];
+    if (!klas) mist.push($("#mk-klas"));
+    if (!Number(($("#mk-dag-0") || {}).value || 0)) mist.push(document.querySelector(".dagkies"));
+    if (gsAan){ if (!/^\d{4,8}$/.test($("#mk-pin").value.trim())) mist.push($("#mk-pin")); if (!$("#mk-g").value.split(",").map(x => parseInt(x,10)).filter(x => x > 1 && x <= 31).length) mist.push($("#mk-g")); }
+    if (mist.length){ markeer(mist, !klas ? "Vul je klas in, bijvoorbeeld H4E." : mist[0] === $("#mk-pin") ? "Kies een pincode van 4 tot 8 cijfers." : mist[0] === $("#mk-g") ? "Vul minstens één lesnummer in voor het gespreksslot." : "Kies de lesdag van periode 1; de andere periodes mogen ‘nog onbekend’ blijven."); return; }
     const q = new URLSearchParams({ klas, w });
     if (gsAan){ const pin = $("#mk-pin").value.trim(), g = $("#mk-g").value.split(",").map(x => parseInt(x,10)).filter(x => x > 1 && x <= 31);
-      if (!/^\d{4,8}$/.test(pin)){ toast("Kies een pincode van 4 tot 8 cijfers."); return; }
-      if (!g.length){ toast("Vul minstens één lesnummer in voor het gespreksslot."); return; }
       q.set("g", g.join(",")); q.set("k", sleutelUitPin(pin)); }
     q.set("x", mods.join(","));
     const madj = (S.ui && S.ui.madj) || {}, aa = Object.keys(madj).map(Number).sort((x,y) => x-y).filter(n => madj[n]).map(n => n + madj[n]).join(","); if (aa) q.set("a", aa);
@@ -2399,7 +2413,8 @@ document.addEventListener("click", e => {
     const b0 = $("#mk-base").value.trim(); if (!/^https:\/\//.test(b0)){ toast("Het adres moet beginnen met https:// (het adres op GitHub)."); return; }
     S.ui.mmods = mods; S.ui.mw = w;
     const url = b0 + "?" + q.toString().replace(/%2C/g, ","); S.ui.mlink = url; S.ui.mlinkOp = Date.now(); save();
-    $("#mk-out").innerHTML = `<label class="f"><span class="lab">Klaslink${mods.length || gsAan ? " (basis plus " + [...mods.map(c => MODS.find(m => m[0] === c)[1].toLowerCase()), gsAan ? "gespreksslot" : ""].filter(Boolean).join(", ") + ")" : " (basis)"}</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Test de link zelf in een privévenster voordat je hem in Teams zet.</span>`; const ic = $("#m-inst"); if (ic) ic.outerHTML = mentorInstellingen(); }
+    $("#mk-out").innerHTML = `<label class="f"><span class="lab">Klaslink${mods.length || gsAan ? " (basis plus " + [...mods.map(c => MODS.find(m => m[0] === c)[1].toLowerCase()), gsAan ? "gespreksslot" : ""].filter(Boolean).join(", ") + ")" : " (basis)"}</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Test de link zelf in een privévenster voordat je hem in Teams zet.</span><div class="note" style="margin-top:12px"><b>${ikon("check")} Je klas is ingesteld.</b> Zet de link in Teams en ga dan naar <a href="#mentor/week">Deze week</a>: daar staat je eerste les klaar.</div>`; const ic = $("#m-inst"); if (ic) ic.outerHTML = mentorInstellingen(); renderMentorNav(); }
+function renderMentorNav(){ if (MENTOR) { const cur = mentorSub(); $("#nav").innerHTML = MGROEP.map(([id,t,subs]) => `<a href="#mentor/${id}" class="tabbtn" ${subs.includes(cur)?'aria-current="page"':""}>${t}</a>`).join(""); } }
   if (act === "copyLinkOnth"){ const t = $("#mk-url-onthouden"); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Link gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Link gekopieerd."); } return; }
   if (act === "mentorBackup"){ const u = S.ui || {}, data = { jaarlijnMentor: 2, op: Date.now(), mklas: u.mklas, mw: u.mw, mdagen: u.mdagen, mmods: u.mmods, mgates: u.mgates, madj: u.madj, mlink: u.mlink, mlinkOp: u.mlinkOp };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" }), url = URL.createObjectURL(blob), a2 = document.createElement("a");
@@ -2407,6 +2422,11 @@ document.addEventListener("click", e => {
     S.ui.mbackupNaam = a2.download; S.ui.mbackupOp = Date.now(); save();
     toast("Instellingen gedownload naar je map Downloads. Let op: je pincode zit er niet in."); return; }
   if (act === "mentorRestore"){ $("#importFile").click(); return; }
+  if (act === "startCheck"){ const half = CFG().werkwijze === "half", mist = [];
+    if (!S.leerling.voornaam) mist.push(document.querySelector('input[data-p="leerling.voornaam"]'));
+    if (half && !S.leerling.groep){ const g = document.querySelector('input[data-p="leerling.groep"]'); mist.push(g && g.closest(".radios")); }
+    if (!S.vakken.length){ const v = document.querySelector("input[data-vak]"); mist.push(v && v.closest(".radios")); }
+    if (markeer(mist, "Vul eerst de gele velden in.")) return; go("les:" + a.dataset.les); return; }
   if (act === "mwoff"){ const d = Number(a.dataset.d); S.ui.mwoff = d === 0 ? 0 : (S.ui.mwoff || 0) + d; save(); render(); return; }
   if (act === "copyLink"){ const t = $("#mk-url"); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Link gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Link gekopieerd."); } }
   if (act === "mPlanPdf"){ mentorPlanPdf(); return; }
