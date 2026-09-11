@@ -1747,7 +1747,7 @@ const MPAGES = {
     <div id="mk-gsv" ${(mentorGates() || []).length ? "" : "hidden"} class="card soft" style="margin-top:8px"><p style="margin:0 0 4px"><b>Zo werkt het gespreksslot</b></p>${gsFlow("klein")}<div style="height:12px"></div><div class="grid2"><label class="f"><span class="lab">Pincode (4 tot 8 cijfers)</span><span class="hint">Alleen jij kent hem. Hij staat niet in de link. Schrijf hem goed op.</span><input type="password" id="mk-pin" inputmode="numeric" autocomplete="off"></label>
     <label class="f"><span class="lab">Gesprek verplicht vóór les</span><span class="hint">Lesnummers met komma’s. Standaard 9, 17 en 25. Halve klas: les 9 is een week van groep 1, les 17 en 25 van groep 2. Spreek de andere groep in de lessen ervoor.</span><input type="text" id="mk-g" value="${(mentorGates() || []).length ? mentorGates().join(", ") : "9, 17, 25"}"></label></div></div></div>
     <div class="card"><h2>3. Maak de link</h2><details style="margin-bottom:12px"><summary>Adres van de tool (hoef je meestal niet te veranderen)</summary><label class="f" style="margin-top:8px"><span class="lab">Adres van de tool</span><span class="hint">Voor alle mentoren hetzelfde.</span><input type="text" id="mk-base" value="${esc(base)}"></label></details>
-    <button class="btn" data-act="mkLink">Maak klaslink</button><div id="mk-out" style="margin-top:12px"></div></div>`; },
+    <button class="btn" data-act="mkLink">Maak klaslink</button><div id="mk-out" style="margin-top:12px"></div></div>${mentorInstellingen()}`; },
   vrijgave: () => { const mg = mentorGates(), datum = n => lesDatumM(n);
     const status = mg ? (mg.length ? `<div class="note"><b>In jouw klaslink:</b> gesprek vóór ${mg.map(n => `les ${n} (${esc(datum(n))})`).join(", ")}.</div>` : `<div class="note">Je laatste klaslink heeft <b>geen gespreksslot</b>. Deze pagina heb je dan niet nodig.</div>`)
       : `<div class="note">Het gespreksslot werkt alleen als je bij het maken van je klaslink het vinkje <i>Gespreksslot</i> aanzette. Standaard liggen de gesprekken vóór ${gatesStd.map(n => `les ${n} (${esc(datum(n))})`).join(", ")}.</div>`;
@@ -1771,7 +1771,7 @@ MPAGES.planning = () => {
   <div class="card"><h2>1. Plak je huidige klaslink</h2><p class="sub">De link die nu in Teams staat. Je pincode is niet nodig.</p>
     <textarea id="pl-link" rows="3" placeholder="https://weerthuis-cloud.github.io/H4-mentoraat/?klas=...">${PL ? esc(PL.url) : ""}</textarea>
     <div class="row" style="margin-top:8px"><button class="btn" data-act="plLoad">Laden</button></div></div>`;
-  if (!PL) return h;
+  if (!PL) return h + mentorInstellingen();
   const w = PL.q.get("w") === "heel" ? "heel" : "half", g = (PL.q.get("g")||"").split(",").map(Number).filter(Boolean);
   const pd = PL.q.get("d") ? PL.q.get("d").split(",").map(Number) : null;
   h += `<div class="card"><h2>2. Lesdag</h2><p class="sub">Verandert je rooster, bijvoorbeeld in een nieuwe periode? Kies hier de nieuwe dag. De data in de lessen van je leerlingen schuiven mee.</p>${dagKiezer("pl-dag", pd)}</div>`;
@@ -1793,7 +1793,7 @@ function plLaad(){
   try { const u = new URL(raw); const q = u.searchParams;
     if (!q.has("w") && !q.has("klas")) throw 0;
     const adj = Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvzs])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]]));
-    PL = { url: raw, base: u.origin + u.pathname, q, adj }; S.ui.madj = Object.assign({}, adj); S.ui.mdagen = q.get("d") ? q.get("d").split(",").map(Number) : S.ui.mdagen; S.ui.mklas = q.get("klas") || S.ui.mklas; S.ui.mw = q.get("w") === "heel" ? "heel" : "half";
+    PL = { url: raw, base: u.origin + u.pathname, q, adj }; S.ui.madj = Object.assign({}, adj); S.ui.mlink = raw; S.ui.mlinkOp = S.ui.mlinkOp || Date.now(); S.ui.mdagen = q.get("d") ? q.get("d").split(",").map(Number) : S.ui.mdagen; S.ui.mklas = q.get("klas") || S.ui.mklas; S.ui.mw = q.get("w") === "heel" ? "heel" : "half";
     S.ui.mgates = q.get("k") ? (q.get("g") || "").split(",").map(Number).filter(Boolean) : []; if (q.has("x")) S.ui.mmods = (q.get("x") || "").split(",").filter(Boolean); save(); render();
   } catch(e){ toast("Dit is geen klaslink. Plak de link die nu in Teams staat."); }
 }
@@ -1802,7 +1802,7 @@ function plMaak(){
   const a = Object.keys(PL.adj).map(Number).sort((x,y) => x-y).filter(n => PL.adj[n]).map(n => n + PL.adj[n]).join(",");
   if (a) q.set("a", a); else q.delete("a");
   const dagen = leesDagKiezer("pl-dag"); if (dagen.some(Boolean)) q.set("d", dagen.join(",")); else q.delete("d"); S.ui.mdagen = dagen.some(Boolean) ? dagen : null;
-  const url = PL.base + "?" + q.toString().replace(/%2C/g, ","); S.ui.madj = Object.assign({}, PL.adj); save(); PL.url = url; PL.q = q;
+  const url = PL.base + "?" + q.toString().replace(/%2C/g, ","); S.ui.madj = Object.assign({}, PL.adj); S.ui.mlink = url; S.ui.mlinkOp = Date.now(); save(); PL.url = url; PL.q = q;
   const n = Object.keys(PL.adj).length;
   $("#pl-out").innerHTML = `<label class="f"><span class="lab">Nieuwe klaslink${n?` (${n} ${n===1?"les":"lessen"} aangepast)`:""}</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Vervang de oude link in Teams door deze. Leerlingen zien de aanpassingen zodra ze de tool via de nieuwe link openen.</span>`;
 }
@@ -2085,6 +2085,11 @@ MPAGES.handleiding = () => `<h1>Handleiding</h1><p class="lead">Wat je elke week
 
 function posterPrint(html, titel){ $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt">` + html; const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st); const oud = document.title; document.title = titel; window.print(); document.title = oud; st.remove(); }
 /* ---------- gespreksslot: uitleg als stappenplan ---------- */
+function mentorInstellingen(){ /* wat het portaal op dit apparaat onthoudt, met back-up */
+  const u = S.ui || {}, md = mentorDagen(), mg = mentorGates(), mm = mentorMods();
+  const regels = [u.mklas ? `klas ${esc(u.mklas)}` : "", u.mw ? (u.mw === "heel" ? "hele klas" : "halve klas") : "", md ? "lesdag " + md.map((d, i) => `P${i+1} ${d ? DAGKORT[d] : "?"}`).join(" ") : "", mm ? (mm.length ? "extra’s: " + mm.map(c => (MODS.find(m => m[0] === c) || [c,c])[1].toLowerCase()).join(", ") : "alleen de basis") : "", mg ? (mg.length ? "gespreksslot vóór les " + mg.join(", ") : "geen gespreksslot") : "", Object.keys(u.madj || {}).length ? Object.keys(u.madj).length + " aangepaste les(sen)" : ""].filter(Boolean);
+  return `<div class="card soft"><h2>${ikon("cloud")} Je instellingen op dit apparaat</h2><p class="sub">Alles wat je hier kiest, wordt meteen in deze browser bewaard. Je klaslink bevat al je instellingen (behalve je pincode) en is dus ook je back-up: bewaar hem in Teams of OneDrive.</p>
+    ${u.mlink ? `<p class="small" style="margin:0 0 6px"><b>Onthouden:</b> ${regels.join(" · ")}.</p><label class="f"><span class="lab">Je huidige klaslink${u.mlinkOp ? ` (${fmtTs(u.mlinkOp)})` : ""}</span><textarea readonly rows="2" id="mk-url-onthouden">${esc(u.mlink)}</textarea></label><div class="row" style="gap:8px"><button class="btn small ghost" data-act="copyLinkOnth">Kopieer link</button><button class="btn small ghost" data-act="mentorBackup">Instellingen downloaden</button><button class="btn small ghost" data-act="mentorRestore">Instellingen terugzetten</button></div>` : `<p class="small" style="margin:0 0 6px">Nog geen klaslink gemaakt op dit apparaat. Werk je op een ander apparaat? Plak je klaslink bij Planning aanpassen en klik op Laden, of zet een gedownload instellingenbestand terug.</p><button class="btn small ghost" data-act="mentorRestore">Instellingen terugzetten</button>`}</div>`; }
 function mentorGates(){ const g = S.ui && S.ui.mgates; return Array.isArray(g) ? g : null; } /* null = onbekend (geen klaslink op dit apparaat gemaakt) */
 function gsFlow(cls = ""){ return flow([
   ["Jij zet het aan", "Bij het maken van je klaslink: vinkje <i>Gespreksslot</i>, een pincode en de lessen (standaard 9, 17 en 25).", "sleutel"],
@@ -2385,9 +2390,15 @@ document.addEventListener("click", e => {
     S.ui.mdagen = dagen.some(Boolean) ? dagen : null; S.ui.mklas = klas;
     S.ui.mgates = gsAan ? q.get("g").split(",").map(Number) : [];
     const b0 = $("#mk-base").value.trim(); if (!/^https:\/\//.test(b0)){ toast("Het adres moet beginnen met https:// (het adres op GitHub)."); return; }
-    S.ui.mmods = mods; S.ui.mw = w; save();
-    const url = b0 + "?" + q.toString().replace(/%2C/g, ",");
+    S.ui.mmods = mods; S.ui.mw = w;
+    const url = b0 + "?" + q.toString().replace(/%2C/g, ","); S.ui.mlink = url; S.ui.mlinkOp = Date.now(); save();
     $("#mk-out").innerHTML = `<label class="f"><span class="lab">Klaslink${mods.length || gsAan ? " (basis plus " + [...mods.map(c => MODS.find(m => m[0] === c)[1].toLowerCase()), gsAan ? "gespreksslot" : ""].filter(Boolean).join(", ") + ")" : " (basis)"}</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Test de link zelf in een privévenster voordat je hem in Teams zet.</span>`; }
+  if (act === "copyLinkOnth"){ const t = $("#mk-url-onthouden"); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Link gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Link gekopieerd."); } return; }
+  if (act === "mentorBackup"){ const u = S.ui || {}, data = { jaarlijnMentor: 2, op: Date.now(), mklas: u.mklas, mw: u.mw, mdagen: u.mdagen, mmods: u.mmods, mgates: u.mgates, madj: u.madj, mlink: u.mlink, mlinkOp: u.mlinkOp };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" }), url = URL.createObjectURL(blob), a2 = document.createElement("a");
+    a2.href = url; a2.download = `jaarlijn-mentor-${(u.mklas || "klas").toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a2); a2.click(); a2.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+    toast("Instellingen gedownload naar je map Downloads. Let op: je pincode zit er niet in."); return; }
+  if (act === "mentorRestore"){ $("#importFile").click(); return; }
   if (act === "mwoff"){ const d = Number(a.dataset.d); S.ui.mwoff = d === 0 ? 0 : (S.ui.mwoff || 0) + d; save(); render(); return; }
   if (act === "copyLink"){ const t = $("#mk-url"); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Link gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Link gekopieerd."); } }
   if (act === "mPlanPdf"){ mentorPlanPdf(); return; }
@@ -2414,6 +2425,8 @@ $("#importFile").addEventListener("change", e => {
   const r = new FileReader();
   r.onload = () => {
     try { const data = JSON.parse(r.result);
+      if (data && data.jaarlijnMentor === 2){ if (!MENTOR) throw new Error("mentorbestand");
+        ["mklas","mw","mdagen","mmods","mgates","madj","mlink","mlinkOp"].forEach(k => { S.ui[k] = data[k]; }); save(); render(true); toast("Mentorinstellingen teruggezet."); e.target.value = ""; return; }
       if (!data || data.versie !== 2 || !data.leerling) throw new Error("geen jaarlijn");
       if (!confirm("Je huidige gegevens op dit apparaat worden vervangen door de back-up. Doorgaan?")) return;
       S = Object.assign(blank(), data); save(); render(true); alert("Back-up teruggezet.");
