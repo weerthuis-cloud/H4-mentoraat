@@ -199,6 +199,7 @@ textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
 #bord .b-dias{flex:1;position:relative;overflow:hidden}
 #bord .b-dia{position:absolute;inset:0;overflow:auto;padding:6vh 6vw 4vh;display:flex;flex-direction:column;gap:2.4vh;--a:#0a58a3}
 #bord .b-dia::before{content:"";position:absolute;left:0;right:0;top:0;height:1.3vh;background:linear-gradient(90deg,#0a58a3 0 20%,#2f7d32 20% 40%,#f0a800 40% 60%,#e8591a 60% 80%,#b3141c 80%)}
+#bord .b-ik{position:absolute;right:5vw;top:5vh;width:16vh;height:16vh;color:var(--a);opacity:.14;z-index:0;pointer-events:none}
 #bord .b-dia::after{content:"";position:absolute;right:-14vh;bottom:-14vh;width:46vh;height:46vh;border-radius:50%;background:conic-gradient(#0a58a3 0 20%,#2f7d32 0 40%,#f0a800 0 60%,#e8591a 0 80%,#b3141c 0);-webkit-mask:radial-gradient(circle,transparent 54%,#000 55%);mask:radial-gradient(circle,transparent 54%,#000 55%);opacity:.16;pointer-events:none}
 #bord .b-start{--a:#0a58a3} #bord .b-opener{--a:#2f7d32} #bord .b-terug{--a:#e8591a} #bord .b-vandaag{--a:#0a58a3} #bord .b-gesprek{--a:#c98a00} #bord .b-uitleg{--a:#b3141c} #bord .b-werk{--a:#2f7d32} #bord .b-af{--a:#0a58a3} #bord .b-vooruit{--a:#e8591a}
 #bord .b-start{background:linear-gradient(135deg,#fff 0 55%,#e5eef8 55%)} #bord .b-uitleg{background:linear-gradient(180deg,#fff 0,#f7f5f0 60%)}
@@ -227,6 +228,7 @@ textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
 #bord .b-vb:not(.toon) .b-zin.sterk em{visibility:hidden} #bord .b-zin.sterk em{font-style:normal;font-weight:600}
 #bord .b-pijl{color:var(--a);font-size:clamp(24px,2.6vw,42px);line-height:1;align-self:center;transform:rotate(90deg)}
 #bord .b-vb .b-knop{align-self:flex-start}
+#bord .b-strook{width:min(100%,1100px);height:auto;position:relative;z-index:1;margin-top:auto}
 #bord .b-timer{align-self:flex-start;display:flex;align-items:center;gap:1em;background:#fff;border:3px solid var(--a);border-radius:999px;padding:.3em .5em .3em 1.1em;position:relative;z-index:1}
 #bord .b-tijd{font-size:clamp(28px,3.4vw,56px);font-weight:900;font-variant-numeric:tabular-nums;color:var(--a)}
 #bord .b-timer.om{background:#b3141c;border-color:#b3141c} #bord .b-timer.om .b-tijd{color:#fff}
@@ -255,16 +257,17 @@ body.bord-open{overflow:hidden}
 .flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
 .flow .st{position:relative;background:var(--card);border:2px solid var(--acc);border-radius:14px;padding:12px 12px 12px;display:flex;flex-direction:column;gap:4px}
 .flow .st .nr{width:32px;height:32px;border-radius:50%;background:var(--acc);color:var(--acc-ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
+.ik{width:1.25em;height:1.25em;vertical-align:-.3em;flex:0 0 auto} .flow .st .sth{display:flex;align-items:center;gap:8px;color:var(--acc)} .flow .st .sth .ik{width:26px;height:26px} .flow.klein .st .sth .ik{display:none}
 .flow .st b{font-size:15.5px} .flow .st b:empty{display:none} .flow .st span:last-child{font-size:13.5px;color:var(--muted);line-height:1.4}
 @media (min-width:700px){ .flow:not(.klein) .st:not(:last-child)::after{content:"➜";position:absolute;right:-15px;top:22px;color:var(--acc);font-size:16px;z-index:1} }
 .flow.klein{grid-template-columns:1fr;gap:8px;margin-top:10px} .flow.klein .st{flex-direction:row;align-items:center;gap:10px;border-width:1px;padding:8px 10px} .flow.klein .st span:last-child{color:var(--ink);font-size:14.5px}
 .kol3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
 .kol3 .kol{background:var(--card);border:1px solid var(--line);border-top:8px solid var(--c-leerling);border-radius:14px;padding:12px 16px 14px}
-.kol3 .kol.k2{border-top-color:var(--c-mentor)} .kol3 .kol.k3{border-top-color:var(--c-lob)}
-.kol3 h3{margin:4px 0 10px;font-size:17px} .kol3 ol{margin:0;padding:0;list-style:none;counter-reset:k}
-.kol3 li{counter-increment:k;position:relative;padding:0 0 12px 42px} .kol3 li::before{content:counter(k);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--card);font-weight:800;display:flex;align-items:center;justify-content:center}
+.kol3 .kol.k2{border-top-color:var(--c-mentor)} .kol3 .kol.k3{border-top-color:var(--c-lob)} .kol3 .kol.k2 li::before{background:var(--c-mentor)} .kol3 .kol.k3 li::before{background:var(--c-lob)}
+.kol3 h3{margin:4px 0 10px;font-size:17px;display:flex;align-items:center;gap:8px;color:var(--c-leerling)} .kol3 .kol.k2 h3{color:var(--c-mentor)} .kol3 .kol.k3 h3{color:var(--c-lob)} .kol3 h3 .ik{width:24px;height:24px} .kol3 li b .ik{width:18px;height:18px;margin-right:5px;color:var(--muted)} .kol3 ol{margin:0;padding:0;list-style:none;counter-reset:k}
+.kol3 li{counter-increment:k;position:relative;padding:0 0 12px 42px} .kol3 li::before{content:counter(k);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--c-leerling);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
 .kol3 li b{display:block;font-size:15px} .kol3 li span{font-size:13.5px;color:var(--muted);line-height:1.4}
-.soms{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--geel-soft);font-size:14px}
+.soms{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--geel-soft);font-size:14px} .soms span{display:inline-flex;align-items:center;gap:6px} .soms .ik{width:18px;height:18px;color:var(--c-studie)}
 .plaat-wrap{overflow-x:auto} .plaat{width:100%;min-width:820px;height:auto;display:block}
 .plaat .pl-m{font-size:12.5px;font-weight:600;fill:var(--muted)} .plaat .pl-r{font-size:15px;font-weight:700} .plaat .pl-l{font-size:13px;font-weight:600;fill:var(--ink)} .plaat .pl-k{font-size:12px;fill:var(--muted)} .plaat .pl-p{font-size:14px;font-weight:700;fill:#fff}
 .subnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;width:fit-content;max-width:100%}
@@ -1828,33 +1831,57 @@ MPAGES.week = () => {
 /* ============================================================
    Stappenplannen en infographics
    ============================================================ */
-function flow(stappen, cls = ""){ return `<ol class="flow ${cls}">${stappen.map(([t,u], i) => `<li class="st"><span class="nr">${i+1}</span><b>${t}</b><span>${u}</span></li>`).join("")}</ol>`; }
+function flow(stappen, cls = ""){ return `<ol class="flow ${cls}">${stappen.map(([t,u,ik], i) => `<li class="st"><span class="sth"><span class="nr">${i+1}</span>${ik ? ikon(ik) : ""}</span><b>${t}</b><span>${u}</span></li>`).join("")}</ol>`; }
 const WEEKSTAPPEN = [
-  ["Open Deze week", "Klik op <i>Open de les</i>. Alles van deze week staat daar."],
-  ["Kijk terug", "Wat was je volgende stap van vorige keer? Is het gelukt?"],
-  ["Doe de opdracht", "Open het onderdeel van deze week. Loop je vast? Klik op het vraagteken."],
-  ["Sluit af", "Wat deed je, hoe ging het, wat is je volgende stap?"],
-  ["Lever in", "Maak de PDF, lever hem in via Teams en zet je back-up in OneDrive."]
+  ["Open Deze week", "Klik op <i>Open de les</i>. Alles van deze week staat daar.", "start"],
+  ["Kijk terug", "Wat was je volgende stap van vorige keer? Is het gelukt?", "terug"],
+  ["Doe de opdracht", "Open het onderdeel van deze week. Loop je vast? Klik op het vraagteken.", "doel"],
+  ["Sluit af", "Wat deed je, hoe ging het, wat is je volgende stap?", "check"],
+  ["Lever in", "Maak de PDF, lever hem in via Teams en zet je back-up in OneDrive.", "pdf"]
 ];
 function weekStappen(){ return `<div class="card"><h2>Zo werkt elke week</h2>${flow(WEEKSTAPPEN)}</div>`; }
 
 /* jaarplaat: het schooljaar in één beeld (SVG) */
+/* ---------- pictogrammen (SVG, 20x20-raster rond 0,0; kleur via c of currentColor) ---------- */
+const IKON = {
+  doel: c => `<circle r="7" fill="none" stroke="${c}" stroke-width="2"/><circle r="2.6" fill="${c}"/>`,
+  gesprek: c => `<g fill="${c}"><circle cx="-4" cy="-2.5" r="2.6"/><circle cx="4" cy="-2.5" r="2.6"/><path d="M-8 6c0-3 2-4.5 4-4.5s4 1.5 4 4.5zM0 6c0-3 2-4.5 4-4.5s4 1.5 4 4.5z"/></g>`,
+  toets: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><rect x="-6" y="-7.5" width="12" height="15" rx="2"/><path d="M-3 -2h6M-3 2h6M-3 6h3"/></g>`,
+  lob: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M0 7.5c-3-3.5-6-5.5-6-9a6 6 0 0 1 12 0c0 3.5-3 5.5-6 9z"/><circle cx="0" cy="-2" r="2"/></g>`,
+  spiegel: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-7 -6l7 4 7-4M-7 6l7-4 7 4M0 -7v14"/></g>`,
+  pitch: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-7 -5h8l6 -3v16l-6 -3h-8zM-7 8v-13"/></g>`,
+  docent: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-7 -6h14v9h-14zM-3 7h6M0 3v4"/></g>`,
+  studie: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-8 -2l8 -4 8 4 -8 4zM-4 0v5c0 1.5 8 1.5 8 0v-5"/></g>`,
+  balans: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M0 -7v14M-7 7h14M-6 -3l-3 6h6zM6 -3l-3 6h6zM-7 -3h14"/></g>`,
+  zon: c => `<g fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"><circle r="3.5"/><path d="M0 -8v2M0 6v2M-8 0h2M6 0h2M-5.7 -5.7l1.4 1.4M4.3 4.3l1.4 1.4M-5.7 5.7l1.4-1.4M4.3-4.3l1.4-1.4"/></g>`,
+  link: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-2 3l-2 2a3.5 3.5 0 0 1-5-5l3-3a3.5 3.5 0 0 1 5 0M2 -3l2-2a3.5 3.5 0 0 1 5 5l-3 3a3.5 3.5 0 0 1-5 0"/></g>`,
+  check: c => `<g fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M-7 0.5l4.5 4.5L7 -5"/></g>`,
+  teams: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-8 -6h16v10h-9l-4 3.5v-3.5h-3z"/></g>`,
+  groep: c => `<g fill="${c}"><circle cx="-4.5" cy="-3" r="2.6"/><circle cx="4.5" cy="-3" r="2.6"/><path d="M-9 6c0-3.5 2-5 4.5-5s4.5 1.5 4.5 5zM0 6c0-3.5 2-5 4.5-5s4.5 1.5 4.5 5z"/></g>`,
+  schild: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -8l7 2.5v5c0 4-3 6.5-7 8.5-4-2-7-4.5-7-8.5v-5z"/><path d="M-3 0l2 2 4-4"/></g>`,
+  start: c => `<g fill="${c}"><path d="M-5 -8v16h2v-6h8l-2.5-3.5L10.5 -5h-8z" opacity=".95"/></g>`,
+  bord: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><rect x="-8" y="-7" width="16" height="10" rx="1.5"/><path d="M-3 8h6M0 3v5"/></g>`,
+  klok: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><circle r="7.5"/><path d="M0 -4v4l3 2"/></g>`,
+  pdf: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-5 -8h6l4 4v12h-10z M1 -8v4h4"/><path d="M-2 1h4M-2 4h4"/></g>`,
+  reageer: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-8 -5h16v9h-6l-5 4v-4h-5z"/><path d="M-4 -0.5h8"/></g>`,
+  vraag: c => `<g fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><path d="M-3.5 -3a3.5 3.5 0 1 1 5 3.2c-1 .6-1.5 1.3-1.5 2.6"/><circle cx="0" cy="6.5" r=".6" fill="${c}"/></g>`,
+  slot: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><rect x="-6.5" y="-1" width="13" height="9" rx="2"/><path d="M-4 -1v-3a4 4 0 0 1 8 0v3"/></g>`,
+  sleutel: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><circle cx="-3.5" cy="0" r="4"/><path d="M0.5 0h8M6 0v3M8.5 0v2"/></g>`,
+  terug: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-6.5 -1a7 7 0 1 1 1.5 5.5"/><path d="M-8 -5v4.5h4.5"/></g>`,
+  lamp: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-4.5 3.5c-1.5-1.5-3-3-3-6a7 7 0 0 1 15 0c0 3-1.5 4.5-3 6z"/><path d="M-3 6.5h6M-2 9h4"/></g>`,
+  laptop: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="-7" y="-7" width="14" height="9" rx="1.5"/><path d="M-9.5 5.5h19"/></g>`,
+  vooruit: c => `<g fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M-7 0h14M3 -4.5l4.5 4.5-4.5 4.5"/></g>`,
+  ziek: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-2 -8h4M0 -8v4M-5 -4h10l0 11h-10z"/><path d="M-2 1h4M0 -1v4"/></g>`,
+  wissel: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-7 -3h12l-3-3M7 3h-12l3 3"/></g>`,
+  opener: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-3 -1a3 3 0 1 0 0-.01M3 -1a3 3 0 1 0 0-.01"/><path d="M-8.5 7c0-3 2.5-5 5.5-5s5.5 2 5.5 5M2.5 2.5c3 0 6 2 6 4.5"/></g>`,
+  cloud: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-4.5 6h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.5 1.5A3.3 3.3 0 0 0-4.5 6z"/></g>`
+};
+function ikon(k, c = "currentColor", cls = "ik"){ return IKON[k] ? `<svg class="${cls}" viewBox="-10 -10 20 20" aria-hidden="true"><g>${IKON[k](c)}</g></svg>` : ""; }
 function jaarPlaat(o = {}){ /* o.sv, o.df: extra rij tonen; o.label: kop "Extra’s" (mentor) */
   const extra = (o.sv || o.df) ? (o.label ? "label" : "aan") : "uit";
   const t0 = new Date("2026-08-31T12:00:00"), t1 = new Date("2027-07-10T12:00:00"), X0 = 200, W = 976;
   const x = d => X0 + (new Date(d + "T12:00:00") - t0) / (t1 - t0) * W;
-  const IC = {
-    doel: c => `<circle r="7" fill="none" stroke="${c}" stroke-width="2"/><circle r="2.6" fill="${c}"/>`,
-    gesprek: c => `<g fill="${c}"><circle cx="-4" cy="-2.5" r="2.6"/><circle cx="4" cy="-2.5" r="2.6"/><path d="M-8 6c0-3 2-4.5 4-4.5s4 1.5 4 4.5zM0 6c0-3 2-4.5 4-4.5s4 1.5 4 4.5z"/></g>`,
-    toets: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><rect x="-6" y="-7.5" width="12" height="15" rx="2"/><path d="M-3 -2h6M-3 2h6M-3 6h3"/></g>`,
-    lob: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M0 7.5c-3-3.5-6-5.5-6-9a6 6 0 0 1 12 0c0 3.5-3 5.5-6 9z"/><circle cx="0" cy="-2" r="2"/></g>`,
-    spiegel: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-7 -6l7 4 7-4M-7 6l7-4 7 4M0 -7v14"/></g>`,
-    pitch: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-7 -5h8l6 -3v16l-6 -3h-8zM-7 8v-13"/></g>`,
-    docent: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-7 -6h14v9h-14zM-3 7h6M0 3v4"/></g>`,
-    studie: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M-8 -2l8 -4 8 4 -8 4zM-4 0v5c0 1.5 8 1.5 8 0v-5"/></g>`,
-    balans: c => `<g fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M0 -7v14M-7 7h14M-6 -3l-3 6h6zM6 -3l-3 6h6zM-7 -3h14"/></g>`,
-    zon: c => `<g fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"><circle r="3.5"/><path d="M0 -8v2M0 6v2M-8 0h2M6 0h2M-5.7 -5.7l1.4 1.4M4.3 4.3l1.4 1.4M-5.7 5.7l1.4-1.4M4.3-4.3l1.4-1.4"/></g>` };
-  const ico = (k, cx, cy, c) => `<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)})">${IC[k](c)}</g>`;
+  const ico = (k, cx, cy, c) => `<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)})">${IKON[k](c)}</g>`;
   const rij = [["Toetsweken","var(--c-toets)","toets"],["MOL-gesprekken","var(--c-mentor)","gesprek"],["Mijn ontwikkeling","var(--c-leerling)","doel"],["LOB","var(--c-lob)","lob"]];
   if (extra !== "uit") rij.push([extra === "label" ? "Extra’s" : "Extra", "var(--c-studie)", "studie"]);
   const RH = 62, Y0 = 96, Y = i => Y0 + i * RH + RH / 2, XR = extra !== "uit" ? 22 : 0, H = Y0 + rij.length * RH + XR;
@@ -1885,13 +1912,13 @@ function jaarPlaat(o = {}){ /* o.sv, o.df: extra rij tonen; o.label: kop "Extra�
 
 /* mentor: stappenplan als infographic */
 function mentorPlaat(){
-  const kol = (kop, kl, st) => `<div class="kol ${kl}"><h3>${kop}</h3><ol>${st.map(([t,u]) => `<li><b>${t}</b><span>${u}</span></li>`).join("")}</ol></div>`;
+  const kol = (kop, kl, ik, st) => `<div class="kol ${kl}"><h3>${ikon(ik)}${kop}</h3><ol>${st.map(([t,u,i2]) => `<li><b>${i2 ? ikon(i2) : ""}${t}</b><span>${u}</span></li>`).join("")}</ol></div>`;
   return `<div class="kol3">
-    ${kol("Eén keer, voor les 1", "k1", [["Maak je klaslink","Tab Mijn klas. Kies je werkwijze en je lesdag. De eerste keer alleen de basis."],["Test de link","Open hem in een privévenster."],["Zet hem in Teams","Op een vaste plek, bijvoorbeeld bovenaan het kanaal van je klas. Maak ook per les een Teams-opdracht om de PDF in te leveren; plan ze vooruit."],["Halve klas? Deel in","Groep 1 en 2. Groep 2 werkt in week 37 al thuis: stuur ze de klaslink en zeg dat ze bij Start groep 2 kiezen."],["Informeer vooraf","Leg de werkwijze voor aan de privacyfunctionaris en informeer ouders vóór les 1."],["Les 1","Leerlingen openen de tool via de link, vullen hun naam in, vinken vakken aan en oefenen de back-up."]])}
-    ${kol("Elke week, in de les", "k2", [["Open Deze week","Start de digibordles en zet hem schermvullend (toets F). Met de pijltjes klik je door."],["Opener, 5 à 8 minuten","De werkvorm voor de groep; in een grote groep in viertallen."],["De les","Korte uitleg, leerlingen werken, jij voert drie à vier gesprekjes."],["Laatste 5 minuten","Leerlingen sluiten af en leveren hun PDF in via Teams."]])}
-    ${kol("Na de les, ongeveer 20 minuten", "k3", [["Bekijk de controlestrook","Bovenaan elke PDF: tijdstip, getypte tijd, afsluiting. Een halve minuut per PDF."],["Reageer op vier of vijf","Eén zin in Teams, steeds andere leerlingen."],["Mist er een PDF?","Die haalt de leerling de volgende les eerst in."]])}
+    ${kol("Eén keer, voor les 1", "k1", "start", [["Maak je klaslink","Tab Mijn klas. Kies je werkwijze en je lesdag. De eerste keer alleen de basis.","link"],["Test de link","Open hem in een privévenster.","check"],["Zet hem in Teams","Op een vaste plek, bijvoorbeeld bovenaan het kanaal van je klas. Maak ook per les een Teams-opdracht om de PDF in te leveren; plan ze vooruit.","teams"],["Halve klas? Deel in","Groep 1 en 2. Groep 2 werkt in week 37 al thuis: stuur ze de klaslink en zeg dat ze bij Start groep 2 kiezen.","groep"],["Informeer vooraf","Leg de werkwijze voor aan de privacyfunctionaris en informeer ouders vóór les 1.","schild"],["Les 1","Leerlingen openen de tool via de link, vullen hun naam in, vinken vakken aan en oefenen de back-up.","start"]])}
+    ${kol("Elke week, in de les", "k2", "bord", [["Open Deze week","Start de digibordles en zet hem schermvullend (toets F). Met de pijltjes klik je door.","bord"],["Opener, 5 à 8 minuten","De werkvorm voor de groep; in een grote groep in viertallen.","opener"],["De les","Korte uitleg, leerlingen werken, jij voert drie à vier gesprekjes.","laptop"],["Laatste 5 minuten","Leerlingen sluiten af en leveren hun PDF in via Teams.","klok"]])}
+    ${kol("Na de les, ongeveer 20 minuten", "k3", "pdf", [["Bekijk de controlestrook","Bovenaan elke PDF: tijdstip, getypte tijd, afsluiting. Een halve minuut per PDF.","pdf"],["Reageer op vier of vijf","Eén zin in Teams, steeds andere leerlingen.","reageer"],["Mist er een PDF?","Die haalt de leerling de volgende les eerst in.","vraag"]])}
   </div>
-  <div class="soms"><b>Soms:</b> <span>ziek of les valt uit → <a href="#mentor/planning">Planning aanpassen</a></span><span>gesprek gehad → <a href="#mentor/vrijgave">Gesprek en vrijgavecode</a> (alleen bij gespreksslot)</span><span>extra aanzetten → nieuwe <a href="#mentor/klaslink">klaslink</a></span><span>leerling loopt vast → <a href="#mentor/vragen">Vragen van leerlingen</a></span></div>`; }
+  <div class="soms"><b>Soms:</b> <span>${ikon("ziek")}ziek of les valt uit → <a href="#mentor/planning">Planning aanpassen</a></span><span>${ikon("sleutel")}gesprek gehad → <a href="#mentor/vrijgave">Gesprek en vrijgavecode</a> (alleen bij gespreksslot)</span><span>${ikon("wissel")}extra aanzetten → nieuwe <a href="#mentor/klaslink">klaslink</a></span><span>${ikon("vraag")}leerling loopt vast → <a href="#mentor/vragen">Vragen van leerlingen</a></span></div>`; }
 
 /* ---------- mentorportaal: nieuwe indeling ---------- */
 const MGROEP = [["week","Deze week",["week"]],["klaslink","Mijn klas",["klaslink","planning","vrijgave"]],["lessen","Jaaroverzicht",["lessen","groepsvorming"]],["start","Uitleg",["start","handleiding","vragen"]],["voorbeeld","Bekijk leerlingprogramma",["voorbeeld"]]];
@@ -1952,11 +1979,11 @@ function posterPrint(html, titel){ $("#print").innerHTML = `<img src="${LOGO}" a
 /* ---------- gespreksslot: uitleg als stappenplan ---------- */
 function mentorGates(){ const g = S.ui && S.ui.mgates; return Array.isArray(g) ? g : null; } /* null = onbekend (geen klaslink op dit apparaat gemaakt) */
 function gsFlow(cls = ""){ return flow([
-  ["Jij zet het aan", "Bij het maken van je klaslink: vinkje <i>Gespreksslot</i>, een pincode en de lessen (standaard 9, 17 en 25)."],
-  ["Leerling bereidt voor", "In de lessen ervoor ziet de leerling het gesprek aankomen en beantwoordt drie korte vragen."],
-  ["De les gaat op slot", "Vanaf die les kan de leerling niet verder. Hij ziet een aanvraagcode, bijvoorbeeld 9-K7F3."],
-  ["Jullie praten", "Een gesprekje van vijf minuten in de les. Een MOL-gesprek mag meetellen."],
-  ["Jij geeft vrij", "Hier typ je je pincode en de aanvraagcode. De leerling typt de vrijgavecode in en kan verder."]
+  ["Jij zet het aan", "Bij het maken van je klaslink: vinkje <i>Gespreksslot</i>, een pincode en de lessen (standaard 9, 17 en 25).", "sleutel"],
+  ["Leerling bereidt voor", "In de lessen ervoor ziet de leerling het gesprek aankomen en beantwoordt drie korte vragen.", "doel"],
+  ["De les gaat op slot", "Vanaf die les kan de leerling niet verder. Hij ziet een aanvraagcode, bijvoorbeeld 9-K7F3.", "slot"],
+  ["Jullie praten", "Een gesprekje van vijf minuten in de les. Een MOL-gesprek mag meetellen.", "gesprek"],
+  ["Jij geeft vrij", "Hier typ je je pincode en de aanvraagcode. De leerling typt de vrijgavecode in en kan verder.", "check"]
 ], cls); }
 function gsRonde(les){ /* lopende gespreksronde voor deze les: { gate, start } of null */
   const gs = mentorGates() || gatesStd; const g = gs.find(x => x >= les); if (!g) return null;
@@ -2044,10 +2071,10 @@ function bordDias(les, w){
   const k30 = !!L.k30, pitch = !!tk.pitch, kort = (S.ui.madj || {})[les] === "k" || k30, g = (k30 || pitch) ? null : gvVan(les, w), rg = gsRonde(les), gsZeker = rg && rg.zeker && mentorGates().length;
   const vlg = LES.find(l => l.les === les + 1), vr = vlg && mentorRijen(w).find(x => x.les === vlg.les);
   const D = [], dia = (soort, html) => D.push({ soort, html });
-  const eyebrow = `Mentorles · les ${les} · ${esc(lesDatumM(les))}`;
+  const eyebrow = `Mentorles · les ${les} · ${esc(lesDatumM(les))}`, ld = lesDag(L, mentorDagen());
   dia("start", `<p class="b-eye">${eyebrow}</p><h1 class="b-h1">${esc(r.titel)}</h1>
     <div class="b-groot">Open de tool en ga naar <b>Deze week</b>.</div>
-    ${half && L.g ? `<p class="b-sub">In de klas: groep ${L.g}. Groep ${L.g === 1 ? 2 : 1} werkt deze week thuis.</p>` : ""}${k30 ? `<p class="b-sub">Les van 30 minuten (60-minutenrooster): alleen de kern.</p>` : ""}${half && L.wissel ? `<p class="b-sub">${esc(L.wissel)}</p>` : ""}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}`);
+    ${half && L.g ? `<p class="b-sub">In de klas: groep ${L.g}. Groep ${L.g === 1 ? 2 : 1} werkt deze week thuis.</p>` : ""}${k30 ? `<p class="b-sub">Les van 30 minuten (60-minutenrooster): alleen de kern.</p>` : ""}${half && L.wissel ? `<p class="b-sub">${esc(L.wissel)}</p>` : ""}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}${jaarStrook(ld ? ld.iso : L.ma)}`);
   if (g) dia("opener", `<p class="b-eye">Opener · ${esc(g.fase)}</p><h1 class="b-h1">${esc(g.titel)}</h1>
     <ol class="b-stap">${g.hoe.split(/(?<=[.?!])\s+(?=[A-Z‘“])/).map(s => `<li>${esc(s)}</li>`).join("")}</ol>${bordTimer(8)}`);
   dia("terug", `<p class="b-eye">Terugkijken</p><h1 class="b-h1">${les === 1 ? "Hoe gingen je eerste weken in havo 4?" : "Wat was je volgende stap van vorige keer?"}</h1>
@@ -2064,20 +2091,34 @@ function bordDias(les, w){
     <ol class="b-stap"><li>Om de beurt: je pitch, maximaal 5 minuten.</li><li>Applaus. De anderen geven feedback op de criteria: één top, één tip, steeds van iemand anders.</li><li>Wissel. Klaar? Doe je LOB 3-reflectie in de tool.</li></ol>${bordTimer(7)}`);
   else dia("werk", `<p class="b-eye">Aan het werk</p><h1 class="b-h1">Aan de slag</h1>${titels.length ? `<div class="b-pillen"><span>Open in de les:</span>${titels.map(t => `<b>${esc(t)}</b>`).join("")}</div>` : ""}
     <ol class="b-stap"><li>Open de les van deze week en schrijf je terugblik op (stap 1).</li><li>Doe de opdracht (stap 2). Loop je vast? Klik op het vraagteken.</li><li>Ik roep een paar leerlingen voor een kort gesprekje.</li>${mMod("sv") ? `<li>Klaar? Werk aan studievaardigheden.</li>` : ""}</ol>${bordTimer(k30 ? 15 : kort ? 10 : 20)}`);
-  dia("af", `<p class="b-eye">Afsluiten</p><h1 class="b-h1">Sluit af en lever in</h1>${flow(WEEKSTAPPEN.slice(3,4).concat([["Check je werk","Concreet, over jezelf, met een voorbeeld?"]], WEEKSTAPPEN.slice(4)))}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}`);
+  dia("af", `<p class="b-eye">Afsluiten</p><h1 class="b-h1">Sluit af en lever in</h1>${flow(WEEKSTAPPEN.slice(3,4).concat([["Check je werk","Concreet, over jezelf, met een voorbeeld?","schild"]], WEEKSTAPPEN.slice(4)))}${r.dl ? `<div class="b-dl">Deadline: ${esc(r.dl)}</div>` : ""}`);
   const terug = half && L.g ? LES.find(l => l.les > les && l.g === L.g) : LES.find(l => l.les > les && l.g !== 0), tr = terug && mentorRijen(w).find(x => x.les === terug.les);
   dia("vooruit", `<p class="b-eye">Vooruitblik</p><h1 class="b-h1">${terug ? `Volgende keer in de klas: les ${terug.les}` : "Dit was de laatste mentorles in de klas"}</h1>
     ${terug ? `<div class="b-groot">${esc(tr ? tr.titel : "")} · ${esc(lesDatumM(terug.les))}</div>` : ""}
     ${vlg && vlg.thuis && ((half && L.g && vlg.g !== L.g) || vlg.g === 0) ? `<div class="b-kader"><span>In week ${esc(vlg.wk)} werk je thuis:</span>${esc(bordTaak(vlg.thuis))}${vlg.g !== 0 && THUISUITLEG[vlg.les] ? " In die les vind je ook de uitleg ‘Zo pak je het aan’." : ""}</div>` : ""}
     <p class="b-sub">Heb je de PDF van vandaag ingeleverd? Dan ben je klaar.</p>`);
   return D; }
+/* jaarstrook: waar in het jaar zit deze les (voor de startdia van het bord) */
+function jaarStrook(iso){
+  const t0 = new Date("2026-08-31T12:00:00"), t1 = new Date("2027-07-10T12:00:00"), X0 = 30, W = 1140;
+  const x = d => X0 + (new Date(d + "T12:00:00") - t0) / (t1 - t0) * W;
+  const PER = [["2026-08-31","2026-11-08","Periode 1","#0a58a3"],["2026-11-09","2027-01-24","Periode 2","#2f7d32"],["2027-01-25","2027-04-04","Periode 3","#f0a800"],["2027-04-05","2027-07-10","Periode 4","#b35400"]];
+  let s = `<svg class="b-strook" viewBox="0 0 1200 96" aria-label="Waar in het jaar" xmlns="http://www.w3.org/2000/svg">`;
+  PER.forEach(([a,b,n,c]) => s += `<rect x="${x(a)}" y="38" width="${x(b)-x(a)-3}" height="22" rx="7" fill="${c}"/>`);
+  [["2026-10-10","2026-10-18"],["2026-12-19","2027-01-03"],["2027-02-20","2027-02-28"],["2027-04-24","2027-05-09"]].forEach(([a,b]) => s += `<rect x="${x(a)}" y="38" width="${x(b)-x(a)}" height="22" fill="#fff" opacity=".6"/>`);
+  PER.forEach(([a,b,n,c]) => s += `<text x="${(x(a)+x(b))/2}" y="54" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" style="paint-order:stroke;stroke:${c};stroke-width:3px">${n.toUpperCase()}</text>`);
+  Object.entries(CONFIG.toetsweken).forEach(([k,v]) => s += `<rect x="${x(v.van)}" y="64" width="${x(v.tot)-x(v.van)}" height="6" rx="3" fill="#b35400"/><text x="${(x(v.van)+x(v.tot))/2}" y="86" text-anchor="middle" font-size="12" font-weight="700" fill="#b35400">toetsweek ${k}</text>`);
+  const xn = Math.max(X0, Math.min(X0 + W, x(iso)));
+  s += `<path d="M${xn} 36l-9-14h18z" fill="#b3141c"/><text x="${xn}" y="16" text-anchor="middle" font-size="13" font-weight="800" fill="#b3141c">je bent hier</text>`;
+  return s + `</svg>`; }
 function bordTimer(min){ return `<div class="b-timer" data-sec="${min*60}"><span class="b-tijd">${min}:00</span><button class="b-knop" data-bord="timer">Start timer</button></div>`; }
 let BORD = null;
 function openBord(les){
   const w = mWerkwijze(), D = bordDias(les, w); if (!D.length){ toast("Voor deze les is er geen digibordles: het is een thuisles."); return; }
   BORD = { les, i: 0, n: D.length, t: null };
   let el = $("#bord"); if (!el){ el = document.createElement("div"); el.id = "bord"; el.setAttribute("role","dialog"); el.setAttribute("aria-label","Digibordles"); document.body.appendChild(el); }
-  el.innerHTML = `<div class="b-dias">${D.map((d, i) => `<section class="b-dia b-${d.soort}" ${i ? "hidden" : ""}>${d.html}</section>`).join("")}</div>
+  const BIK = { start:"start", opener:"opener", terug:"terug", vandaag:"doel", gesprek:"gesprek", uitleg:"lamp", werk:"laptop", af:"pdf", vooruit:"vooruit" };
+  el.innerHTML = `<div class="b-dias">${D.map((d, i) => `<section class="b-dia b-${d.soort}" ${i ? "hidden" : ""}>${BIK[d.soort] ? ikon(BIK[d.soort], "currentColor", "b-ik") : ""}${d.html}</section>`).join("")}</div>
     <div class="b-balk"><img src="${LOGO}" alt="KSH" style="height:22px"><span class="b-tel"></span><div class="b-punten">${D.map((d,i) => `<button data-bord="ga" data-i="${i}" aria-label="Dia ${i+1}"></button>`).join("")}</div>
     <button class="b-knop" data-bord="vorige">← Vorige</button><button class="b-knop" data-bord="volgende">Volgende →</button><button class="b-knop" data-bord="vol">Schermvullend</button><button class="b-knop" data-bord="print">PDF</button><button class="b-knop" data-bord="dicht">Sluiten ✕</button></div>`;
   el.hidden = false; document.body.classList.add("bord-open"); bordGa(0); }
