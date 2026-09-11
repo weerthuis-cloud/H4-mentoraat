@@ -1539,13 +1539,14 @@ function gesprekKaart(g, volledig){
 const ROUTE_IK = { actieplan:"doel", mol:"gesprek", toetsVoor:"toets", toetsNa:"balans", lob1:"lob", lob2:"lob", lob3:"pitch", spiegel:"spiegel", tussen:"balans", eind:"balans", docentfb:"docent" };
 function routeKort(id){ if (id === "start") return "Start"; const t = MOM[id].titel;
   return t.replace("Voorbereiding MOL-gesprek", "MOL").replace("Terugblik toetsweek", "Terugblik").replace("Feedback van een docent", "Docentfeedback").replace(/ · .*$/, ""); }
+function startKlaar(){ return !!(S.leerling.voornaam && S.vakken.length && (CFG().werkwijze !== "half" || S.leerling.groep)); }
 function routeHaltes(n){
   const L = LES.find(l => l.les === n); if (!L) return [];
   const { taak } = lesInfo(L), kort = isKort(n), b = `lessen.${n}`, d = S.lessen[n] || {};
   const taken = (taak || !L.klas) ? lesTaken(n).map(x => x.taak) : [L.klas, L.thuis].filter(Boolean);
   const ids = []; taken.forEach(tk => taakOpen(tk).forEach(id => { if (!ids.includes(id)) ids.push(id); }));
   const H = [{ k:"terug", ik:"terug", lab:"Terugkijken", klaar: !!get(`${b}.terug.tekst`) || (kort && !!get(`${b}.terug.gelukt`)), r:"#r-terug" }];
-  ids.forEach(id => H.push({ k:id, ik: id === "start" ? "start" : (ROUTE_IK[MOM[id].type] || "doel"), lab: routeKort(id), klaar: id === "start" ? !!(S.leerling.voornaam && S.vakken.length) : status(id) === "klaar", r:id }));
+  ids.forEach(id => H.push({ k:id, ik: id === "start" ? "start" : (ROUTE_IK[MOM[id].type] || "doel"), lab: routeKort(id), klaar: id === "start" ? startKlaar() : status(id) === "klaar", r:id }));
   H.push({ k:"afsl", ik:"check", lab:"Afsluiten", klaar: !!get(`${b}.afsl.volgende`) && (kort || !!get(`${b}.afsl.gedaan`)), r:"#r-afsl" });
   H.push({ k:"pdf", ik:"pdf", lab:"PDF inleveren", klaar: !!(d.pdf && d.pdf.length), r:"#r-pdf" });
   return H; }
@@ -1607,7 +1608,7 @@ function lesView(n){
     const kop = tk.van && tk.van !== n ? `<b>Uit les ${tk.van}:</b> ` : (!taak && L.klas ? `<b>${tk===L.klas?"In de klas":"Thuis"}:</b> ` : "");
     h += kort ? `<div class="note">${kop}<b>Kern:</b> ${esc(kernVan(tk))}</div><details><summary>De volledige opdracht</summary><div class="ex">${esc(taakTekst(tk))}</div></details><div class="row" style="margin-bottom:12px">`
       : `<p style="margin:0 0 10px">${kop}${esc(taakTekst(tk))}</p><div class="row" style="margin-bottom:12px">`;
-    taakOpen(tk).filter(id => { if (alGetoond.has(id)) return false; alGetoond.add(id); return true; }).forEach(id => { if (id === "start") h += `<button class="btn ghost small" data-go="start">Open: Start (${CFG().werkwijze === "heel" ? "naam en vakken" : "naam, groep en vakken"})</button>`;
+    taakOpen(tk).filter(id => { if (alGetoond.has(id)) return false; alGetoond.add(id); return true; }).forEach(id => { if (id === "start"){ const ok = startKlaar(); h += `<button class="btn ghost small" data-go="start">Open: Start (${CFG().werkwijze === "heel" ? "naam en vakken" : "naam, groep en vakken"}) <span class="status ${ok ? "klaar" : "leeg"}" style="margin-left:6px">${ok ? "ingevuld" : "nog niet begonnen"}</span></button>`; }
       else { const st = status(id); h += `<button class="btn ghost small" data-lesgo="${id}" data-les="${n}">Open: ${esc(MOM[id].titel)} <span class="status ${st}" style="margin-left:6px">${STATUSTXT[st]}</span></button>`; } });
     h += `</div>`;
   });
