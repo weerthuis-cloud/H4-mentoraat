@@ -275,6 +275,9 @@ body.bord-open{overflow:hidden}
 .kol3 li b{display:block;font-size:15px} .kol3 li span{font-size:13.5px;color:var(--muted);line-height:1.4}
 .soms{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--geel-soft);font-size:14px} .soms span{display:inline-flex;align-items:center;gap:6px} .soms .ik{width:18px;height:18px;color:var(--c-studie)}
 .jaarkaart{margin-bottom:14px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+#print .pkop{display:none}
+@media print{ #print .pkop{display:block;position:fixed;top:0;right:0;font-size:9pt;color:#555} #print{padding-top:14pt} #toast,.toast{display:none!important} }
 code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:var(--geel-soft);padding:1px 6px;border-radius:5px;word-break:break-all}
 .halte{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-left:5px solid var(--c-leerling);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--card)} .halte.ok{border-left-color:var(--c-lob)} .halte .hnr{width:30px;height:30px;border-radius:50%;background:var(--c-leerling);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto} .halte.ok .hnr{background:var(--c-lob)} .halte .hbody{flex:1;min-width:0}
 .route-wrap{margin:6px 0 14px;overflow-x:auto} .route{width:100%;min-width:560px;height:auto;display:block} .route .rt-l{font-size:14px;font-weight:600;fill:var(--ink)} .route .rt-cur .rt-l{font-weight:800} .route .rt-n{fill:var(--c-leerling);font-weight:800} .route .rt-mark{display:none} .route .rt-cur .rt-mark{display:block} .route .rt-nu{font-size:12px;font-weight:800;fill:var(--c-mentor)} .route g:hover circle:first-of-type{filter:brightness(1.08)}
@@ -847,6 +850,9 @@ const LIVE = {
   chart: () => chartHTML(),
   toetsOverzicht: () => toetsOverzicht()
 };
+LIVE.lesStart = () => { const n0 = huidigeLes(), L0 = LES.find(l => l.les === n0), half = CFG().werkwijze === "half";
+  const mist = [!S.leerling.voornaam ? "je voornaam" : "", half && !S.leerling.groep ? "je groep" : "", !S.vakken.length ? "je vakken" : ""].filter(Boolean);
+  return `<div class="card soft dw"><div class="small">De les van deze week · week ${esc(L0.wk)} · ${esc(lesDatumL(n0))}</div><h2 style="margin:4px 0 8px">Les ${n0} · ${esc(lesBlok(L0))}</h2>${mist.length ? `<p class="small" style="margin:0 0 10px">${ikon("slot")} Nog invullen: <b>${mist.join(", ")}</b>. Daarna kun je de les starten.</p><button class="btn groot" disabled>Start les ${n0}</button>` : `<p class="small" style="margin:0 0 10px">${ikon("check")} Alles is ingesteld.</p><button class="btn groot" data-go="les:${n0}">Start les ${n0}</button>`}</div>`; };
 function refreshLive(){ document.querySelectorAll("[data-live]").forEach(el => { el.innerHTML = LIVE[el.dataset.live](el.dataset.arg); }); }
 
 function chartHTML(){
@@ -1010,7 +1016,7 @@ const PAGES = {
     <div class="card soft"><h2>Zo lever je in</h2><p style="margin:0 0 8px">Elke week sluit je een les af en lever je die in als PDF via Teams. In die PDF staat wanneer je hem maakte en hoe lang je aan elke opdracht hebt <b>getypt</b>. Pauzes tellen niet mee.</p><p style="margin:0">Kopiëren en plakken in de invulvelden staan uit: je typt alles zelf. Gebruik je spraakherkenning, dan kan dat gewoon. In de PDF staat dan dat die tekst ingesproken is.</p></div>`;
     if (S.ui.privacyOk){ const n0 = huidigeLes(), L0 = LES.find(l => l.les === n0), half = CFG().werkwijze === "half";
       h += opgezet ? `<details class="card"><summary>Je naam, groep en vakken aanpassen</summary><div style="margin-top:12px">${inst}</div></details>`
-        : inst + `<div class="card soft dw"><div class="small">De les van deze week · week ${esc(L0.wk)} · ${esc(lesDatumL(n0))}</div><h2 style="margin:4px 0 8px">Les ${n0} · ${esc(lesBlok(L0))}</h2>${S.leerling.voornaam && S.vakken.length && (!half || S.leerling.groep) ? `<p class="small" style="margin:0 0 10px">Alles is ingesteld.</p><button class="btn groot" data-go="les:${n0}">Open les ${n0}</button>` : `<p class="small" style="margin:0 0 10px">Vul eerst hierboven je naam${half ? ", je groep" : ""} en je vakken in. Wil je de les alvast bekijken? Dat kan, maar de opdracht past pas bij jou als alles is ingesteld.</p><button class="btn ghost" data-go="les:${n0}">Bekijk les ${n0} alvast</button>`}</div>`; }
+        : inst + live("lesStart"); }
     return h;
   },
   jaarlijn: () => `<h1>Jaarlijn</h1><p class="lead">Je jaar in één beeld. Daaronder alle onderdelen in volgorde: klik erop om ze te openen.</p><div class="card">${jaarPlaat({ sv: mod("sv"), df: mod("df") })}</div>` + jaarlijn(),
@@ -1703,7 +1709,7 @@ function buildLesReport(n){
   const chk = get(`${b}.check`) || {}, nChk = KWALITEIT.filter(([k]) => chk[k]).length;
   const modeTxt = (aj === "z" ? "zelfstandig, zonder mentor" : { klas:"in de klas", thuis:"thuis", les:"mentorles" }[mode]) || "–";
   const aanp = [kort ? "korte les" : "", sv.length ? "samen met les " + sv.join(" en ") : "", aj === "z" ? "zelfstandig" : ""].filter(Boolean).join(" · ");
-  let h = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Les ${n} · ${esc(lesBlok(L))} · ${esc(P.voornaam||"(geen naam)")}</h1>
+  let h = `<div class="pkop">${esc([P.voornaam || "(geen naam)", P.klas].filter(Boolean).join(" · "))} · les ${n} · ${esc(lesDatumL(n))} · PDF ${fmtTs(now)}</div><img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Les ${n} · ${esc(lesBlok(L))} · ${esc(P.voornaam||"(geen naam)")}</h1>
   <table class="strook"><tr><th>Leerling</th><td>${esc([P.voornaam, P.klas, CFG().werkwijze==="half"&&P.groep?"groep "+P.groep:""].filter(Boolean).join(" · "))}</td><th>Les</th><td>les ${n} · week ${esc(L.wk)} · ${esc(lesDatumL(n))} · ${modeTxt}</td></tr>
   <tr><th>PDF gemaakt op</th><td><b>${fmtTs(now)}</b>${d.heropend && d.heropend.length ? `<br>heropend na inleveren: ${d.heropend.map(fmtTs).join(", ")}` : ""}</td><th>Getypt sinds vorige PDF</th><td><b>${fmtDur(totWeek)}</b></td></tr>
   <tr><th>Afsluiting ingevuld</th><td>${afslOk?"ja":"<b>nee</b>"}</td><th>Eigen oordeel</th><td>gewerkt: ${["","nauwelijks","matig","goed","heel goed"][get(`${b}.afsl.inzet`)||0]||"–"} · kwaliteitscheck ${nChk} van 3</td></tr>${aanp ? `<tr><th>Aangepaste les</th><td colspan="3">${esc(aanp)}</td></tr>` : ""}</table>
@@ -2323,7 +2329,7 @@ function go(tab){ sluitHulp(); if (String(tab).startsWith("studie:")){ stepIdx.s
 /* ---------- events ---------- */
 function onField(e){
   const el = e.target;
-  if (el.dataset.vak !== undefined){ const v = el.dataset.vak; S.vakken = el.checked ? Array.from(new Set([...S.vakken, v])) : S.vakken.filter(x => x !== v); save(); return; }
+  if (el.dataset.vak !== undefined){ const v = el.dataset.vak; S.vakken = el.checked ? Array.from(new Set([...S.vakken, v])) : S.vakken.filter(x => x !== v); save(); refreshLive(); return; }
   const p = el.dataset.p; if (!p) return;
   let v = el.type === "checkbox" ? el.checked : el.value;
   if (el.dataset.n !== undefined && v !== "") v = Number(v);
@@ -2360,7 +2366,7 @@ document.addEventListener("click", e => {
     if (!((isKort(n) || get(`${b}.afsl.gedaan`)) && get(`${b}.afsl.volgende`)) && !confirm("Je afsluiting is nog niet helemaal ingevuld. Toch een PDF maken?")) return;
     const html = buildLesReport(n);
     S.lessen[n] = S.lessen[n] || {}; S.lessen[n].pdf = (S.lessen[n].pdf || []).concat(Date.now()); S.lessen[n].snap = snapshot(); S.lessen[n].locked = true; save();
-    $("#print").innerHTML = html; document.title = `Les ${n} - ${S.leerling.voornaam || "leerling"}`; window.print(); document.title = "Mijn jaarlijn havo 4"; maakBackup("les" + n); toast(`PDF gemaakt. Je back-up ${S.ui.lastBackupNaam || ""} staat in ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}: zet hem in je OneDrive.`); render(); }
+    $("#print").innerHTML = html; document.title = `Les ${n} - ${S.leerling.voornaam || "leerling"}${S.leerling.klas ? " " + S.leerling.klas : ""} - ${new Date().toISOString().slice(0,10)}`; window.print(); document.title = "Mijn jaarlijn havo 4"; maakBackup("les" + n); toast(`PDF gemaakt. Je back-up ${S.ui.lastBackupNaam || ""} staat in ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}: zet hem in je OneDrive.`); render(); }
   if (act === "heropen"){ const n = Number(a.dataset.les); if (!confirm("Les heropenen? Maak daarna een nieuwe PDF en lever die opnieuw in. In de PDF staat dat je de les hebt heropend.")) return;
     S.lessen[n].locked = false; S.lessen[n].heropend = (S.lessen[n].heropend || []).concat(Date.now()); save(); render(); }
   if (act === "ontgrendel"){ const g = Number(a.dataset.g), inv = ($("#vrij-"+g).value || "").trim(), gs = S.gesprek[g] || {};
