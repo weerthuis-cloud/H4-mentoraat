@@ -185,10 +185,14 @@ details .ex{font-size:14px;color:var(--muted);margin:6px 0 0;padding-left:12px;b
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:10px}
 .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 .per{margin:22px 0 8px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+svg.strook{width:100%;height:auto;display:block}
+.drie{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0 0 14px} .drie li{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:14px} .drie li .hnr{width:22px;height:22px;border-radius:50%;background:var(--line);color:var(--ink);font-weight:800;font-size:12px;display:inline-flex;align-items:center;justify-content:center} .drie li.nu{border-color:var(--acc);color:var(--ink);font-weight:700} .drie li.nu .hnr{background:var(--acc);color:var(--acc-ink)} .drie li.ok{color:var(--ink)} .drie li.ok .hnr{background:var(--c-lob);color:#fff}
 .tl{display:grid;gap:8px}
 .tl .it{display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
 .tl .it.toets{border-left-color:var(--warm)} .tl .it.lob{border-left-color:var(--lob)} .tl .it.studie{border-left-color:var(--studie)} .tl .it.mol{border-left-style:double;border-left-width:7px}
 .tl .it.nu{box-shadow:0 0 0 2px var(--acc)}
+.spoorik{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--acc);margin-right:8px;vertical-align:-5px} .spoorik .ik{width:14px;height:14px} .spoorik.toets{background:var(--warm)} .spoorik.lob{background:var(--lob)} .spoorik.mol{background:var(--c-mentor)}
+.tl .it.mol{border-left-color:var(--c-mentor)}
 .tl .wk{font-size:12px;color:var(--muted);line-height:1.2}
 .tl .wk b{display:block;font-size:15px;color:var(--ink)}
 .tl .it small{display:block;color:var(--muted);font-size:13px}
@@ -574,11 +578,14 @@ function zinFouten(t){
   return [...f];
 }
 function zinTekst(f){ if (!f.length) return "";
-  return "Volledige zinnen graag: " + [f.includes("hoofdletter") ? "begin elke zin met een hoofdletter" : "", f.includes("punt") ? "sluit elke zin af met een punt" : ""].filter(Boolean).join(" en ") + ".";
+  const z = [f.includes("hoofdletter") ? "begin elke zin met een hoofdletter" : "", f.includes("punt") ? "sluit elke zin af met een punt" : ""].filter(Boolean);
+  return (z.length ? "Volledige zinnen graag: " + z.join(" en ") + ". " : "") + (f.includes("kort") ? "Dit is nog kort: voeg een voorbeeld toe en leg uit waarom." : "");
 }
+const KORT_WOORDEN = 6; /* onder dit aantal woorden vraagt de tool om een voorbeeld en een waarom */
 function zinCheck(el, alleenAls){ const hint = el.parentElement && el.parentElement.querySelector(".zinhint"); if (!hint) return false;
   if (alleenAls && hint.hidden) return false;
-  const f = zinFouten(el.value), fout = f.length > 0;
+  const f = zinFouten(el.value); if (el.value.trim() && woorden(el.value) < KORT_WOORDEN && !/^(ja|nee|deels)\b/i.test(el.value.trim())) f.push("kort");
+  const fout = f.length > 0;
   hint.hidden = !fout; hint.textContent = zinTekst(f); el.classList.toggle("zinfout", fout); return fout;
 }
 const STAP_HTML = {};
@@ -588,7 +595,7 @@ function zinStappen(id){ /* welke stappen van dit onderdeel bevatten antwoorden 
   htmls.forEach((h, j) => { t.innerHTML = h; if ([...t.content.querySelectorAll("textarea[data-zin]")].some(el => el.value.trim() && zinFouten(el.value).length)) uit.push(j + 1); });
   return uit;
 }
-function zinCheckAlles(){ let n = 0; document.querySelectorAll("textarea[data-zin]").forEach(el => { if (el.value.trim() && zinCheck(el)) n++; }); return n; }
+function zinCheckAlles(){ let n = 0; document.querySelectorAll("textarea[data-zin]").forEach(el => { if (el.value.trim()){ zinCheck(el); if (zinFouten(el.value).length) n++; } }); return n; }
 document.addEventListener("focusout", e => { if (e.target.matches && e.target.matches("textarea[data-zin]")) zinCheck(e.target); });
 document.addEventListener("input", e => { if (e.target.matches && e.target.matches("textarea[data-zin]")) zinCheck(e.target, true); });
 function ta(p, label, hint="", rows=3, ph=""){
@@ -1054,7 +1061,8 @@ const PAGES = {
     <div class="card">${flow([
       ["Stel één keer in", "Je naam, je groep en je vakken. Twee minuten.", "start"],
       ["Elke week één les", "Bij <b>Deze week</b> staat klaar wat je doet: in de klas of thuis, in 25 tot 30 minuten.", "bord"],
-      ["Sluit af met een PDF", "Onderaan elke les maak je een PDF en zet je die in Teams. Meer hoeft niet.", "pdf"]])}</div>
+      ["Sluit af met een PDF", "Onderaan elke les maak je een PDF en zet je die in Teams. Meer hoeft niet.", "pdf"]])}
+      <p class="small" style="margin:14px 0 4px"><b>Zo ziet je jaar eruit:</b> vier periodes, vier toetsweken, en jij bent hier.</p>${jaarStrook(new Date().toISOString().slice(0,10), true)}</div>
     <div class="card soft"><h2>${ikon("schild")} Goed om te weten</h2>
       <p style="margin:0 0 8px">Alles wat je typt blijft op <b>dit apparaat, in deze browser</b>. Het gaat nergens naartoe; je mentor ziet alleen de PDF die jij inlevert.</p>
       <p style="margin:0 0 12px">Werk daarom altijd op hetzelfde apparaat in dezelfde browser (geen privévenster). Bij elke PDF maakt de tool vanzelf een back-upbestand; zet dat in je OneDrive, dan raak je nooit iets kwijt.</p>
@@ -1062,7 +1070,7 @@ const PAGES = {
     h += backupWaarschuwing();
     if (!storageOk) h += `<div class="alert">Deze browser staat opslaan niet toe (misschien een privévenster). Open de pagina in een gewoon venster, of maak tussendoor steeds een back-up.</div>`;
     if (opgezet) h += dezeWeek();
-    else if (S.ui.privacyOk) h += `<h1>Nog even instellen</h1><p class="lead">Vul je naam in${CFG().werkwijze==="half" ? ", kies je groep" : ""} en vink je vakken aan. Daarna zie je hier elke week je les.</p>`;
+    else if (S.ui.privacyOk) h += `<h1>Nog even instellen</h1>${routeDrie(1)}<p class="lead">Vul je naam in${CFG().werkwijze==="half" ? ", kies je groep" : ""} en vink je vakken aan. Daarna zie je hier elke week je les.</p>`;
     const inst = `<div class="card"><h2>Over jou</h2><div class="grid2">${inp("leerling.voornaam","Voornaam","Komt op je PDF, zodat je mentor weet van wie hij is.")}${inp("leerling.klas","Klas","","text","bijvoorbeeld H4B")}</div>${inp("leerling.profiel","Profiel","","text","bijvoorbeeld Economie en Maatschappij")}
       ${CFG().werkwijze==="half" ? `<span class="lab">In welke groep zit je?</span><span class="hint">Je mentor vertelt je dit. De ene groep is om de week in de klas, de andere werkt dan thuis.</span>${radios("leerling.groep", [{v:"1",t:"Groep 1"},{v:"2",t:"Groep 2"}], "cols2")}` : ""}
       ${S.cfg ? `<p class="small" style="margin:6px 0 0">Ingesteld door je mentor: ${esc([S.cfg.klas, S.cfg.werkwijze==="heel"?"hele klas elke week":"halve klas om de week", gates().length?"gesprek vóór les "+gates().join(", "):""].filter(Boolean).join(" · "))}</p>` : `<div class="alert" style="margin-top:10px"><b>Je opende de tool zonder de klaslink van je mentor.</b> Daardoor kloppen je klas, je lesdag en misschien je lessen niet. Vraag de link in Teams en open de tool daarmee; wat je hier al invulde, blijft staan.</div>`}</div>
@@ -1790,6 +1798,17 @@ function naLesRender(n){
   const d = S.lessen[n]; if (!d || !d.locked) return;
   document.querySelectorAll(`#app [data-p^="lessen.${n}."]`).forEach(el => { el.disabled = true; });
 }
+
+function lesSpoor(n){ /* kleur en icoon van een les: naar het eerste onderdeel dat erin hoort */
+  const ids = Array.from(new Set(samenVan(n).concat([n]).map(k => { const L = LES.find(l => l.les === k); return lesInfo(L).taak || L.klas || L.thuis; }).filter(Boolean).flatMap(t => taakOpen(t)))).filter(id => id !== "start");
+  const m = ids.map(id => MOM[id]).find(Boolean);
+  if (!m) return { cls:"", ik:"doel" };
+  if (m.type === "mol") return { cls:"mol", ik:"gesprek" };
+  if (m.spoor === "toets") return { cls:"toets", ik:"toets" };
+  if (m.spoor === "lob") return { cls:"lob", ik:"lob" };
+  if (m.type === "docentfb") return { cls:"", ik:"docent" };
+  return { cls:"", ik: m.type === "spiegel" ? "spiegel" : "doel" };
+}
 PAGES.lessen = () => {
   const nu = huidigeLes(), bg = blokGate();
   let h = `<h1>Lessen</h1><p class="lead">Elke week is er een les${CFG().werkwijze==="half"?", in de klas of thuis":""}. Elke les sluit je af met een PDF voor je mentor.</p>`;
@@ -1797,7 +1816,8 @@ PAGES.lessen = () => {
   h += `<div class="tl">`;
   LES.forEach(L => { const { mode } = lesInfo(L), st = lesStatus(L.les), slot = bg && L.les >= bg && st !== "samen", aj = adjOf(L.les);
     if (gates().includes(L.les)) h += `<div class="ev"><span></span><span><b>Gesprek met je mentor</b> vóór les ${L.les}${gesprekVrij(L.les)?" · gehad":""}</span></div>`;
-    h += `<button class="it ${mode==="thuis"?"toets":""} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(lesDatumL(L.les))} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}</small></span><span class="status ${slot||lesSlot(L.les)?"slot":st}">${slot?"op slot":lesSlot(L.les)?(lesSlot(L.les).type==="mentor"?"op slot":"vanaf "+fmtDate(lesSlot(L.les).vanaf)):st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
+    const sp = lesSpoor(L.les);
+    h += `<button class="it ${sp.cls} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b><span class="spoorik ${sp.cls}">${ikon(sp.ik, "#fff")}</span>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(lesDatumL(L.les))} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}</small></span><span class="status ${slot||lesSlot(L.les)?"slot":st}">${slot?"op slot":lesSlot(L.les)?(lesSlot(L.les).type==="mentor"?"op slot":"vanaf "+fmtDate(lesSlot(L.les).vanaf)):st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
   return h + `</div>`;
 };
 function buildLesReport(n){
@@ -2204,7 +2224,7 @@ function mentorKlaar(){ return !!(S.ui && S.ui.mlink); }
 function mentorEerst(){ return `<div class="card warn" id="m-eerst"><h2>${ikon("start")} Welkom. Zo begin je</h2>${flow([
     ["Stel je klas in", "Hieronder: je klas, hoe je werkt en op welke dag. Klik dan op <b>Maak klaslink</b>.", "link"],
     ["Zet de link in Teams", "Eén link voor je hele klas. Wie hem opent, krijgt jouw instellingen vanzelf.", "teams"],
-    ["Geef les 1", "Bij <b>Deze week</b> staat elke week je les klaar, met digibordslides.", "bord"]], "klein")}<p class="small" style="margin:10px 0 0">Heb je op een ander apparaat al een klaslink gemaakt? Plak die dan bij <a href="#mentor/planning">Planning aanpassen</a> en klik op Laden.</p></div>`; }
+    ["Geef les 1", "Bij <b>Deze week</b> staat elke week je les klaar, met digibordslides.", "bord"]], "klein")}<div style="margin-top:12px">${jaarStrook(new Date().toISOString().slice(0,10), true)}</div><p class="small" style="margin:10px 0 0">Heb je op een ander apparaat al een klaslink gemaakt? Plak die dan bij <a href="#mentor/planning">Planning aanpassen</a> en klik op Laden.</p></div>`; }
 function mentorInstellingen(){ /* wat het portaal op dit apparaat onthoudt, met back-up */
   const u = S.ui || {}, md = mentorDagen(), mg = mentorGates(), mm = mentorMods();
   const regels = [u.mklas ? `klas ${esc(u.mklas)}` : "", u.mw ? (u.mw === "heel" ? "hele klas" : "halve klas") : "", md ? "lesdag " + md.map((d, i) => `P${i+1} ${d ? DAGKORT[d] : "?"}`).join(" ") : "", mm ? (mm.length ? "extra’s: " + mm.map(c => (MODS.find(m => m[0] === c) || [c,c])[1].toLowerCase()).join(", ") : "alleen de basis") : "", mg ? (mg.length ? "gespreksslot vóór les " + mg.join(", ") : "geen gespreksslot") : "", Object.keys(u.madj || {}).length ? Object.keys(u.madj).length + " aangepaste les(sen)" : ""].filter(Boolean);
@@ -2386,7 +2406,7 @@ function renderMentor(){
   $("#pvbar").hidden = true;
   const klaar = mentorKlaar(), vrij = ["klaslink","planning","start","handleiding","vragen"];
   $("#nav").innerHTML = MGROEP.map(([id,t,subs]) => { const dicht = !klaar && !subs.some(x => vrij.includes(x));
-    return `<a href="#mentor/${id}" class="tabbtn ${dicht ? "dicht" : ""}" ${subs.includes(sub)?'aria-current="page"':""}>${t}${id === "klaslink" && !klaar ? ' <span class="tabtag">eerst</span>' : ""}</a>`; }).join("") + `<button type="button" class="hulpknop" data-hulp="pagina" title="Uitleg bij deze pagina">? Hoe werkt dit?</button>`;
+    return `<a href="#mentor/${id}" class="tabbtn ${dicht ? "dicht" : ""}" ${subs.includes(sub)?'aria-current="page"':""}>${t}${id === "klaslink" && !klaar ? ' <span class="tabtag">eerst</span>' : ""}</a>`; }).join("");
   if (!klaar && !vrij.includes(sub)){ $("#app").innerHTML = mentorEerst() + subNav("klaslink") + MPAGES.klaslink(); return; }
   $("#app").innerHTML = subNav(sub) + (MPAGES[sub] || MPAGES.week)();
 }
@@ -2427,6 +2447,10 @@ function backupWaarschuwing(){
     h += `<div class="alert klaarbox"><div><b>${S.ui.lastBackup ? "Je laatste back-up is van " + fmtTs(S.ui.lastBackup) + "." : "Je hebt nog geen back-up gemaakt."}</b> Maak er nu een en zet hem in je OneDrive.</div><button class="btn small" data-act="backup">Back-up maken</button></div>`;
   return h;
 }
+
+function routeDrie(actief){ /* de drie stappen van de leerling: instellen, les van de week, PDF */
+  const st = [["Instellen","start"],["Les van de week","bord"],["PDF in Teams","pdf"]];
+  return `<ol class="drie">${st.map(([t,ik], i) => `<li class="${i+1 < actief ? "ok" : ""} ${i+1 === actief ? "nu" : ""}"><span class="hnr">${i+1 < actief ? "✓" : i+1}</span>${ikon(ik)}<span>${t}</span></li>`).join("")}</ol>`; }
 function herstelHint(){ const heeftWerk = hasContent(S.m) || hasContent(S.lessen) || hasContent(S.doelenA);
   return (!heeftWerk && S.ui.privacyOk) ? `<details class="small" style="margin:14px 0 0"><summary>Heb je al eerder in de tool gewerkt en is alles weg?</summary><div class="note klaarbox" style="margin-top:8px"><div>Zet dan je laatste back-up terug. Die staat in je OneDrive of in je map Downloads en heet <code>jaarlijn-jenaam-…json</code>.</div><button class="btn small ghost" data-act="restore">Back-up terugzetten</button></div></details>` : ""; }
 
