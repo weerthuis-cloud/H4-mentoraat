@@ -1452,6 +1452,7 @@ const PAGHULP = {
   m_start: { t:"Stappenplan", kort:"Zo werk je met de jaarlijn: één keer instellen, elke week de les geven, na de les twintig minuten PDF’s bekijken.", stappen:["Volg de drie kolommen: één keer, elke week, na de les.","Gebruik de jaarplaat om te zien wat wanneer komt.","Print de poster voor in je lokaal."], vast:["Vragen van leerlingen? Kijk bij <i>Vragen van leerlingen</i> voor kant-en-klare antwoorden."] },
   m_handleiding: { t:"Handleiding", kort:"De uitgebreide uitleg van het programma: opbouw, privacy, PDF’s en de extra’s.", stappen:[], vast:[] },
   m_vragen: { t:"Vragen van leerlingen", kort:"Wat leerlingen het vaakst vragen, met wat jij dan zegt.", stappen:[], vast:[] },
+  m_bezwaren: { t:"Veelgehoorde bezwaren", kort:"Wat collega’s zeggen voordat ze beginnen, met het eerlijke antwoord, inclusief wat het echt kost.", stappen:[], vast:[] },
   m_voorbeeld: { t:"Bekijk leerlingprogramma", kort:"Je ziet het programma zoals een leerling het ziet. Wat je hier invult, wordt apart bewaard en heeft geen invloed op leerlingen.", stappen:["Kies bovenaan de werkwijze en de onderdelen die je wilt zien.","Klik door de lessen en onderdelen zoals een leerling dat doet."], vast:[] }
 };
 function paginaHulpKey(){
@@ -2158,8 +2159,8 @@ function mentorPlaat(){
   <div class="soms"><b>Soms:</b> <span>${ikon("ziek")}ziek of les valt uit → <a href="#mentor/planning">Planning aanpassen</a></span><span>${ikon("sleutel")}gesprek gehad → <a href="#mentor/vrijgave">Gesprek en vrijgavecode</a> (alleen bij gespreksslot)</span><span>${ikon("wissel")}extra aanzetten → nieuwe <a href="#mentor/klaslink">klaslink</a></span><span>${ikon("vraag")}leerling loopt vast → <a href="#mentor/vragen">Vragen van leerlingen</a></span></div>`; }
 
 /* ---------- mentorportaal: nieuwe indeling ---------- */
-const MGROEP = [["week","Deze week",["week"]],["klaslink","Mijn klas",["klaslink","planning","vrijgave"]],["lessen","Jaaroverzicht",["lessen","groepsvorming"]],["start","Uitleg",["start","handleiding","vragen"]],["voorbeeld","Bekijk leerlingprogramma",["voorbeeld"]]];
-const SUBNAAM = { klaslink:"Klaslink maken", planning:"Planning aanpassen", vrijgave:"Gesprek gehad: vrijgavecode maken", lessen:"Lessen per week", groepsvorming:"Groepsvorming", start:"Stappenplan", handleiding:"Handleiding", vragen:"Vragen van leerlingen" };
+const MGROEP = [["week","Deze week",["week"]],["klaslink","Mijn klas",["klaslink","planning","vrijgave"]],["lessen","Jaaroverzicht",["lessen","groepsvorming"]],["start","Uitleg",["start","handleiding","vragen","bezwaren"]],["voorbeeld","Bekijk leerlingprogramma",["voorbeeld"]]];
+const SUBNAAM = { klaslink:"Klaslink maken", planning:"Planning aanpassen", vrijgave:"Gesprek gehad: vrijgavecode maken", lessen:"Lessen per week", groepsvorming:"Groepsvorming", start:"Stappenplan", handleiding:"Handleiding", vragen:"Vragen van leerlingen", bezwaren:"Veelgehoorde bezwaren" };
 const MALIAS = { klas:"klaslink", jaar:"lessen", uitleg:"start" };
 function subNav(sub){ const g = MGROEP.find(x => x[2].includes(sub)); if (!g || g[2].length < 2) return "";
   const subs = g[2].filter(s => s !== "vrijgave" || (mentorGates() || []).length || sub === "vrijgave");
@@ -2189,6 +2190,21 @@ MPAGES.vragen = () => { const V = [
   ];
   return `<h1>Vragen van leerlingen</h1><p class="lead">De vragen die je in de eerste weken het vaakst krijgt, met de stappen om ze op te lossen.</p>` +
     V.map(([q, st]) => `<details class="card vraag"><summary>${q}</summary>${flow(st.map(t => ["", t]), "klein")}</details>`).join(""); };
+
+MPAGES.bezwaren = () => { const B = [
+    ["“Weer een tool erbij. We hebben Magister en Teams al.”", "Klopt, en die blijven. De jaarlijn vervangt niets: cijfers staan in Magister, inleveren gaat via Teams. Wat erbij komt, is een vaste plek waar de leerling zijn eigen ontwikkeling bijhoudt, met per week één les die klaarstaat. Zonder de tool moet je dat zelf elke week bedenken en uitdelen."],
+    ["“Dit kost mij elke week extra tijd.”", "Eerlijk: ongeveer twintig minuten per week om de PDF’s te bekijken en op vier of vijf leerlingen met één zin te reageren, plus vijf grote momenten van anderhalf tot twee uur. Daar staat tegenover dat de les zelf klaarstaat, met digibordslides, en dat je vóór elk MOL-gesprek al weet wat de leerling gaat zeggen: hij heeft het voorbereid. Dat scheelt tijd in het gesprek en in de voorbereiding erop."],
+    ["“Halve klas om de week past niet in mijn rooster.”", "Dan kies je bij Klaslink maken voor hele klas elke week. Alles werkt dan hetzelfde; je mist alleen de wekelijkse gesprekjes met een halve groep. Je kunt later nog wisselen met een nieuwe klaslink."],
+    ["“Als het werk op het apparaat van de leerling staat, is het zo weg.”", "Bij elke les-PDF maakt de tool automatisch een back-upbestand, en de leerling zet dat in OneDrive. De PDF’s staan bovendien in Teams. In het slechtste geval raakt een leerling het werk van één week kwijt, nooit het hele jaar. De keerzijde is de reden dat het zo gebouwd is: er is geen server met leerlinggegevens, dus geen datalek mogelijk en geen verwerkersovereenkomst nodig."],
+    ["“Is dit goedgekeurd? Mag dit van de AVG?”", "Er worden geen persoonsgegevens verwerkt door een derde partij: de tool draait in de browser van de leerling en stuurt niets weg. Wat de leerling deelt, is de PDF die hij zelf in Teams inlevert, net als elk ander werkstuk. Meld het gebruik wel bij de privacyfunctionaris en informeer ouders vóór les 1; het stappenplan noemt dat als stap 5."],
+    ["“Mijn leerlingen hebben hun laptop niet bij zich.”", "De tool werkt ook op een telefoon en een iPad, alleen de PDF maken is op een telefoon onhandig. Werk je met de halve klas, dan zit de helft thuis aan een laptop. Verder helpt het als je in de eerste les afspreekt dat de mentorles een laptoples is, net als bij vakken die dat ook vragen."],
+    ["“Leerlingen vullen toch maar wat in.”", "Dat gebeurt bij elk formulier. Daarom vraagt de tool om hele zinnen en een voorbeeld, staat er in elke PDF hoe lang er getypt is en of er geplakt is, en gaat de leerling in het MOL-gesprek zijn eigen plan verdedigen. Wie maar wat invult, merkt dat daar."],
+    ["“Wie onderhoudt dit als Peter er niet meer is?”", "Het is één bestand op GitHub zonder server of abonnement; het blijft werken zolang de school het adres laat bestaan. De inhoud (lessen, teksten, data) staat in leesbare vorm in datzelfde bestand en in de handleiding. Dat is minder afhankelijkheid dan bij een commercieel pakket, niet meer."],
+    ["“Ik ben niet handig met computers.”", "Je hoeft drie dingen te kunnen: een klaslink maken (formulier invullen, één knop), een link in Teams zetten en op Deze week op de rode knop klikken. Op elke pagina staat rechtsboven ‘Hoe werkt dit?’ met stap-voor-stapuitleg. En de eerste keer kijkt Peter met je mee."],
+    ["“Ik wil eerst zien dat het werkt.”", "Terecht. Klik op <i>Bekijk leerlingprogramma</i> en doorloop les 1 zelf als leerling; dat kost tien minuten. Of vraag een collega die al begonnen is hoe les 1 ging."]
+  ];
+  return `<h1>Veelgehoorde bezwaren</h1><p class="lead">Wat collega’s zeggen voordat ze beginnen, met het eerlijke antwoord. Geen verkooppraatje: waar het echt tijd of moeite kost, staat dat erbij.</p>` +
+    B.map(([q, a]) => `<details class="card vraag"><summary>${q}</summary><p style="margin:10px 0 0">${a}</p></details>`).join(""); };
 
 MPAGES.handleiding = () => `<h1>Handleiding</h1><p class="lead">Wat je elke week doet, wat je doet op bijzondere momenten, en wat alleen geldt als je een extra aanzette.</p>
   <div class="card"><h2>1. Elke week</h2>
@@ -2404,7 +2420,7 @@ function renderMentor(){
   $("#who").textContent = "KSH Haarlemmermeer · voor mentoren";
   try { $("#save").innerHTML = saveTekst(); } catch(_){}
   $("#pvbar").hidden = true;
-  const klaar = mentorKlaar(), vrij = ["klaslink","planning","start","handleiding","vragen"];
+  const klaar = mentorKlaar(), vrij = ["klaslink","planning","start","handleiding","vragen","bezwaren"];
   $("#nav").innerHTML = MGROEP.map(([id,t,subs]) => { const dicht = !klaar && !subs.some(x => vrij.includes(x));
     return `<a href="#mentor/${id}" class="tabbtn ${dicht ? "dicht" : ""}" ${subs.includes(sub)?'aria-current="page"':""}>${t}${id === "klaslink" && !klaar ? ' <span class="tabtag">eerst</span>' : ""}</a>`; }).join("");
   if (!klaar && !vrij.includes(sub)){ $("#app").innerHTML = mentorEerst() + subNav("klaslink") + MPAGES.klaslink(); return; }
