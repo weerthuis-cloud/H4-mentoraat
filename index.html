@@ -653,19 +653,38 @@ const OUDERVRAGEN = { /* 360 graden: wat de ouder of verzorger in het gesprek in
   toetsVoor: ["Is dit toetsweekplan thuis uitvoerbaar? Wat is daarvoor nodig?", "Hoe kijkt u naar de overgang naar havo 5?", "Waar bent u dit jaar trots op geweest?", "Welke afspraak maken we voor de laatste periode?"],
   eind: ["Wat heeft uw kind dit jaar laten zien waar u trots op bent?", "Wat neemt u mee naar havo 5?"] };
 function molVan(id){ return CONFIG.momenten.find(m => m.type === "mol" && m.bron === id); } /* het MOL-gesprek waar dit onderdeel het gespreksstuk voor is */
-function docTitel(id){ if (id === "studie") return "Studievaardigheden"; const m = MOM[id]; const mol = molVan(id); return mol ? `${m.titel} · gespreksstuk MOL-gesprek ${mol.nr}` : m.titel; }
+function docTitel(id){ if (id === "studie") return "Studievaardigheden"; if (id === "eind") return "Eindrapportage havo 4"; const m = MOM[id]; const mol = molVan(id); return mol ? `${m.titel} · gespreksstuk MOL-gesprek ${mol.nr}` : m.titel; }
 function docInhoud(id){ /* de inhoud van een onderdeel zonder typ-informatie */
-  let h = id === "studie" ? rSv() : (REPORT[MOM[id].type] ? REPORT[MOM[id].type](id) : "");
+  let h = id === "studie" ? rSv() : id === "eind" ? eindRapport() : (REPORT[MOM[id].type] ? REPORT[MOM[id].type](id) : "");
   h = h.replace(/<i class="meta">[\s\S]*?<\/i>/g, "");
   const mol = molVan(id);
   if (mol){ const mp = REPORT.mol(mol.id).replace(/<i class="meta">[\s\S]*?<\/i>/g, ""); if (mp.replace(/<[^>]+>/g, "").trim()) h += `<h2>Mijn voorbereiding op MOL-gesprek ${mol.nr}</h2>` + mp; }
   const vr = OUDERVRAGEN[id === "studie" ? "" : MOM[id].type];
   if (vr && (mol || MOM[id].type === "eind")){
     const oud = rOuder(id) + (mol ? rOuder(mol.id) : "");
-    h += `<h2 class="newpage">Voor het gesprek: vragen aan mijn ouder of verzorger</h2><p class="small">Bij het MOL-gesprek kijken we van drie kanten: de leerling, thuis en school. Wilt u deze vragen vóór het gesprek bekijken? Uw antwoord mag kort; het gaat om uw blik.</p>${vr.map(q => `<div class="qa lijn"><b>${esc(q)}</b><div class="schrijf"></div></div>`).join("")}${oud}
-      <h2>Afspraken uit het gesprek</h2><div class="qa lijn"><b>Wat doe ik (leerling)</b><div class="schrijf"></div></div><div class="qa lijn"><b>Wat doet thuis</b><div class="schrijf"></div></div><div class="qa lijn"><b>Wat doet mijn mentor</b><div class="schrijf"></div></div><div class="qa lijn"><b>We kijken hier weer naar op</b><div class="schrijf kort"></div></div>`;
+    h += `<h2 class="newpage">${mol ? "Voor het gesprek: vragen aan mijn ouder of verzorger" : "Vragen aan mijn ouder of verzorger"}</h2><p class="small">${mol ? "Bij het MOL-gesprek kijken we van drie kanten: de leerling, thuis en school. Wilt u deze vragen vóór het gesprek bekijken? Uw antwoord mag kort; het gaat om uw blik." : "Aan het eind van het jaar kijken we van drie kanten terug: de leerling, thuis en school. Uw antwoord mag kort; het gaat om uw blik."}</p>${vr.map(q => `<div class="qa lijn"><b>${esc(q)}</b><div class="schrijf"></div></div>`).join("")}${oud}
+      <h2>${mol ? "Afspraken uit het gesprek" : "Afspraken voor havo 5"}</h2><div class="qa lijn"><b>Wat doe ik (leerling)</b><div class="schrijf"></div></div><div class="qa lijn"><b>Wat doet thuis</b><div class="schrijf"></div></div><div class="qa lijn"><b>Wat doet mijn mentor</b><div class="schrijf"></div></div><div class="qa lijn"><b>We kijken hier weer naar op</b><div class="schrijf kort"></div></div>`;
   }
   return h; }
+function eindRapport(){ /* eindrapportage havo 4: wat de leerling meeneemt naar havo 5, met het hele jaar erachter */
+  const q = (l, p) => qp(l, p), sv = mod("sv") && hasContent(S.sv);
+  let h = `<h2>Mee naar havo 5</h2>` + q("Deze aanpak neem ik zeker mee", "m.eind.meenemen") + q("Hierop moet ik in havo 5 letten (mijn valkuil)", "m.eind.valkuil") + q("Wat mijn mentor in havo 5 van mij moet weten", "m.eind.nieuwementor")
+    + q("Mijn belangrijkste les over leren en plannen", "m.eind.tw.les") + (sv ? qa("Mijn manier van leren voor de lange termijn", [get("sv.keuze.manier"), get("sv.keuze.hoe")].filter(Boolean).join(" · ")) : "")
+    + (get("m.lob3.zin") ? qa("Mijn richting na havo 5", get("m.lob3.zin")) + q("Wat ik in havo 5 doe om mijn keuze te maken of te bevestigen", "m.lob3.havo5") : "")
+    + q("Waar ik trots op ben", "m.eind.trots") + q("Waarop ik het meest gegroeid ben", "m.eind.groei");
+  const series = [["m.actieplan.terug","Havo 3"],["m.actieplan.nu","September"],["m.tussen.nu","Februari"],["m.eind.nu","Juni"]], fb = get("m.spiegel.fb") || [];
+  if (series.some(([k]) => DOMEINEN.some(d => get(k + "." + d.id)))){
+    h += `<h2>Mijn jaar in cijfers</h2><h3>Metingen (schaal 1 tot 4)</h3><table><thead><tr><th></th>${series.map(([,t]) => `<th>${t}</th>`).join("")}<th>Anderen (spiegel)</th></tr></thead><tbody>${DOMEINEN.map(d => { const vals = fb.map(f => f.scores && f.scores[d.id]).filter(Boolean).map(Number), avg = vals.length ? nl(vals.reduce((a,b)=>a+b,0)/vals.length) : "–";
+      return `<tr><td>${esc(d.naam)}</td>${series.map(([k]) => `<td>${esc(get(k + "." + d.id) || "–")}</td>`).join("")}<td>${avg}</td></tr>`; }).join("")}</tbody></table>`;
+  }
+  const to = toetsOverzicht(); if (!/muted/.test(to)) h += `<h3>Toetsweken</h3>` + to.replace('<div class="tbl-wrap">', "").replace(/<\/div>$/, "");
+  const dA = rEval("tussen", "doelenA"), dB = rEval("eind", "doelenB");
+  if (dA || dB) h += `<h2>Mijn doelen dit jaar</h2>` + (dA ? `<p class="small">Doelen tot februari, beoordeeld in de tussenbalans.</p>` + dA : "") + (dB ? `<p class="small">Doelen tot de zomer, beoordeeld in de eindbalans.</p>` + dB : "");
+  const zag = fb.filter(f => f.top || f.tip).map(f => qa(f.rol || "Feedback", `Top: ${f.top || "–"}\nTip: ${f.tip || "–"}`)).join("") + ["dfb1","dfb2"].filter(id => get(`m.${id}.top`) || get(`m.${id}.tip`)).map(id => qa(`Docent ${get(`m.${id}.vak`) || ""}`.trim(), `Top: ${get(`m.${id}.top`) || "–"}\nTip: ${get(`m.${id}.tip`) || "–"}`)).join("");
+  if (zag) h += `<h2>Wat anderen zagen</h2>` + zag;
+  h += rWelzijn("eind");
+  return h; }
+
 function docHTML(id){ const L = S.leerling;
   return `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>${esc(docTitel(id))} · ${esc(L.voornaam || "(geen naam)")}</h1><div class="pmeta">${[L.klas, L.profiel, CONFIG.school, CONFIG.schooljaar, "versie van " + fmtTs(Date.now())].filter(Boolean).map(esc).join(" · ")}</div>` + docInhoud(id); }
 function presHTML(id){ /* één dia per kop (h2 en h3), liggend, groot lettertype */
@@ -680,7 +699,7 @@ function presHTML(id){ /* één dia per kop (h2 en h3), liggend, groot lettertyp
   alle.forEach((d, i) => { h += `<section class="dia-p"><h2>${esc(d.kop)}</h2>${d.body.join("")}<div class="dia-nr">${esc(L.voornaam || "")} · ${i + 2}</div></section>`; });
   return h; }
 function docKnoppen(id){ const mol = molVan(id);
-  return `<div class="card soft"><h2>${ikon("pdf")} Document en presentatie</h2><p class="sub">Een nette versie van dit onderdeel, zonder typ-informatie${mol ? `, met de vragen voor je ouders en ruimte voor afspraken. Neem hem mee naar MOL-gesprek ${mol.nr}` : ""}. De presentatie heeft één dia per kop; open hem schermvullend in je PDF-lezer.</p>
+  return `<div class="card soft"><h2>${ikon("pdf")} Document en presentatie</h2><p class="sub">${id === "eind" ? "Je eindrapportage: wat je meeneemt naar havo 5, met je metingen, doelen en toetsweken van het hele jaar erachter. Voor jou, je ouders en je mentor in havo 5. " : "Een nette versie van dit onderdeel, zonder typ-informatie"}${mol ? `, met de vragen voor je ouders en ruimte voor afspraken. Neem hem mee naar MOL-gesprek ${mol.nr}` : ""}. De presentatie heeft één dia per kop; open hem schermvullend in je PDF-lezer.</p>
     <div class="row" style="gap:8px"><button class="btn" data-act="docPdf" data-id="${id}">Document (PDF)</button><button class="btn ghost" data-act="presPdf" data-id="${id}">Presentatie (PDF, liggend)</button><button type="button" class="btn small ghost" data-hulp="pdfmaken">Hoe maak ik een PDF?</button></div></div>`; }
 
 function klaarBox(id){
