@@ -325,6 +325,7 @@ details.vraag summary{font-size:16px} ul.kort{margin:0 0 10px;padding-left:20px}
   #print .qa div{white-space:pre-wrap}
   #print .pmeta{color:#444;font-size:10pt;margin-bottom:8pt}
   #print .newpage{break-before:page}
+  #print .qa.lijn{margin:0 0 10pt} #print .schrijf{border-bottom:1px solid #999;height:30pt} #print .schrijf.kort{height:16pt}
   #print .qa i.meta{display:block;font-style:normal;font-size:8pt;color:#666;margin-top:1pt}
   #print table.strook{border:2px solid #1d5c63;margin-bottom:10pt}
   #print table.strook th{background:#e3efef;width:17%}
@@ -645,10 +646,47 @@ function volgendeHalte(id){
     : nx.k === "terug" ? `<button class="btn" data-route="#r-terug" data-les="${n}">Naar het terugkijken van les ${n}</button>`
     : `<button class="btn" data-route="${esc(nx.r)}" data-les="${n}">Open: ${esc(nx.lab)}</button>`;
   return `<div class="card" style="border-color:var(--acc)"><h2>${ikon("vooruit")} Volgende halte in les ${n}: ${esc(nx.lab)}</h2><p class="sub">${nx.k === "pdf" ? "Je afsluiting is ingevuld. Maak nu de PDF van de les en lever hem in via Teams." : nx.k === "afsl" ? "Je opdrachten zijn af. Sluit de les af: wat deed je, hoe ging het, wat is je volgende stap? Daarna maak je de PDF." : "Dit hoort ook bij deze les."}</p>${knop} <button class="btn ghost" data-go="les:${n}">← Naar les ${n}</button></div>`; }
+/* ---------- documenten en presentaties per ijkmoment (zonder controlestrook; voor het MOL-gesprek, de toetsweek, LOB, studievaardigheden) ---------- */
+const OUDERVRAGEN = { /* 360 graden: wat de ouder of verzorger in het gesprek inbrengt */
+  actieplan: ["Herkent u het beeld dat uw kind hier van zichzelf geeft? Waar wel, waar niet?", "Welke sterke kant ziet u die hier nog niet staat?", "Wat merkt u thuis van het leren, de planning en de motivatie?", "Wat kan er thuis veranderen zodat het plan makkelijker lukt?", "Wat is uw wens voor dit schooljaar?"],
+  tussen: ["Wat is er sinds september veranderd, zoals u het thuis ziet?", "Welk doel voor de rest van het jaar vindt u het belangrijkst, en waarom?", "Waar maakt u zich zorgen over, en wat gaat juist goed?", "Welke afspraak thuis helpt bij het nieuwe plan?"],
+  toetsVoor: ["Is dit toetsweekplan thuis uitvoerbaar? Wat is daarvoor nodig?", "Hoe kijkt u naar de overgang naar havo 5?", "Waar bent u dit jaar trots op geweest?", "Welke afspraak maken we voor de laatste periode?"],
+  eind: ["Wat heeft uw kind dit jaar laten zien waar u trots op bent?", "Wat neemt u mee naar havo 5?"] };
+function molVan(id){ return CONFIG.momenten.find(m => m.type === "mol" && m.bron === id); } /* het MOL-gesprek waar dit onderdeel het gespreksstuk voor is */
+function docTitel(id){ if (id === "studie") return "Studievaardigheden"; const m = MOM[id]; const mol = molVan(id); return mol ? `${m.titel} · gespreksstuk MOL-gesprek ${mol.nr}` : m.titel; }
+function docInhoud(id){ /* de inhoud van een onderdeel zonder typ-informatie */
+  let h = id === "studie" ? rSv() : (REPORT[MOM[id].type] ? REPORT[MOM[id].type](id) : "");
+  h = h.replace(/<i class="meta">[\s\S]*?<\/i>/g, "");
+  const mol = molVan(id);
+  if (mol){ const mp = REPORT.mol(mol.id).replace(/<i class="meta">[\s\S]*?<\/i>/g, ""); if (mp.replace(/<[^>]+>/g, "").trim()) h += `<h2>Mijn voorbereiding op MOL-gesprek ${mol.nr}</h2>` + mp; }
+  const vr = OUDERVRAGEN[id === "studie" ? "" : MOM[id].type];
+  if (vr && (mol || MOM[id].type === "eind")){
+    const oud = rOuder(id) + (mol ? rOuder(mol.id) : "");
+    h += `<h2 class="newpage">Voor het gesprek: vragen aan mijn ouder of verzorger</h2><p class="small">Bij het MOL-gesprek kijken we van drie kanten: de leerling, thuis en school. Wilt u deze vragen vóór het gesprek bekijken? Uw antwoord mag kort; het gaat om uw blik.</p>${vr.map(q => `<div class="qa lijn"><b>${esc(q)}</b><div class="schrijf"></div></div>`).join("")}${oud}
+      <h2>Afspraken uit het gesprek</h2><div class="qa lijn"><b>Wat doe ik (leerling)</b><div class="schrijf"></div></div><div class="qa lijn"><b>Wat doet thuis</b><div class="schrijf"></div></div><div class="qa lijn"><b>Wat doet mijn mentor</b><div class="schrijf"></div></div><div class="qa lijn"><b>We kijken hier weer naar op</b><div class="schrijf kort"></div></div>`;
+  }
+  return h; }
+function docHTML(id){ const L = S.leerling;
+  return `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>${esc(docTitel(id))} · ${esc(L.voornaam || "(geen naam)")}</h1><div class="pmeta">${[L.klas, L.profiel, CONFIG.school, CONFIG.schooljaar, "versie van " + fmtTs(Date.now())].filter(Boolean).map(esc).join(" · ")}</div>` + docInhoud(id); }
+function presHTML(id){ /* één dia per kop (h2 en h3), liggend, groot lettertype */
+  const L = S.leerling, t = document.createElement("template"); t.innerHTML = docInhoud(id);
+  const dias = [], nieuw = (kop) => { dias.push({ kop, body: [] }); };
+  Array.from(t.content.childNodes).forEach(n => { if (n.nodeType !== 1 && !(n.nodeType === 3 && n.textContent.trim())) return;
+    if (n.nodeType === 1 && /^H[23]$/.test(n.tagName)){ nieuw(n.textContent.trim()); return; }
+    if (!dias.length) nieuw(docTitel(id)); dias[dias.length-1].body.push(n.outerHTML || esc(n.textContent)); });
+  const alle = dias.filter(d => d.body.join("").replace(/<[^>]+>/g, "").trim() || /Afspraken|ouder/i.test(d.kop));
+  let h = `<style>#print .dia-p{break-after:page;min-height:180mm;display:flex;flex-direction:column;align-items:stretch;padding:6mm 4mm 0;font-size:16pt;line-height:1.35}#print .dia-p img{align-self:flex-start;width:auto}#print .dia-p:last-child{break-after:auto}#print .dia-p h2{font-size:26pt;border:0;margin:0 0 10pt;color:#0a58a3;border-bottom:4px solid #0a58a3;padding-bottom:6pt}#print .dia-p .qa b{font-size:12pt;color:#444}#print .dia-p .qa{margin:0 0 9pt}#print .dia-p table{font-size:12pt}#print .dia-p .kaft{margin:auto 0;text-align:left}#print .dia-p .kaft h2{font-size:34pt;border:0}#print .dia-p .kaft p{font-size:18pt;color:#444;margin:0}#print .dia-p .dia-nr{margin-top:auto;font-size:10pt;color:#888;text-align:right;padding-top:6pt}#print .schrijf{border-bottom:1px solid #999;height:34pt}#print .schrijf.kort{height:18pt}</style>`;
+  h += `<section class="dia-p"><img src="${LOGO}" alt="KSH" style="height:34px"><div class="kaft"><h2>${esc(docTitel(id))}</h2><p>${esc(L.voornaam || "")}${L.klas ? " · " + esc(L.klas) : ""}${L.profiel ? " · " + esc(L.profiel) : ""}</p><p style="font-size:13pt;margin-top:8pt">${esc(CONFIG.school)} · ${esc(CONFIG.schooljaar)}</p></div></section>`;
+  alle.forEach((d, i) => { h += `<section class="dia-p"><h2>${esc(d.kop)}</h2>${d.body.join("")}<div class="dia-nr">${esc(L.voornaam || "")} · ${i + 2}</div></section>`; });
+  return h; }
+function docKnoppen(id){ const mol = molVan(id);
+  return `<div class="card soft"><h2>${ikon("pdf")} Document en presentatie</h2><p class="sub">Een nette versie van dit onderdeel, zonder typ-informatie${mol ? `, met de vragen voor je ouders en ruimte voor afspraken. Neem hem mee naar MOL-gesprek ${mol.nr}` : ""}. De presentatie heeft één dia per kop; open hem schermvullend in je PDF-lezer.</p>
+    <div class="row" style="gap:8px"><button class="btn" data-act="docPdf" data-id="${id}">Document (PDF)</button><button class="btn ghost" data-act="presPdf" data-id="${id}">Presentatie (PDF, liggend)</button><button type="button" class="btn small ghost" data-hulp="pdfmaken">Hoe maak ik een PDF?</button></div></div>`; }
+
 function klaarBox(id){
   const k = S.m[id] && S.m[id].klaar;
   return `<div class="card soft klaarbox"><div><b>${k?"Afgerond op "+new Date(k).toLocaleDateString("nl-NL"):"Klaar met dit onderdeel?"}</b><div class="small">${k?"Je kunt nog steeds dingen aanpassen.":"Klik op Ik ben klaar. Inleveren doe je met de PDF van je les: daarin staat alles wat je hier invulde."}</div></div>
-  <button class="btn ${k?"ghost":""}" data-act="klaar" data-id="${id}">${k?"Toch nog niet klaar":"Ik ben klaar"}</button></div>` + (k ? volgendeHalte(id) : "");
+  <button class="btn ${k?"ghost":""}" data-act="klaar" data-id="${id}">${k?"Toch nog niet klaar":"Ik ben klaar"}</button></div>` + (k ? volgendeHalte(id) : "") + (MOM[id] ? docKnoppen(MOM[id].type === "mol" ? MOM[id].bron : id) : "");
 }
 function pager(id){
   const i = CONFIG.momenten.findIndex(m => m.id === id), p = CONFIG.momenten[i-1], n = CONFIG.momenten[i+1];
@@ -1096,7 +1134,7 @@ const PAGES = {
     return h;
   },
   delen: () => `<h1>Opslaan en delen</h1><p class="lead">Je werk staat alleen op dit apparaat. Hier maak je een PDF voor je mentor en een back-up voor jezelf.</p>
-    <div class="card"><h2>PDF van een onderdeel</h2><p class="sub">Je wekelijkse PDF maak je bij <b>Alle lessen</b>, onderaan elke les. Hier kun je ook een los onderdeel of alles samen als PDF maken. ${esc(CONFIG.inleveren)} Kies bij het afdrukken <b>Opslaan als PDF</b> (klik op het vraagteken voor uitleg per apparaat). Hoe het met je gaat, komt er alleen in als je dat per onderdeel hebt aangevinkt.</p>
+    <div class="card"><h2>PDF van een onderdeel</h2><p class="sub">Je wekelijkse PDF maak je bij <b>Alle lessen</b>, onderaan elke les. Hier kun je ook een los onderdeel of alles samen als PDF maken (mét typ-informatie). Een nette versie voor een MOL-gesprek of je LOB-dossier, als document of presentatie, maak je onderaan het onderdeel zelf. ${esc(CONFIG.inleveren)} Kies bij het afdrukken <b>Opslaan als PDF</b> (klik op het vraagteken voor uitleg per apparaat). Hoe het met je gaat, komt er alleen in als je dat per onderdeel hebt aangevinkt.</p>
       <label class="f"><span class="lab">Wat wil je in de PDF?</span><select id="pdfSel"><option value="alles">Alles wat ik tot nu toe invulde</option>${CONFIG.momenten.filter(m => zichtbaar(m.id)).map(m=>`<option value="${m.id}">${esc(m.titel)} (week ${esc(m.week)})</option>`).join("")}${mod("sv") ? `<option value="studie">Studievaardigheden</option>` : ""}</select></label>
       <button class="btn" data-act="pdf">PDF maken</button> <button type="button" class="btn small ghost" data-hulp="pdfmaken">Hoe maak ik een PDF?</button></div>
     <div class="card"><h2>Back-up</h2><p class="sub">Bij elke les-PDF maakt de tool automatisch een back-up. Zet die in je OneDrive van school, dan ben je nooit meer dan een week werk kwijt. Op een ander apparaat zet je hem hier terug. Let op: de back-up bevat álles, ook wat je privé hield. Deel hem dus niet.</p>
@@ -1329,6 +1367,7 @@ PAGES.studie = () => {
         <div class="grid2">${inp("sv.keuze.als", "Als …", "", "text", "als ik merk dat ik ga uitstellen")}${inp("sv.keuze.dan", "dan …", "", "text", "dan zet ik een timer op 25 minuten")}</div>
         ${ta("sv.keuze.check", "Wanneer check je of hij nog werkt?", "Bijvoorbeeld na toetsweek D, of begin havo 5.", 2)}${chk("sv.klaar.keuze", "Mijn keuze is klaar.")}</div>` }
   ]);
+  if (hasContent(S.sv)) h += docKnoppen("studie");
   return h; };
 function rSv(){
   let h = "";
@@ -2564,6 +2603,9 @@ document.addEventListener("click", e => {
     $("#print").innerHTML = html;
     printMet({ titel: `Les ${n} - ${S.leerling.voornaam || "leerling"}${S.leerling.klas ? " " + S.leerling.klas : ""} - ${new Date().toISOString().slice(0,10)}`, links: `Les ${n} · ${[S.leerling.voornaam || "(geen naam)", S.leerling.klas].filter(Boolean).join(" · ")}`, rechts: `${lesDatumL(n)} · PDF ${fmtTs(Date.now())}` });
     maakBackup("les" + n); toast(`PDF gemaakt. Je back-up ${S.ui.lastBackupNaam || ""} staat in ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}: zet hem in je OneDrive.`); render(); }
+  if (act === "docPdf" || act === "presPdf"){ const id = a.dataset.id, pres = act === "presPdf", L = S.leerling, naam = `${docTitel(id)} - ${L.voornaam || "leerling"}${L.klas ? " " + L.klas : ""} - ${new Date().toISOString().slice(0,10)}`;
+    $("#print").innerHTML = pres ? presHTML(id) : docHTML(id);
+    printMet({ landscape: pres, titel: (pres ? "Presentatie " : "") + naam, links: `${docTitel(id)} · ${[L.voornaam || "", L.klas].filter(Boolean).join(" · ")}`, rechts: pres ? "" : `versie ${fmtTs(Date.now())}`, marge: pres ? "10mm 10mm 10mm" : undefined }); return; }
   if (act === "heropen"){ const n = Number(a.dataset.les); if (!confirm("Les heropenen? Maak daarna een nieuwe PDF en lever die opnieuw in. In de PDF staat dat je de les hebt heropend.")) return;
     S.lessen[n].locked = false; S.lessen[n].heropend = (S.lessen[n].heropend || []).concat(Date.now()); save(); render(); }
   if (act === "ontgrendel"){ const g = Number(a.dataset.g), inv = ($("#vrij-"+g).value || "").trim(), gs = S.gesprek[g] || {};
