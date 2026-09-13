@@ -1113,6 +1113,16 @@ function jaarlijn(){
 }
 const PAGES = {
   start: () => {
+    if (MENTOR){ /* de mentor kijkt mee als voorbeeldleerling en hoeft niets in te vullen */
+      let wijzig = false;
+      if (!S.ui.privacyOk){ S.ui.privacyOk = true; wijzig = true; }
+      if (!S.leerling.voornaam){ S.leerling.voornaam = "Voorbeeldleerling"; wijzig = true; }
+      if (CFG().werkwijze === "half" && !S.leerling.groep){ S.leerling.groep = "1"; wijzig = true; }
+      if (!S.vakken.length){ S.vakken = ["Nederlands", "Engels", "Wiskunde A"]; wijzig = true; }
+      if (wijzig) save();
+      return `<div class="note" style="margin-bottom:14px"><b>${ikon("start")} Wat de leerling hier eerst doet:</b> bij de eerste keer leest hij drie stappen (instellen, les van de week, PDF), en vult hij zijn voornaam, zijn groep en zijn vakken in. Pas daarna ziet hij de les van de week. Jij kijkt mee als ‘${esc(S.leerling.voornaam)}’ in groep ${esc(S.leerling.groep || "1")}; alles wat je hier invult, blijft los van echte leerlingen.</div>` + dezeWeek()
+        + `<details class="card"><summary>Instellingen van de voorbeeldleerling aanpassen (naam, groep, vakken)</summary><div style="margin-top:12px">${PAGES.startInst()}</div></details>`;
+    }
     const opgezet = S.ui.privacyOk && S.leerling.voornaam && S.vakken.length && (CFG().werkwijze !== "half" || S.leerling.groep);
     let h = "";
     if (!S.ui.privacyOk) h += `<h1>Welkom bij je jaarlijn</h1>
@@ -1130,12 +1140,7 @@ const PAGES = {
     if (!storageOk) h += `<div class="alert">Deze browser staat opslaan niet toe (misschien een privévenster). Open de pagina in een gewoon venster, of maak tussendoor steeds een back-up.</div>`;
     if (opgezet) h += dezeWeek();
     else if (S.ui.privacyOk) h += `<h1>Nog even instellen</h1>${routeDrie(1)}<p class="lead">Vul je naam in${CFG().werkwijze==="half" ? ", kies je groep" : ""} en vink je vakken aan. Daarna zie je hier elke week je les.</p>`;
-    const inst = `<div class="card"><h2>Over jou</h2><div class="grid2">${inp("leerling.voornaam","Voornaam","Komt op je PDF, zodat je mentor weet van wie hij is.")}${inp("leerling.klas","Klas","","text","bijvoorbeeld H4B")}</div>${inp("leerling.profiel","Profiel","","text","bijvoorbeeld Economie en Maatschappij")}
-      ${CFG().werkwijze==="half" ? `<span class="lab">In welke groep zit je?</span><span class="hint">Je mentor vertelt je dit. De ene groep is om de week in de klas, de andere werkt dan thuis.</span>${radios("leerling.groep", [{v:"1",t:"Groep 1"},{v:"2",t:"Groep 2"}], "cols2")}` : ""}
-      ${S.cfg ? `<p class="small" style="margin:6px 0 0">Ingesteld door je mentor: ${esc([S.cfg.klas, S.cfg.werkwijze==="heel"?"hele klas elke week":"halve klas om de week", gates().length?"gesprek vóór les "+gates().join(", "):""].filter(Boolean).join(" · "))}</p>` : `<div class="alert" style="margin-top:10px"><b>Je opende de tool zonder de klaslink van je mentor.</b> Daardoor kloppen je klas, je lesdag en misschien je lessen niet. Vraag de link in Teams en open de tool daarmee; wat je hier al invulde, blijft staan.</div>`}</div>
-    <div class="card"><h2>Jouw vakken</h2><p class="sub">Nederlands en Engels staan al aan, die heeft iedereen. Vink de rest van je vakken aan.</p><div class="radios cols3">${Array.from(new Set([...CONFIG.vakken, ...S.vakken])).map(v => `<label class="opt"><input type="checkbox" data-vak="${esc(v)}" ${S.vakken.includes(v)?"checked":""}><span><b>${esc(v)}</b></span></label>`).join("")}</div>
-      <div class="row"><input type="text" id="nieuwVak" placeholder="Ander vak toevoegen" style="flex:1;min-width:180px"><button class="btn ghost" data-act="addVak">Toevoegen</button></div></div>
-    <div class="card soft"><h2>Zo lever je in</h2><p style="margin:0 0 8px">Elke week sluit je een les af en lever je die in als PDF via Teams. In die PDF staat wanneer je hem maakte en hoe lang je aan elke opdracht hebt <b>getypt</b>. Pauzes tellen niet mee.</p><p style="margin:0">Kopiëren en plakken in de invulvelden staan uit: je typt alles zelf. Gebruik je spraakherkenning, dan kan dat gewoon. In de PDF staat dan dat die tekst ingesproken is.</p></div>`;
+    const inst = PAGES.startInst();
     if (S.ui.privacyOk){ const n0 = huidigeLes(), L0 = LES.find(l => l.les === n0), half = CFG().werkwijze === "half";
       h += opgezet ? `<details class="card"><summary>Je naam, groep en vakken aanpassen</summary><div style="margin-top:12px">${inst}</div></details>`
         : inst + live("lesStart") + herstelHint(); }
@@ -1162,6 +1167,12 @@ const PAGES = {
     <div class="card soft"><h2>${ikon("reageer")} Feedback aan de maker</h2><p class="sub">Werkt iets niet, of heb je een idee? Laat het weten; het programma wordt beter van wat jij tegenkomt.</p><button type="button" class="btn ghost" data-hulp="feedback">Feedback geven</button></div>
     <div class="card"><h2>Opnieuw beginnen</h2><p class="sub">Wist alles op dit apparaat. Maak eerst een back-up als je twijfelt.</p><button class="btn danger" data-act="wipe">Alles wissen</button></div>`
 };
+PAGES.startInst = () => `<div class="card"><h2>Over jou</h2><div class="grid2">${inp("leerling.voornaam","Voornaam","Komt op je PDF, zodat je mentor weet van wie hij is.")}${inp("leerling.klas","Klas","","text","bijvoorbeeld H4B")}</div>${inp("leerling.profiel","Profiel","","text","bijvoorbeeld Economie en Maatschappij")}
+      ${CFG().werkwijze==="half" ? `<span class="lab">In welke groep zit je?</span><span class="hint">Je mentor vertelt je dit. De ene groep is om de week in de klas, de andere werkt dan thuis.</span>${radios("leerling.groep", [{v:"1",t:"Groep 1"},{v:"2",t:"Groep 2"}], "cols2")}` : ""}
+      ${S.cfg ? `<p class="small" style="margin:6px 0 0">Ingesteld door je mentor: ${esc([S.cfg.klas, S.cfg.werkwijze==="heel"?"hele klas elke week":"halve klas om de week", gates().length?"gesprek vóór les "+gates().join(", "):""].filter(Boolean).join(" · "))}</p>` : `<div class="alert" style="margin-top:10px"><b>Je opende de tool zonder de klaslink van je mentor.</b> Daardoor kloppen je klas, je lesdag en misschien je lessen niet. Vraag de link in Teams en open de tool daarmee; wat je hier al invulde, blijft staan.</div>`}</div>
+    <div class="card"><h2>Jouw vakken</h2><p class="sub">Nederlands en Engels staan al aan, die heeft iedereen. Vink de rest van je vakken aan.</p><div class="radios cols3">${Array.from(new Set([...CONFIG.vakken, ...S.vakken])).map(v => `<label class="opt"><input type="checkbox" data-vak="${esc(v)}" ${S.vakken.includes(v)?"checked":""}><span><b>${esc(v)}</b></span></label>`).join("")}</div>
+      <div class="row"><input type="text" id="nieuwVak" placeholder="Ander vak toevoegen" style="flex:1;min-width:180px"><button class="btn ghost" data-act="addVak">Toevoegen</button></div></div>
+    <div class="card soft"><h2>Zo lever je in</h2><p style="margin:0 0 8px">Elke week sluit je een les af en lever je die in als PDF via Teams. In die PDF staat wanneer je hem maakte en hoe lang je aan elke opdracht hebt <b>getypt</b>. Pauzes tellen niet mee.</p><p style="margin:0">Kopiëren en plakken in de invulvelden staan uit: je typt alles zelf. Gebruik je spraakherkenning, dan kan dat gewoon. In de PDF staat dan dat die tekst ingesproken is.</p></div>`;
 
 /* ---------- PDF-rapport ---------- */
 function qa(label, v, p){ return filled(v) ? `<div class="qa"><b>${label}</b><div>${esc(v)}</div>${p?metaNote(p):""}</div>` : ""; }
