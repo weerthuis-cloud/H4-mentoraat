@@ -91,7 +91,20 @@ h3{font-size:16px;margin:18px 0 6px}
 .meta{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
 .pill{font-size:13px;background:var(--acc-soft);color:var(--ink);border-radius:999px;padding:3px 10px}
 .pill.warm{background:var(--warm-soft)} .pill.geel{background:var(--geel-soft)} .pill.lob{background:var(--lob-soft)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:0 0 14px;box-shadow:var(--shadow)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px 20px;margin:0 0 20px;box-shadow:var(--shadow)}
+.card > h2:first-child{padding-left:14px;border-left:5px solid var(--acc);border-radius:3px;margin-bottom:10px;line-height:1.25}
+.card.soft > h2:first-child,.card.warn > h2:first-child{border-left-color:color-mix(in srgb,var(--acc) 55%,transparent)}
+.card.lever > h2:first-child{border-left-color:var(--c-lob)}
+.leskop{display:flex;align-items:center;gap:18px;margin:22px 0 10px;padding:16px 20px;border-radius:var(--radius);color:#fff;background:var(--acc);box-shadow:var(--shadow)}
+.leskop.ontw{background:var(--c-leerling)} .leskop.toets{background:var(--c-toets)} .leskop.lob{background:var(--c-lob)} .leskop.mol{background:var(--c-mentor)} .leskop.studie{background:var(--c-studie)}
+.leskop .lesnr{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,.18);font-size:30px;font-weight:900;line-height:1;letter-spacing:-.02em}
+.leskop .lesnr small{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.9;margin-bottom:2px}
+.leskop .lesnr.ik-only .ik{width:34px;height:34px}
+.leskop .leseye{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.92} .leskop .leseye .ik{width:16px;height:16px}
+.leskop h1{margin:2px 0 0;color:#fff;font-size:26px}
+@media (max-width:620px){.leskop{gap:12px;padding:14px 16px} .leskop .lesnr{width:52px;height:52px;font-size:24px} .leskop h1{font-size:21px}}
+.lesstappen{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:8px} .lesstappen li{position:relative;padding:8px 12px 8px 30px;background:color-mix(in srgb,var(--acc) 6%,var(--card));border-radius:10px;line-height:1.45} .lesstappen li::before{content:"";position:absolute;left:12px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--acc)}
+.f .hint{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;transition:none} .f:focus-within .hint,.f:hover .hint{display:block;-webkit-line-clamp:unset}
 .card.soft{background:var(--acc-soft);border-color:transparent;box-shadow:none}
 .card.warn{background:var(--warm-soft);border-color:transparent;box-shadow:none}
 .card.lobc{background:var(--lob-soft);border-color:transparent;box-shadow:none}
@@ -632,9 +645,8 @@ function nuId(){
 function momentHead(id, lead){
   const m = MOM[id];
   const tw = m.tw ? CONFIG.toetsweken[m.tw] : null;
-  return `<h1>${esc(m.titel)}</h1><div class="meta">
-    <span class="pill ${m.spoor==="toets"?"warm":m.spoor==="lob"?"lob":""}">${SPOORNAAM[m.spoor]}</span>
-    <span class="pill">week ${m.week}</span>${m.datum?`<span class="pill">klaar op ${fmtDate(m.datum)}</span>`:""}
+  const kl = m.type === "mol" ? "mol" : m.spoor === "toets" ? "toets" : m.spoor === "lob" ? "lob" : "ontw";
+  return `<div class="leskop ${kl}"><span class="lesnr ik-only">${ikon(ROUTE_IK[m.type] || "doel", "currentColor")}</span><div class="leskop-t"><span class="leseye">${SPOORNAAM[m.spoor]} · week ${m.week}</span><h1>${esc(m.titel)}</h1></div></div><div class="meta">${m.datum?`<span class="pill">klaar op ${fmtDate(m.datum)}</span>`:""}
     ${tw?`<span class="pill warm">toetsweek ${m.tw}: ${fmtDate(tw.van)} – ${fmtDate(tw.tot)}</span>`:""}
     ${m.mol?`<span class="pill warm">gespreksstuk ${esc(m.mol)}</span>`:""}</div><p class="lead">${lead}</p>`;
 }
@@ -1843,7 +1855,8 @@ function lesView(n){
   const L = LES.find(l => l.les === n); if (!L) return PAGES.lessen();
   const { mode: mode0, taak } = lesInfo(L), b = `lessen.${n}`, bg = blokGate(), aj = adjOf(n), kort = isKort(n);
   const mode = (aj === "z" && mode0) ? "zelf" : mode0;
-  let h = `<h1>Les ${n} · ${esc(lesBlok(L))}</h1><div class="meta"><span class="pill">week ${esc(L.wk)}</span><span class="pill">${esc(lesDatumL(L.les))}</span>`;
+  const sp0 = lesSpoor(n);
+  let h = `<div class="leskop ${sp0.cls || "ontw"}"><span class="lesnr"><small>les</small>${n}</span><div class="leskop-t"><span class="leseye">${ikon(sp0.ik, "currentColor")} week ${esc(L.wk)} · ${esc(lesDatumL(L.les))}</span><h1>${esc(lesBlok(L))}</h1></div></div><div class="meta">`;
   if (aj === "v"){ const naar = samenIn(n);
     return h + `</div><div class="card soft"><h2>Deze les is samengevoegd met les ${naar}</h2><p style="margin:0 0 12px">Je mentor heeft deze les laten vervallen. Het werk van deze week doe je in les ${naar}, samen met die les en in een korte versie. Je hoeft voor deze les geen PDF te maken.</p><button class="btn" data-go="les:${naar}">Naar les ${naar}</button></div>` + `<div class="pager"><button class="btn ghost" data-go="lessen">← Naar het overzicht</button></div>`; }
   h += mode ? `<span class="pill ${mode==="thuis"||mode==="zelf"?"warm":""}">${MODETXT[mode]}</span>` : "";
@@ -2178,6 +2191,10 @@ function dezeWeek(){
 function isoWeek(d){ const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y0) / 86400000 + 1) / 7); }
 function rijVanWeek(rows, wk){ return rows.findIndex(r => String(r.wk).split(/[–-]/).map(x => parseInt(x, 10)).some((x, i, a) => a.length === 2 ? (a[0] <= a[1] ? wk >= a[0] && wk <= a[1] : wk >= a[0] || wk <= a[1]) : x === wk)); }
 function mentorMods(){ return (S.ui && S.ui.mmods) || null; }
+function lesBlokken(t){ /* lestekst van de mentor als korte blokken per zin, in plaats van één alinea */
+  const zinnen = String(t || "").replace(/([.!?])\s+(?=[A-Z‘“(])/g, "$1\n").split("\n").map(x => x.trim()).filter(Boolean);
+  if (zinnen.length < 2) return `<p>${esc(t)}</p>`;
+  return `<ul class="lesstappen">${zinnen.map(z => `<li>${esc(z)}</li>`).join("")}</ul>`; }
 function mkFilter(t){ const mm = mentorMods(); return (mm && !mm.includes("df")) ? String(t).replace(/\s*Extra docentfeedback[^.]*\./g, "") : t; }
 function markeer(els, msg){ /* laat ontbrekende velden oplichten en scrol naar het eerste */
   const lijst = els.filter(Boolean); if (!lijst.length) return false;
@@ -2233,7 +2250,7 @@ MPAGES.week = () => {
   h += `<div class="card"><div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start"><h2 style="margin:0">Les ${r.les} · ${esc(r.titel)}</h2><button class="btn small" data-bord="open" data-les="${r.les}" style="white-space:nowrap">▶ Start digibordles</button></div>${w === "half" ? (r.g ? `<p class="small" style="margin-top:-6px">In de klas: groep ${r.g}. Groep ${r.g === 1 ? 2 : 1} werkt thuis.</p>` : `<p class="small" style="margin-top:-6px">De hele klas is in de klas.</p>`) : ""}
     ${r.dl ? `<div class="note"><b>Deadline:</b> ${esc(r.dl)}</div>` : ""}
     <h3>1. Opener, 5 à 8 minuten</h3>${(LES.find(l => l.les === r.les) || {}).k30 && !(LES.find(l => l.les === r.les) || {}).laatste ? "<p>Sla de opener over: deze les duurt 30 minuten. De digibordles is vanzelf kort.</p>" : g ? `<p><b>${esc(g.titel.replace(/[.?!]$/, ""))}.</b> ${esc(g.hoe)}</p>` : "<p>Geen werkvorm.</p>"}
-    <h3>2. De les</h3><p>${esc(mkFilter(r.mkW))}</p>
+    <h3>2. De les</h3>${lesBlokken(mkFilter(r.mkW))}
     ${r.leerl.map(([l,t]) => `<p><span class="lbl" style="display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase">${esc(l)}</span>${esc(t)}</p>`).join("")}
     <h3>3. Na de les</h3><p style="margin:0">${mentorNaDeLes(r.les)}</p>
     ${r.nbW ? `<p class="small" style="margin:12px 0 0">Let op: ${esc(r.nbW)}</p>` : ""}</div>`;
