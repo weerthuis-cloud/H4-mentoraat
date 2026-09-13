@@ -188,6 +188,7 @@ details .ex{font-size:14px;color:var(--muted);margin:6px 0 0;padding-left:12px;b
 .gap{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 12px}
 .gap td,.gap th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
 .gap th{color:var(--muted);font-weight:600;font-size:13px}
+.inl{width:100%;border-collapse:collapse;font-size:14px} .inl th,.inl td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} .inl th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;border-bottom:2px solid var(--line)} .inl td:first-child{font-weight:800;color:var(--acc);text-align:right;padding-right:16px} .inl td:nth-child(2){white-space:nowrap;color:var(--muted)} .inl td:nth-child(5){font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--muted)} .inl tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--acc) 4%,var(--card))} .inl tr.off td{opacity:.55}
 .flag{color:var(--warm);font-weight:600}
 .chart{display:grid;gap:16px}
 .chart .rowc{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:end}
@@ -343,6 +344,7 @@ details.vraag summary{font-size:16px} ul.kort{margin:0 0 10px;padding-left:20px}
   #print .qa i.meta{display:block;font-style:normal;font-size:8pt;color:#666;margin-top:1pt}
   #print table.strook{border:2px solid #1d5c63;margin-bottom:10pt}
   #print table.strook th{background:#e3efef;width:17%}
+  #print table.inl{font-size:9pt;width:100%;border-collapse:collapse} #print table.inl th,#print table.inl td{padding:4pt 6pt;border-bottom:1px solid #bbb;text-align:left;vertical-align:top} #print table.inl th{background:#f2f1ec}
   #print table.mplan{font-size:8pt}
   #print table.mplan th{background:#f2f1ec}
   #print table.mplan td{vertical-align:top}
@@ -2240,9 +2242,9 @@ MPAGES.inleveren = () => {
   const regel = r => `<tr class="${r.aan ? "" : "off"}"><td>${r.n}</td><td>${esc(r.datum)}</td><td><b>${esc(r.titel)}</b>${r.extra ? ` <span class="pill" style="font-size:11px">extra${r.aan ? "" : ", staat uit"}</span>` : ""}</td><td>${esc(r.waar)}</td><td>${esc("Inleveren: " + r.titel + (molVan(r.m.id) ? " (MOL " + molVan(r.m.id).nr + ")" : ""))}</td></tr>`;
   const tekst = std.filter(r => r.aan).concat(ext.filter(r => r.aan)).sort((a,b) => a.n - b.n).map(r => `Les ${r.n} · ${r.datum} · Inleveren: ${r.titel}${r.extra ? " (extra)" : ""} · ${r.waar}`).join("\n");
   return `<h1>Inlevermomenten</h1><p class="lead">${week ? "Je klas levert elke week de les-PDF in. Daarnaast zijn dit de momenten waarop een onderdeel af is en het document ervan hoort te bestaan." : "Twaalf keer per jaar leveren leerlingen het document van een onderdeel in via Teams; in de andere weken maken ze alleen hun les-PDF als back-up."} De data volgen jouw lesdag; standaard is de inlevering in de les van de week waarin het onderdeel af moet.</p>
-    <div class="card"><h2>Standaard, voor elke klas</h2><div class="tbl-wrap"><table class="mplan" style="font-size:13px"><thead><tr><th>Les</th><th>Datum</th><th>Wat wordt ingeleverd</th><th>Waarvoor</th><th>Naam Teams-opdracht</th></tr></thead><tbody>${std.map(regel).join("")}</tbody></table></div>
+    <div class="card"><h2>Standaard, voor elke klas</h2><div class="tbl-wrap"><table class="inl"><thead><tr><th style="width:52px">Les</th><th style="width:140px">Datum</th><th>Wat wordt ingeleverd</th><th>Waarvoor</th><th>Naam Teams-opdracht</th></tr></thead><tbody>${std.map(regel).join("")}</tbody></table></div>
       <p class="small" style="margin:10px 0 0">Elk document heeft onderaan een controlestrook en het weeklog van de lessen sinds de vorige inlevering, dus je ziet ook de thuisweken.</p></div>
-    ${ext.length ? `<div class="card"><h2>Alleen als je de extra aanzet</h2><div class="tbl-wrap"><table class="mplan" style="font-size:13px"><thead><tr><th>Les</th><th>Datum</th><th>Wat wordt ingeleverd</th><th>Waarvoor</th><th>Naam Teams-opdracht</th></tr></thead><tbody>${ext.map(regel).join("")}</tbody></table></div></div>` : ""}
+    ${ext.length ? `<div class="card"><h2>Alleen als je de extra aanzet</h2><div class="tbl-wrap"><table class="inl"><thead><tr><th style="width:52px">Les</th><th style="width:140px">Datum</th><th>Wat wordt ingeleverd</th><th>Waarvoor</th><th>Naam Teams-opdracht</th></tr></thead><tbody>${ext.map(regel).join("")}</tbody></table></div></div>` : ""}
     <div class="card soft"><h2>${ikon("teams")} In één keer in Teams zetten</h2><p class="sub">Maak in september alle opdrachten aan: één per regel, met de datum als inleverdatum. Leerlingen zien in de tool vanzelf wanneer het inleverweek is.</p>
       <div class="row" style="gap:8px"><button class="btn" data-act="inlKopieer">Kopieer voor Teams</button><button class="btn ghost" data-act="inlPrint">Print de lijst</button></div><textarea id="inl-tekst" readonly rows="6" style="margin-top:10px;font-size:13px">${esc(tekst)}</textarea></div>`;
 };
