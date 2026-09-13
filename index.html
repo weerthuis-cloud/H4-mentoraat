@@ -187,6 +187,7 @@ details .ex{font-size:14px;color:var(--muted);margin:6px 0 0;padding-left:12px;b
 .per{margin:22px 0 8px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 svg.strook{width:100%;height:auto;display:block}
 .drie{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0 0 14px} .drie li{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:14px} .drie li .hnr{width:22px;height:22px;border-radius:50%;background:var(--line);color:var(--ink);font-weight:800;font-size:12px;display:inline-flex;align-items:center;justify-content:center} .drie li.nu{border-color:var(--acc);color:var(--ink);font-weight:700} .drie li.nu .hnr{background:var(--acc);color:var(--acc-ink)} .drie li.ok{color:var(--ink)} .drie li.ok .hnr{background:var(--c-lob);color:#fff}
+.afvink{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:6px} .afvink li{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line)} .afvink li .hnr{width:24px;height:24px;border-radius:50%;background:var(--line);font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto} .afvink li.ok .hnr{background:var(--c-lob);color:#fff} .afvink li.open{border-color:var(--c-toets)} .afvink li.open .hnr{background:var(--c-toets);color:#fff} .afvink li > span:nth-child(2){flex:1}
 .tl{display:grid;gap:8px}
 .tl .it{display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
 .tl .it.toets{border-left-color:var(--warm)} .tl .it.lob{border-left-color:var(--lob)} .tl .it.studie{border-left-color:var(--studie)} .tl .it.mol{border-left-style:double;border-left-width:7px}
@@ -1679,13 +1680,23 @@ function lesStappen(n, id){ /* [van, tot] uit de taaktekst, bv. "Actieplan stap 
 function routeKort(id){ if (id === "start") return "Instellen"; const t = MOM[id].titel;
   return t.replace("Voorbereiding MOL-gesprek", "MOL").replace("Terugblik toetsweek", "Terugblik").replace("Feedback van een docent", "Docentfeedback").replace(/ · .*$/, ""); }
 function startKlaar(){ return !!(S.leerling.voornaam && S.vakken.length && (CFG().werkwijze !== "half" || S.leerling.groep)); }
+function momentStapHtmls(id){ /* de stap-html's van een onderdeel, zonder te renderen als ze er al zijn */
+  if (!STAP_HTML[id]){ try { const T = TYPES[MOM[id].type]; if (T) T(id); } catch(_){} }
+  return STAP_HTML[id] || null; }
+function halteKlaar(n, id){ /* af voor deze les: alle stappen die in deze les horen zijn ingevuld, of het onderdeel is helemaal klaar */
+  if (status(id) === "klaar") return true;
+  const dl = lesStappen(n, id); if (!dl) return false;
+  const hs = momentStapHtmls(id); if (!hs) return false;
+  for (let j = dl[0]; j <= Math.min(dl[1], hs.length); j++){ if (!stapGevuld(hs[j-1])) return false; }
+  return true; }
+
 function routeHaltes(n){
   const L = LES.find(l => l.les === n); if (!L) return [];
   const { taak } = lesInfo(L), kort = isKort(n), b = `lessen.${n}`, d = S.lessen[n] || {};
   const taken = (taak || !L.klas) ? lesTaken(n).map(x => x.taak) : [L.klas, L.thuis].filter(Boolean);
   const ids = []; taken.forEach(tk => taakOpen(tk).forEach(id => { if (!ids.includes(id)) ids.push(id); }));
   const H = [{ k:"terug", ik:"terug", lab:"Terugkijken", klaar: !!get(`${b}.terug.tekst`) || (kort && !!get(`${b}.terug.gelukt`)), r:"#r-terug" }];
-  ids.forEach(id => H.push({ k:id, ik: id === "start" ? "start" : (ROUTE_IK[MOM[id].type] || "doel"), lab: routeKort(id), klaar: id === "start" ? startKlaar() : status(id) === "klaar", r:id }));
+  ids.forEach(id => H.push({ k:id, ik: id === "start" ? "start" : (ROUTE_IK[MOM[id].type] || "doel"), lab: routeKort(id), klaar: id === "start" ? startKlaar() : halteKlaar(n, id), r:id }));
   H.push({ k:"afsl", ik:"check", lab:"Afsluiten", klaar: !!get(`${b}.afsl.volgende`) && (kort || !!get(`${b}.afsl.gedaan`)), r:"#r-afsl" });
   H.push({ k:"pdf", ik:"pdf", lab:"PDF inleveren", klaar: !!(d.pdf && d.pdf.length), r:"#r-pdf" });
   return H; }
@@ -1770,11 +1781,14 @@ function lesView(n){
     ${ta(`${b}.afsl.volgende`, "Wat is je volgende stap?", "Dit zie je terug aan het begin van de volgende les.", 2)}</div>`;
   // 4 inleveren
   const d = S.lessen[n] || {};
+  const HH = routeHaltes(n).filter(x => x.k !== "pdf"), open = HH.filter(x => !x.klaar), allesAf = open.length === 0;
   h += `<div class="card soft" id="r-pdf"><h2>4. Check en inleveren</h2>
-    <span class="lab">Check je werk</span>${KWALITEIT.map(([k,t]) => chk(`${b}.check.${k}`, t)).join("")}
+    <span class="lab">Wat je deze les deed</span><ol class="afvink">${HH.map((x, i) => `<li class="${x.klaar ? "ok" : "open"}"><span class="hnr">${x.klaar ? "✓" : i + 1}</span><span>${esc(x.lab)}</span>${x.klaar ? `<span class="status klaar">af</span>` : `<button class="btn small ghost" data-route="${esc(x.r)}" data-les="${n}">Open</button>`}</li>`).join("")}</ol>
+    ${allesAf ? `<div class="note"><b>${ikon("check")} Alles van deze les is af.</b> Doe de check hieronder en maak dan je PDF.</div>` : `<div class="alert"><b>Nog niet alles is af:</b> ${esc(open.map(x => x.lab).join(", "))}. Maak dat eerst af; daarna kun je de PDF maken. Kun je iets echt niet doen? Overleg met je mentor.</div>`}
+    <span class="lab" style="margin-top:12px">Check je werk</span>${KWALITEIT.map(([k,t]) => chk(`${b}.check.${k}`, t)).join("")}
     <p class="sub" style="color:inherit;margin-top:8px">Maak een PDF van deze les en lever hem in via de Teams-opdracht van deze week. Daarna staat de les op slot, maar je kunt hem altijd heropenen als je iets wilt aanpassen. Tegelijk downloadt de tool een back-up van al je werk (een bestand <code>jaarlijn-jouwnaam-les${n}-datum.json</code> in ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}): zet die in je OneDrive.</p>
     ${d.locked ? `<div class="note"><b>Ingeleverd en vergrendeld.</b> Wil je toch nog iets aanpassen? Heropen de les en maak daarna een nieuwe PDF. In je PDF staat dan dat je de les hebt heropend.</div><button class="btn ghost" data-act="heropen" data-les="${n}">Les heropenen</button>`
-      : `<button class="btn" data-act="lesPdf" data-les="${n}">PDF maken van les ${n}</button> <button type="button" class="btn small ghost" data-hulp="pdfmaken">Hoe maak ik een PDF?</button>`}
+      : `<button class="btn" data-act="lesPdf" data-les="${n}" ${allesAf ? "" : "disabled"}>PDF maken van les ${n}</button> <button type="button" class="btn small ghost" data-hulp="pdfmaken">Hoe maak ik een PDF?</button>`}
     ${d.pdf && d.pdf.length ? `<p class="small" style="margin:10px 0 0">PDF gemaakt: ${d.pdf.map(fmtTs).join(", ")}${d.heropend && d.heropend.length ? ` · heropend: ${d.heropend.map(fmtTs).join(", ")}` : ""}</p>` : ""}</div>`;
   const nx = gates().find(g => g > n && !gesprekVrij(g) && n >= gateVenster(g) && n !== g);
   if (nx) h += gesprekKaart(nx, false);
@@ -1839,12 +1853,12 @@ function buildLesReport(n){
   const aj = adjOf(n), kort = isKort(n), sv = samenVan(n);
   const rows = [{ naam:"Terugblik", pf:[`${b}.terug.`] }]
     .concat(opens.map(id => ({ naam: MOM[id].titel, pf: prefixesOf(id) })))
-    .concat([{ naam:"Studievaardigheden (extra)", pf:["sv."] }, { naam:"Werk buiten de tool", pf:[`${b}.buiten`] }, { naam:"Afsluiting", pf:[`${b}.afsl.`] }]);
+    .concat(mod("sv") && hasContent(S.sv) ? [{ naam:"Studievaardigheden (extra)", pf:["sv."] }] : []).concat([{ naam:"Werk buiten de tool", pf:[`${b}.buiten`] }, { naam:"Afsluiting", pf:[`${b}.afsl.`] }]);
   if (gates().includes(n)) rows.push({ naam:"Gesprek met mentor", pf:[`gesprek.${n}.`] });
   opens.forEach(id => { if (hasContent((S.ouder||{})[id])) rows.push({ naam:"Ouder of verzorger, bij " + MOM[id].titel, pf:[`ouder.${id}.`], ouder:true });
     if (hasContent((S.peer||{})[id])) rows.push({ naam:"Klasgenoot, bij " + MOM[id].titel, pf:[`peer.${id}.`], ouder:true }); });
   const sums = rows.map(r => ({ ...r, ...sumMeta(r.pf, snap) }));
-  const svWeek = sums.find(r => r.pf[0] === "sv.").ms;
+  const svRij = sums.find(r => r.pf[0] === "sv."), svWeek = svRij ? svRij.ms : 0;
   const totWeek = sums.filter(r => !r.ouder).reduce((a,r) => a + r.ms, 0), afslOk = !!((kort || get(`${b}.afsl.gedaan`)) && get(`${b}.afsl.volgende`));
   const chk = get(`${b}.check`) || {}, nChk = KWALITEIT.filter(([k]) => chk[k]).length;
   const modeTxt = (aj === "z" ? "zelfstandig, zonder mentor" : { klas:"in de klas", thuis:"thuis", les:"mentorles" }[mode]) || "–";
@@ -2544,7 +2558,7 @@ document.addEventListener("click", e => {
     if (hasContent(cur) && !confirm("Doel "+(i+1)+" voor februari is al (deels) ingevuld. Overschrijven?")) return;
     const src = JSON.parse(JSON.stringify(get(`doelenA.${i}`)||{})); src.datum = MOM.eind.datum; S.doelenB[i] = src; save(); render(); }
   if (act === "lesPdf"){ const n = Number(a.dataset.les), b = `lessen.${n}`;
-    if (!((isKort(n) || get(`${b}.afsl.gedaan`)) && get(`${b}.afsl.volgende`)) && !confirm("Je afsluiting is nog niet helemaal ingevuld. Toch een PDF maken?")) return;
+    { const open = routeHaltes(n).filter(x => x.k !== "pdf" && !x.klaar); if (open.length){ toast(`Nog niet af: ${open.map(x => x.lab).join(", ")}. Maak dat eerst af.`, 5000); render(); return; } }
     const html = buildLesReport(n);
     S.lessen[n] = S.lessen[n] || {}; S.lessen[n].pdf = (S.lessen[n].pdf || []).concat(Date.now()); S.lessen[n].snap = snapshot(); S.lessen[n].locked = true; save();
     $("#print").innerHTML = html;
