@@ -290,7 +290,7 @@ body.bord-open{overflow:hidden}
 .jaarkaart{margin-bottom:14px}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 #print .pkop{display:none}
-@media print{ #print .pkop{display:block;position:fixed;top:0;right:0;font-size:9pt;color:#555} #print{padding-top:14pt} #toast,.toast{display:none!important} }
+@media print{ #toast,.toast{display:none!important} }
 code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:var(--geel-soft);padding:1px 6px;border-radius:5px;word-break:break-all}
 .halte{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-left:5px solid var(--c-leerling);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--card)} .halte.ok{border-left-color:var(--c-lob)} .halte .hnr{width:30px;height:30px;border-radius:50%;background:var(--c-leerling);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto} .halte.ok .hnr{background:var(--c-lob)} .halte .hbody{flex:1;min-width:0}
 .route-wrap{margin:6px 0 14px;overflow-x:auto} .route{width:100%;min-width:560px;height:auto;display:block} .route .rt-l{font-size:14px;font-weight:600;fill:var(--ink)} .route .rt-cur .rt-l{font-weight:800} .route .rt-n{fill:var(--c-leerling);font-weight:800} .route .rt-mark{display:none} .route .rt-cur .rt-mark{display:block} .route .rt-nu{font-size:12px;font-weight:800;fill:var(--c-mentor)} .route g:hover circle:first-of-type{filter:brightness(1.08)}
@@ -1549,8 +1549,7 @@ function leerlingPlanPdf(){
     h += `<tr><td>${esc(r.wk)}</td><td>${esc(dat)}</td><td>${r.les}</td>${w === "heel" ? `<td><b>${esc(r.titel)}.</b> ${esc(r.ltHeel || "")}</td>` : `<td>${r.g === 1 ? kl : th}</td><td>${r.g === 2 ? kl : th}</td>`}<td>${r.dl ? `<b>${esc(r.dl)}</b>` : ""}</td></tr>`; });
   h += `</tbody></table><p class="uitleg">Open de tool altijd via de klaslink in Teams. Elke les sluit je af met een PDF.</p>`;
   $("#print").innerHTML = h;
-  const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st);
-  const oud = document.title; document.title = `Jaarplanner leerlingen${klas ? " " + klas : ""}`; window.print(); document.title = oud; st.remove(); }
+  printMet({ landscape:true, titel:`Jaarplanner leerlingen${klas ? " " + klas : ""}`, links:`Jaarplanner leerlingen${klas ? " · " + klas : ""} · jaarlijn havo 4`, voet:"KSH College · Mijn jaarlijn havo 4" }); }
 function gates(){ const c = CFG(); if (!c.key) return []; return Array.from(new Set(c.gates.map(g => (typeof adjOf === "function" && adjOf(g) === "v") ? samenIn(g) : g))).sort((a,b) => a-b); }
 function gesprekVrij(g){ return !!(S.gesprek && S.gesprek[g] && S.gesprek[g].vrij); }
 function blokGate(){ return gates().find(g => !gesprekVrij(g)) || null; }
@@ -1821,6 +1820,19 @@ PAGES.lessen = () => {
     h += `<button class="it ${sp.cls} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b><span class="spoorik ${sp.cls}">${ikon(sp.ik, "#fff")}</span>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(lesDatumL(L.les))} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}</small></span><span class="status ${slot||lesSlot(L.les)?"slot":st}">${slot?"op slot":lesSlot(L.les)?(lesSlot(L.les).type==="mentor"?"op slot":"vanaf "+fmtDate(lesSlot(L.les).vanaf)):st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
   return h + `</div>`;
 };
+/* ---------- PDF: eigen kop- en voetregel via @page-marges (Chrome en Edge 131+); vervangt de datum, titel en link van de browser ---------- */
+function cssStr(t){ return JSON.stringify(String(t || "").replace(/\s+/g, " ")); }
+function printMet(o){ /* o: { links, rechts, voet, landscape, marge } */
+  const st = document.createElement("style"), f = "font:8.5pt system-ui,sans-serif;color:#666";
+  const marge = o.marge || (o.landscape ? "14mm 10mm 13mm" : "18mm 15mm 16mm");
+  st.textContent = `@page{size:A4${o.landscape ? " landscape" : ""};margin:${marge};
+    @top-left{content:${cssStr(o.links || "")};${f}} @top-right{content:${cssStr(o.rechts || "")};${f}}
+    @bottom-left{content:${cssStr(o.voet || "KSH College · Mijn jaarlijn havo 4")};${f}} @bottom-right{content:"Pagina " counter(page) " van " counter(pages);${f}}}`;
+  document.head.appendChild(st);
+  const oud = document.title; if (o.titel) document.title = o.titel;
+  try { window.print(); } finally { document.title = oud; st.remove(); }
+}
+
 function buildLesReport(n){
   const L = LES.find(l => l.les === n), { mode, taak } = lesInfo(L), b = `lessen.${n}`, snap = vorigeSnap(n), P = S.leerling, now = Date.now(), d = S.lessen[n] || {};
   const opdrs = lesTaken(n).map(x => x.taak).filter(Boolean), opens = Array.from(new Set(opdrs.flatMap(o => taakOpen(o)))).filter(id => id !== "start");
@@ -1837,7 +1849,7 @@ function buildLesReport(n){
   const chk = get(`${b}.check`) || {}, nChk = KWALITEIT.filter(([k]) => chk[k]).length;
   const modeTxt = (aj === "z" ? "zelfstandig, zonder mentor" : { klas:"in de klas", thuis:"thuis", les:"mentorles" }[mode]) || "–";
   const aanp = [kort ? "korte les" : "", sv.length ? "samen met les " + sv.join(" en ") : "", aj === "z" ? "zelfstandig" : ""].filter(Boolean).join(" · ");
-  let h = `<div class="pkop">${esc([P.voornaam || "(geen naam)", P.klas].filter(Boolean).join(" · "))} · les ${n} · ${esc(lesDatumL(n))} · PDF ${fmtTs(now)}</div><img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Les ${n} · ${esc(lesBlok(L))} · ${esc(P.voornaam||"(geen naam)")}</h1>
+  let h = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Les ${n} · ${esc(lesBlok(L))} · ${esc(P.voornaam||"(geen naam)")}</h1>
   <table class="strook"><tr><th>Leerling</th><td>${esc([P.voornaam, P.klas, CFG().werkwijze==="half"&&P.groep?"groep "+P.groep:""].filter(Boolean).join(" · "))}</td><th>Les</th><td>les ${n} · week ${esc(L.wk)} · ${esc(lesDatumL(n))} · ${modeTxt}</td></tr>
   <tr><th>PDF gemaakt op</th><td><b>${fmtTs(now)}</b>${d.heropend && d.heropend.length ? `<br>heropend na inleveren: ${d.heropend.map(fmtTs).join(", ")}` : ""}</td><th>Getypt sinds vorige PDF</th><td><b>${fmtDur(totWeek)}</b></td></tr>
   <tr><th>Afsluiting ingevuld</th><td>${afslOk?"ja":"<b>nee</b>"}</td><th>Eigen oordeel</th><td>gewerkt: ${["","nauwelijks","matig","goed","heel goed"][get(`${b}.afsl.inzet`)||0]||"–"} · kwaliteitscheck ${nChk} van 3</td></tr>${aanp ? `<tr><th>Aangepaste les</th><td colspan="3">${esc(aanp)}</td></tr>` : ""}</table>
@@ -1993,10 +2005,7 @@ function mentorPlanPdf(){
   });
   h += `</tbody></table><p class="uitleg">Gespreksmomenten gelden alleen als je het gespreksslot aanzet (standaard vóór les ${gatesStd.join(", ")}). Valt een les uit, pas dan de planning aan op de pagina Planning aanpassen in het mentorportaal.</p>` + gvPdfHTML();
   $("#print").innerHTML = h;
-  const st = document.createElement("style"); st.id = "pageLandscape"; st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st);
-  const oud = document.title; document.title = `Lessen per week - jaarlijn havo 4 - ${w==="heel"?"hele klas":"halve klas"}`;
-  window.print();
-  document.title = oud; st.remove();
+  printMet({ landscape:true, titel:`Lessen per week - jaarlijn havo 4 - ${w==="heel"?"hele klas":"halve klas"}`, links:`Lessen per week · ${w==="heel"?"hele klas":"halve klas"}${(S.ui && S.ui.mklas) ? " · " + S.ui.mklas : ""}`, voet:"KSH College · mentorportaal jaarlijn havo 4" });
 }
 document.addEventListener("change", e => { if (e.target.name === "mw"){ S.ui.mw = e.target.value; save(); render(); } });
 
@@ -2229,7 +2238,7 @@ MPAGES.handleiding = () => `<h1>Handleiding</h1><p class="lead">Wat je elke week
   <details class="card"><summary>Studievaardigheden en executieve functies</summary><p style="margin-top:10px">De nulmeting en de eindkeuze zijn verplicht. De rondes daartussen kiest de leerling zelf; per ronde vinkt hij aan dat jij akkoord bent. Vraag: past deze manier bij wat je nulmeting laat zien? De zelfscan gebruikt de elf executieve functies die SLO noemt (naar Dawson en Guare), verdeeld in doen (gedrag) en denken. Het is een zelfbeeld, geen diagnose. Een leerling die zich op alles laag scoort, spreek je apart.</p></details>
   <details class="card"><summary>Gespreksslot</summary><p style="margin-top:10px">Vanaf de gekozen lessen kan een leerling pas verder na een gesprek met jou. Hij ziet het gesprek in de lessen ervoor aankomen en bereidt het voor. Vanaf het vorige gespreksmoment ziet hij onderaan elke les zijn aanvraagcode. Na het gesprek maak je met je pincode een vrijgavecode (Mijn klas › Gesprek en vrijgavecode). Houd minstens acht lessen tussen twee momenten. Bij de halve klas zie je elke groep in die tijd maar vier keer: spreek dus drie à vier leerlingen per les. Een MOL-gesprek mag meetellen. Bij de halve klas is les 9 een week van groep 1 en zijn les 17 en 25 weken van groep 2 (na de kerst wisselt het ritme); spreek de andere groep in de lessen ervoor, anders zit die thuis op slot.</p><p>Ziek rond een slotles? Voeg die les samen met de volgende (Planning aanpassen); het slot schuift mee. Pincode kwijt? Maak een nieuwe klaslink met een nieuwe pincode; wie al vrij is, blijft vrij. Het slot is een drempel, geen garantie: een handige leerling kan het omzeilen.</p></details>`;
 
-function posterPrint(html, titel){ $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt">` + html; const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st); const oud = document.title; document.title = titel; window.print(); document.title = oud; st.remove(); }
+function posterPrint(html, titel){ $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt">` + html; printMet({ landscape:true, titel, links:titel, voet:"KSH College · jaarlijn havo 4", marge:"12mm 10mm 12mm" }); }
 /* ---------- gespreksslot: uitleg als stappenplan ---------- */
 function markeer(els, msg){ /* laat ontbrekende velden oplichten en scrol naar het eerste */
   const lijst = els.filter(Boolean); if (!lijst.length) return false;
@@ -2538,7 +2547,9 @@ document.addEventListener("click", e => {
     if (!((isKort(n) || get(`${b}.afsl.gedaan`)) && get(`${b}.afsl.volgende`)) && !confirm("Je afsluiting is nog niet helemaal ingevuld. Toch een PDF maken?")) return;
     const html = buildLesReport(n);
     S.lessen[n] = S.lessen[n] || {}; S.lessen[n].pdf = (S.lessen[n].pdf || []).concat(Date.now()); S.lessen[n].snap = snapshot(); S.lessen[n].locked = true; save();
-    $("#print").innerHTML = html; document.title = `Les ${n} - ${S.leerling.voornaam || "leerling"}${S.leerling.klas ? " " + S.leerling.klas : ""} - ${new Date().toISOString().slice(0,10)}`; window.print(); document.title = "Mijn jaarlijn havo 4"; maakBackup("les" + n); toast(`PDF gemaakt. Je back-up ${S.ui.lastBackupNaam || ""} staat in ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}: zet hem in je OneDrive.`); render(); }
+    $("#print").innerHTML = html;
+    printMet({ titel: `Les ${n} - ${S.leerling.voornaam || "leerling"}${S.leerling.klas ? " " + S.leerling.klas : ""} - ${new Date().toISOString().slice(0,10)}`, links: `Les ${n} · ${[S.leerling.voornaam || "(geen naam)", S.leerling.klas].filter(Boolean).join(" · ")}`, rechts: `${lesDatumL(n)} · PDF ${fmtTs(Date.now())}` });
+    maakBackup("les" + n); toast(`PDF gemaakt. Je back-up ${S.ui.lastBackupNaam || ""} staat in ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}: zet hem in je OneDrive.`); render(); }
   if (act === "heropen"){ const n = Number(a.dataset.les); if (!confirm("Les heropenen? Maak daarna een nieuwe PDF en lever die opnieuw in. In de PDF staat dat je de les hebt heropend.")) return;
     S.lessen[n].locked = false; S.lessen[n].heropend = (S.lessen[n].heropend || []).concat(Date.now()); save(); render(); }
   if (act === "ontgrendel"){ const g = Number(a.dataset.g), inv = ($("#vrij-"+g).value || "").trim(), gs = S.gesprek[g] || {};
@@ -2584,7 +2595,7 @@ function renderMentorNav(){ if (MENTOR) { const cur = mentorSub(); $("#nav").inn
   if (act === "posterMentor"){ posterPrint(`<h1>Stappenplan mentor · jaarlijn havo 4</h1>` + mentorPlaat() + `<h2 style="margin-top:12pt">Met gespreksslot</h2>` + gsFlow(), "Stappenplan mentor jaarlijn havo 4"); return; }
   if (act === "posterLeerling"){ posterPrint(`<h1>Zo werkt elke week · mentorles havo 4</h1>` + flow(WEEKSTAPPEN) + `<p style="margin-top:14pt;font-size:12pt">Open de tool altijd via de klaslink in Teams. Loop je vast? Klik op het vraagteken bij de opdracht.</p>`, "Weekposter jaarlijn havo 4"); return; }
   if (act === "posterJaar"){ posterPrint(`<h1>Het jaar in één beeld · havo 4 · ${CONFIG.schooljaar}</h1>` + jaarPlaat({ sv:true, df:true, label:true }), "Jaarplaat havo 4"); return; }
-  if (act === "gvPdf"){ $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Groepsvorming · jaarlijn havo 4</h1><div class="pmeta">${CONFIG.school} · ${CONFIG.schooljaar}</div>` + gvPdfHTML().replace('class="newpage"', ""); const st = document.createElement("style"); st.textContent = "@page{size:A4 landscape;margin:10mm}"; document.head.appendChild(st); window.print(); st.remove(); return; }
+  if (act === "gvPdf"){ $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Groepsvorming · jaarlijn havo 4</h1><div class="pmeta">${CONFIG.school} · ${CONFIG.schooljaar}</div>` + gvPdfHTML().replace('class="newpage"', ""); printMet({ landscape:true, titel:"Groepsvorming - jaarlijn havo 4", links:"Groepsvorming · jaarlijn havo 4", voet:"KSH College · mentorportaal jaarlijn havo 4" }); return; }
   if (act === "plLoad"){ plLaad(); return; }
   if (act === "plMake"){ plMaak(); return; }
   if (act === "plReset"){ if (PL){ PL.adj = {}; render(); } return; }
@@ -2592,8 +2603,9 @@ function renderMentorNav(){ if (MENTOR) { const cur = mentorSub(); $("#nav").inn
     if (!/^\d{4,8}$/.test(pin) || !/^\d+-[A-Z0-9]{4}$/.test(code)){ toast("Vul je pincode en een aanvraagcode zoals 9-K7F3 in."); return; }
     $("#vg-out").innerHTML = `<div class="codebox"><div><span class="small">Vrijgavecode voor ${esc(code)}</span><b>${vrijgaveCode(sleutelUitPin(pin), code)}</b></div></div>`; }
   if (act === "copyDocent"){ const t = document.getElementById("dv-" + a.dataset.id); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast("Bericht gekopieerd.")); else { t.select(); document.execCommand("copy"); toast("Bericht gekopieerd."); } return; }
-  if (act === "spiek"){ const id = a.dataset.id; $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Spiekkaart ${esc(MOM[id].gesprek.split("·")[0].trim())} · ${esc(S.leerling.voornaam||"")}</h1>` + spiekHTML(id); const oud = document.title; document.title = "Spiekkaart " + MOM[id].gesprek.split("·")[0].trim(); window.print(); document.title = oud; return; }
-  if (act === "pdf"){ $("#print").innerHTML = buildReport($("#pdfSel").value); window.print(); }
+  if (act === "spiek"){ const id = a.dataset.id; $("#print").innerHTML = `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>Spiekkaart ${esc(MOM[id].gesprek.split("·")[0].trim())} · ${esc(S.leerling.voornaam||"")}</h1>` + spiekHTML(id); printMet({ titel: "Spiekkaart " + MOM[id].gesprek.split("·")[0].trim(), links: `Spiekkaart ${MOM[id].gesprek.split("·")[0].trim()} · ${[S.leerling.voornaam || "", S.leerling.klas].filter(Boolean).join(" · ")}`, rechts: `PDF ${fmtTs(Date.now())}` }); return; }
+  if (act === "pdf"){ const w = $("#pdfSel").value, m = MOM[w]; $("#print").innerHTML = buildReport(w);
+    printMet({ titel: `${m ? m.titel : w === "studie" ? "Studievaardigheden" : "Jaarlijn"} - ${S.leerling.voornaam || "leerling"}${S.leerling.klas ? " " + S.leerling.klas : ""} - ${new Date().toISOString().slice(0,10)}`, links: `${m ? m.titel : w === "studie" ? "Studievaardigheden" : "Alles tot nu toe"} · ${[S.leerling.voornaam || "(geen naam)", S.leerling.klas].filter(Boolean).join(" · ")}`, rechts: `PDF ${fmtTs(Date.now())}` }); }
   if (act === "backup"){ maakBackup(""); toast(`Back-up ${S.ui.lastBackupNaam || ""} gedownload naar ${IS_IPAD ? "Bestanden › Downloads" : "je map Downloads"}. Zet hem in je OneDrive.`); render(); }
   if (act === "restore") $("#importFile").click();
   if (act === "wipe"){ if (confirm("Weet je het zeker? Alles op dit apparaat wordt gewist.")){ try { localStorage.removeItem(KEY); } catch(_){} S = blank(); render(true); } }
