@@ -517,7 +517,7 @@ const ORGCHECK = [
 
 /* ---------- opslag ---------- */
 function blank(){
-  return { versie:2, leerling:{voornaam:"",klas:"",profiel:"",groep:""}, meta:{}, lessen:{}, gesprek:{}, ouder:{}, peer:{}, sv:{}, cfg:null, vakken:[], doelenA:[{},{}], doelenB:[{},{}],
+  return { versie:2, leerling:{voornaam:"",klas:"",profiel:"",groep:""}, meta:{}, lessen:{}, gesprek:{}, ouder:{}, peer:{}, sv:{}, cfg:null, vakken:["Nederlands","Engels"], doelenA:[{},{}], doelenB:[{},{}],
            m:{ spiegel:{ fb:[{rol:"Klasgenoot"},{rol:"Ouder of verzorger"}] } },
            ui:{ tab:"start", privacyOk:false } };
 }
@@ -1075,7 +1075,7 @@ const PAGES = {
     const inst = `<div class="card"><h2>Over jou</h2><div class="grid2">${inp("leerling.voornaam","Voornaam","Komt op je PDF, zodat je mentor weet van wie hij is.")}${inp("leerling.klas","Klas","","text","bijvoorbeeld H4B")}</div>${inp("leerling.profiel","Profiel","","text","bijvoorbeeld Economie en Maatschappij")}
       ${CFG().werkwijze==="half" ? `<span class="lab">In welke groep zit je?</span><span class="hint">Je mentor vertelt je dit. De ene groep is om de week in de klas, de andere werkt dan thuis.</span>${radios("leerling.groep", [{v:"1",t:"Groep 1"},{v:"2",t:"Groep 2"}], "cols2")}` : ""}
       ${S.cfg ? `<p class="small" style="margin:6px 0 0">Ingesteld door je mentor: ${esc([S.cfg.klas, S.cfg.werkwijze==="heel"?"hele klas elke week":"halve klas om de week", gates().length?"gesprek vóór les "+gates().join(", "):""].filter(Boolean).join(" · "))}</p>` : `<div class="alert" style="margin-top:10px"><b>Je opende de tool zonder de klaslink van je mentor.</b> Daardoor kloppen je klas, je lesdag en misschien je lessen niet. Vraag de link in Teams en open de tool daarmee; wat je hier al invulde, blijft staan.</div>`}</div>
-    <div class="card"><h2>Jouw vakken</h2><p class="sub">Vink de vakken aan die je dit jaar hebt.</p><div class="radios cols3">${Array.from(new Set([...CONFIG.vakken, ...S.vakken])).map(v => `<label class="opt"><input type="checkbox" data-vak="${esc(v)}" ${S.vakken.includes(v)?"checked":""}><span><b>${esc(v)}</b></span></label>`).join("")}</div>
+    <div class="card"><h2>Jouw vakken</h2><p class="sub">Nederlands en Engels staan al aan, die heeft iedereen. Vink de rest van je vakken aan.</p><div class="radios cols3">${Array.from(new Set([...CONFIG.vakken, ...S.vakken])).map(v => `<label class="opt"><input type="checkbox" data-vak="${esc(v)}" ${S.vakken.includes(v)?"checked":""}><span><b>${esc(v)}</b></span></label>`).join("")}</div>
       <div class="row"><input type="text" id="nieuwVak" placeholder="Ander vak toevoegen" style="flex:1;min-width:180px"><button class="btn ghost" data-act="addVak">Toevoegen</button></div></div>
     <div class="card soft"><h2>Zo lever je in</h2><p style="margin:0 0 8px">Elke week sluit je een les af en lever je die in als PDF via Teams. In die PDF staat wanneer je hem maakte en hoe lang je aan elke opdracht hebt <b>getypt</b>. Pauzes tellen niet mee.</p><p style="margin:0">Kopiëren en plakken in de invulvelden staan uit: je typt alles zelf. Gebruik je spraakherkenning, dan kan dat gewoon. In de PDF staat dan dat die tekst ingesproken is.</p></div>`;
     if (S.ui.privacyOk){ const n0 = huidigeLes(), L0 = LES.find(l => l.les === n0), half = CFG().werkwijze === "half";
