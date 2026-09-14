@@ -188,6 +188,7 @@ details .ex{font-size:14px;color:var(--muted);margin:6px 0 0;padding-left:12px;b
 .gap{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 12px}
 .gap td,.gap th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
 .gap th{color:var(--muted);font-weight:600;font-size:13px}
+.vt.stoft td textarea{width:100%;min-height:52px;resize:vertical;font-size:13.5px;line-height:1.35} .bronnen{margin:-2px 0 12px} .bronnen .ex p{margin:0 0 6px} .bronnen .ex p:last-child{margin:0}
 .card.duo{border-left:4px solid var(--acc);background:color-mix(in srgb,var(--acc) 5%,var(--card))} .card.duo>h2:first-child::before{display:none}
 .inl{width:100%;border-collapse:collapse;font-size:14px} .inl th,.inl td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} .inl th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;border-bottom:2px solid var(--line)} .inl td:first-child{font-weight:800;color:var(--acc);text-align:right;padding-right:16px} .inl td:nth-child(2){white-space:nowrap;color:var(--muted)} .inl td:nth-child(5){font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--muted)} .inl tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--acc) 4%,var(--card))} .inl tr.off td{opacity:.55}
 .flag{color:var(--warm);font-weight:600}
@@ -583,7 +584,7 @@ function num(v){ if (v == null || v === "") return null; const n = parseFloat(St
 function nl(n, d=1){ return n == null ? "–" : n.toFixed(d).replace(".", ","); }
 
 /* Volledige zinnen: alle open vragen, behalve losse delen (als/dan), korte logboeknotities, feedbackkreten van anderen, vragenlijsten en bewijsnotities. */
-const ZINVRIJ = [/\.(als|dan)$/, /\.log\.\d+\.wat$/, /\.fb\.\d+\.(top|tip)$/, /\.interview$/, /\.arg\.\d+\.bewijs$/];
+const ZINVRIJ = [/\.(als|dan)$/, /\.log\.\d+\.wat$/, /\.fb\.\d+\.(top|tip)$/, /\.interview$/, /\.arg\.\d+\.bewijs$/, /\.stofActie$/];
 function zinVeld(p){ return !ZINVRIJ.some(r => r.test(p)); }
 const AFK = /(?:^|\s)(?:bijv|bv|enz|etc|ca|nl|blz|min|max|o\.a|d\.w\.z|m\.b\.t|i\.p\.v|t\.o\.v|dr|mr|dhr|mevr|jr|sr|st|nr|evt|incl|excl)$/i;
 function zinFouten(t){
@@ -867,6 +868,7 @@ function checkin(id, set){
 }
 
 /* toetsweken */
+const STOFBRON = ["Studiewijzer", "Magister of Teams", "PTA- of PTO-boekje", "Aan de docent gevraagd", "Van een klasgenoot", "Eigen aantekeningen", "Weet ik nog niet"];
 function prevNa(tw){ const order = ["A","B","C","D"]; const i = order.indexOf(tw); return i > 0 ? `tw${order[i-1]}_na` : null; }
 function toetsVoor(id){
   const m = MOM[id], b = `m.${id}`;
@@ -874,14 +876,18 @@ function toetsVoor(id){
   const pn = prevNa(m.tw), vorig = pn && get(`m.${pn}.anders`);
   if (vorig) h += `<div class="note"><b>Dit nam je je voor na toetsweek ${prevNa(m.tw)[2]}:</b> ${esc(vorig)}</div>`;
   if (!S.vakken.length) return h + geenVakken();
-  h += `<div class="card"><h2>1. Welke toetsen, welke stof?</h2><p class="sub">Zoek het per vak op in de studiewijzer, Magister of het PTA: welke stof precies, hoe zwaar de toets meetelt en of hij bij het PTO (voortgang, telt voor de overgang) of het PTA (examendossier, telt mee voor je eindcijfer) hoort. Vink aan welke vakken een toets hebben.</p>
-  <div class="tbl-wrap"><table class="vt"><thead><tr><th>Vak</th><th>Toets?</th><th>Leerstof (precies)</th><th>PTO of PTA</th><th>Weging</th></tr></thead><tbody>`;
+  h += `<div class="card"><h2>1. Welke toetsen, welke stof?</h2><p class="sub">Maak per vak een overzicht van de leerstof: wat moet je precies kennen en kunnen? Haal het op waar het te vinden is, en noteer erbij waar je het vandaan hebt. Vink eerst aan welke vakken een toets hebben.</p>
+  <details class="small bronnen"><summary>Waar haal je de leerstof vandaan?</summary><div class="ex"><p><b>Studiewijzer</b> in Magister of Teams: daar staat meestal per week wat je moet kennen.</p><p><b>PTA- of PTO-boekje</b>: daar staat welke stof officieel getoetst wordt, en hoe zwaar de toets telt.</p><p><b>Je docent</b>: vraag het in de les of stuur een bericht. Vraag door als het antwoord ‘hoofdstuk 3’ is: welke paragrafen, welke begrippen, welke opgaven?</p><p><b>Een klasgenoot</b>: leg je lijst naast die van iemand anders. Vaak weet de een wat de ander mist.</p><p><b>Je aantekeningen en de opgaven uit de les</b>: wat je geoefend hebt, komt meestal terug op de toets.</p></div></details>
+  <div class="tbl-wrap"><table class="vt stoft"><thead><tr><th>Vak</th><th>Toets?</th><th>Wat moet je kennen en kunnen?</th><th>Hoe weet je dat?</th><th>PTO of PTA</th><th>Weging</th></tr></thead><tbody>`;
   S.vakken.forEach(v => { const k = vkey(v), vp = `${b}.vak.${k}`, on = get(vp+".toets");
     h += `<tr class="${on?"":"off"}"><td class="vak">${esc(v)}</td><td><input type="checkbox" data-p="${vp}.toets" data-rerender aria-label="${esc(v)} heeft toets" ${on?"checked":""} style="width:18px;height:18px;accent-color:var(--acc)"></td>
-      <td><input type="text" data-p="${vp}.stof" value="${esc(get(vp+".stof"))}" placeholder="bijv. H1 t/m 3, par. 2.1–2.4, woordenlijst" aria-label="Leerstof ${esc(v)}" style="min-width:220px"></td>
+      <td><textarea data-p="${vp}.stof" rows="2" placeholder="H3 par. 3.1 t/m 3.4 · begrippen · opgaven 12–20" aria-label="Leerstof ${esc(v)}" spellcheck="true" lang="nl" style="min-width:260px">${esc(get(vp+".stof"))}</textarea></td>
+      <td><select data-p="${vp}.bron" data-rerender aria-label="Bron leerstof ${esc(v)}" style="min-width:150px"><option value="">Kies…</option>${STOFBRON.map(o => `<option ${get(vp+".bron")===o?"selected":""}>${esc(o)}</option>`).join("")}</select></td>
       <td><select data-p="${vp}.soort" aria-label="PTO of PTA ${esc(v)}" style="min-width:90px"><option value="">Kies…</option>${["PTO","PTA"].map(o => `<option ${get(vp+".soort")===o?"selected":""}>${o}</option>`).join("")}</select></td>
-      <td><input type="text" data-p="${vp}.weging" value="${esc(get(vp+".weging"))}" placeholder="bijv. 2x of 15%" aria-label="Weging ${esc(v)}" style="min-width:90px"></td></tr>`; });
-  h += `</tbody></table></div><p class="small" style="margin:8px 0 0">Weet je de stof of de weging niet zeker? Vraag het je docent vóór de toetsweek, niet erna. Een PTA-toets weegt door tot je eindexamen; die verdient je eerste aandacht.</p></div>`;
+      <td><input type="text" data-p="${vp}.weging" value="${esc(get(vp+".weging"))}" placeholder="2x of 15%" aria-label="Weging ${esc(v)}" style="min-width:80px"></td></tr>`; });
+  h += `</tbody></table></div>${live("stofCheck", id)}
+  ${ta(`${b}.stofActie`,"Wat zoek je nog uit, bij wie en wanneer?","Bijvoorbeeld: scheikunde dinsdag in de les aan mevrouw Jansen vragen; economie checken bij Sanne.",2)}
+  <p class="small" style="margin:8px 0 0">Weet je de stof of de weging niet zeker? Vraag het vóór de toetsweek, niet erna. Een PTA-toets weegt door tot je eindexamen; die verdient je eerste aandacht.</p></div>`;
   h += `<div class="card"><h2>2. Ben je er klaar voor?</h2><p class="sub">Schat per vak in hoe klaar je bent, nu én vlak voor de toetsweek. Voorspel ook je cijfer: na de toetsweek vergelijk je dat met wat je haalde.</p>
   <div class="small" style="margin-bottom:8px">1 = ${KLAAR[1]} · 2 = ${KLAAR[2]} · 3 = ${KLAAR[3]} · 4 = ${KLAAR[4]}</div>
   <div class="tbl-wrap"><table class="vt"><thead><tr><th>Vak</th><th>Klaar nu</th><th>Vlak ervoor</th><th>Verwacht</th></tr></thead><tbody>`;
@@ -975,6 +981,13 @@ const LIVE = {
     return `<div class="card soft"><h2>Havo 3 en nu naast elkaar</h2>${rows.map(d => { const a = t[d.id], b = n[d.id];
       return `<div>${d.naam}: ${a} → ${b} <span class="muted">(${b>a?"vooruit":b<a?"achteruit":"gelijk"})</span></div>`; }).join("")}
       <p class="small" style="margin:8px 0 0">Waar ga je achteruit, of blijf je laag? Daar ligt misschien je tweede doel.</p></div>`;
+  },
+  stofCheck: id => {
+    const b = `m.${id}`, rows = S.vakken.filter(v => get(`${b}.vak.${vkey(v)}.toets`));
+    if (!rows.length) return "";
+    const open = rows.filter(v => { const k = `${b}.vak.${vkey(v)}`; return !filled(get(k+".stof")) || !get(k+".bron") || get(k+".bron") === "Weet ik nog niet"; });
+    if (!open.length) return `<p class="small klaarbox" style="margin-top:10px">Compleet: bij elk vak met een toets staat wat je moet kennen en waar je dat vandaan hebt. Daarmee weet je precies wat je de komende weken leert.</p>`;
+    return `<p class="small" style="margin-top:10px"><span class="flag">Nog uitzoeken (${open.length} van ${rows.length}): ${open.map(esc).join(", ")}.</span> Vraag het je docent in de les, check de studiewijzer of leg je lijst naast die van een klasgenoot. Zet hieronder wat je gaat doen.</p>`;
   },
   klaarSamen: id => {
     const b = `m.${id}`, rows = S.vakken.filter(v => get(`${b}.vak.${vkey(v)}.toets`));
@@ -1240,7 +1253,8 @@ function rEval(id,set){ return [0,1].map(i => { const e = get(`m.${id}.eval.${i}
 function rCheckin(id,set){ return [0,1].map(i => { const c = get(`m.${id}.doel.${i}`)||{}, d = get(`${set}.${i}`)||{}; if (!d.specifiek || !hasContent(c)) return "";
   return `<h3>Check doel ${i+1}: ${esc(d.specifiek)}</h3>` + qa("Als-dan-plan uitgevoerd",c.plan) + qa("Dichter bij doel",{1:"Nee",2:"Een beetje",3:"Ja",4:"Al gehaald"}[c.dichterbij]) + qp("Wat werkt en wat niet",`m.${id}.doel.${i}.werkt`) + qa("Huidig als-dan-plan",d.als&&d.dan?`Als ${d.als}, dan ${d.dan}`:""); }).join(""); }
 function rToetsVoor(id){ const b = `m.${id}`, vk = S.vakken.filter(v => get(`${b}.vak.${vkey(v)}.toets`));
-  let h = vk.length ? `<table><thead><tr><th>Vak</th><th>Leerstof</th><th>PTO/PTA</th><th>Weging</th><th>Klaar nu</th><th>Vlak ervoor</th><th>Verwacht</th></tr></thead><tbody>${vk.map(v => { const k = `${b}.vak.${vkey(v)}`; return `<tr><td>${esc(v)}</td><td>${esc(get(k+".stof")||"")}</td><td>${esc(get(k+".soort")||"–")}</td><td>${esc(get(k+".weging")||"–")}</td><td>${get(k+".klaarNu")||"–"}</td><td>${get(k+".klaarVoor")||"–"}</td><td>${esc(get(k+".verwacht")||"–")}</td></tr>`; }).join("")}</tbody></table><div class="qa" style="font-size:9pt;color:#444">Klaar: 1 = ${KLAAR[1]}, 2 = ${KLAAR[2]}, 3 = ${KLAAR[3]}, 4 = ${KLAAR[4]}</div>` : "";
+  let h = vk.length ? `<table><thead><tr><th>Vak</th><th>Leerstof</th><th>PTO/PTA</th><th>Weging</th><th>Klaar nu</th><th>Vlak ervoor</th><th>Verwacht</th></tr></thead><tbody>${vk.map(v => { const k = `${b}.vak.${vkey(v)}`; return `<tr><td>${esc(v)}</td><td>${esc(get(k+".stof")||"")}${get(k+".bron") ? `<br><span style="color:#666;font-size:8.5pt">bron: ${esc(get(k+".bron"))}</span>` : ""}</td><td>${esc(get(k+".soort")||"–")}</td><td>${esc(get(k+".weging")||"–")}</td><td>${get(k+".klaarNu")||"–"}</td><td>${get(k+".klaarVoor")||"–"}</td><td>${esc(get(k+".verwacht")||"–")}</td></tr>`; }).join("")}</tbody></table><div class="qa" style="font-size:9pt;color:#444">Klaar: 1 = ${KLAAR[1]}, 2 = ${KLAAR[2]}, 3 = ${KLAAR[3]}, 4 = ${KLAAR[4]}</div>` : "";
+  h += qp("Nog uit te zoeken (leerstof)", `${b}.stofActie`);
   const st = get(`${b}.strat`)||{}; h += qa("Leerstrategieën", STRATEGIEEN.filter(s=>st[s.id]).map(s=>s.t).join("; "));
   h += qa("Begint met leren op", fmtDate(get(`${b}.start`))) + qp("Planning staat in", `${b}.waar`) + qp("Leermomenten per week", `${b}.momenten`);
   const org = get(`${b}.org`)||{}; h += qa("Organisatie geregeld", ORGCHECK.filter(([k])=>org[k]).map(([,t])=>t).join("\n"));
@@ -1499,7 +1513,8 @@ function rPeer(id){ const b = `peer.${id}`, soort = MOM[id] && MOM[id].type === 
   return `<div class="ouder" style="border-left-color:#b35400"><b>Ingevuld door een klasgenoot of iemand thuis</b>${P.c.map((c,i) => qa(c, ({ja:"ja",deels:"een beetje",nee:"nee"})[get(`${b}.c${i}`)])).join("")}${qp("Top", `${b}.top`)}${qp("Tip", `${b}.tip`)}</div>`; }
 /* ---------- uitleg bij complexere opdrachten (vraagtekenknop, paneel rechts) ---------- */
 const HULP = {
-  leerstof: { t:"Leerstof, weging, PTO of PTA", h:`<p>Een toetsweekplan begint met weten wát je moet kennen. ‘Hoofdstuk 3’ is te grof: welke paragrafen, welke begrippen, welke opgaven, welke woordenlijst? Zoek het op in de studiewijzer in Magister of Teams, of in het PTA, en schrijf het precies op. Twijfel je? Vraag het je docent in de les vóór de toetsweek.</p>
+  leerstof: { t:"Leerstof, weging, PTO of PTA", h:`<p>Een toetsweekplan begint met weten wát je moet kennen. ‘Hoofdstuk 3’ is te grof: welke paragrafen, welke begrippen, welke opgaven, welke woordenlijst? Schrijf het per vak precies op.</p>
+    <p><b>Waar je het vandaan haalt.</b> De studiewijzer in Magister of Teams, het PTA- of PTO-boekje, je eigen aantekeningen en de opgaven die je in de les maakte. Staat het er niet duidelijk in, dan vraag je het je docent, in de les of per bericht; vraag door tot je weet welke paragrafen en begrippen het zijn. Leg je lijst daarna naast die van een klasgenoot: vaak weet de een wat de ander mist. In de kolom ‘Hoe weet je dat?’ zet je waar je lijst vandaan komt, zodat je ziet bij welke vakken je nog gokt.</p>
     <p><b>Weging</b> is hoe zwaar een toets meetelt: ‘2x’ of ‘15%’. Een zware toets verdient meer leertijd dan een lichte; dat bepaalt je planning bij stap 4.</p>
     <p><b>PTO of PTA.</b> PTO staat voor programma van toetsing en overgang: die cijfers tellen voor de overgang naar havo 5. PTA staat voor programma van toetsing en afsluiting: die cijfers gaan in je examendossier en tellen door tot je eindexamen. Een PTA-toets kun je niet zomaar overdoen; kijk in het PTA of hij herkansbaar is.</p>
     <p class="ex">Zwak: ‘wiskunde H3’.<br>Sterk: ‘wiskunde A, H3 par. 3.1 t/m 3.4 (kwadratische verbanden) en de formulekaart, PTO, weegt 2x’.</p>` },
