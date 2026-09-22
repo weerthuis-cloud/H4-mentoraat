@@ -226,7 +226,7 @@ svg.strook{width:100%;height:auto;display:block}
 #print{display:none}
 .codebox{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:6px}
 .codebox b{display:block;font-size:26px;letter-spacing:.08em;font-family:ui-monospace,Menlo,monospace}
-.status.laat{background:var(--warm-soft);color:var(--warm)} .status.slot{background:var(--ink);color:var(--bg)}
+.status.laat{background:var(--warm-soft);color:var(--warm)} .status.over{background:var(--line);color:var(--ink)} .status.slot{background:var(--ink);color:var(--bg)}
 textarea:disabled,input:disabled{opacity:.7;cursor:not-allowed}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:30;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -552,7 +552,7 @@ function saveTekst(){ /* statusregel rechtsboven: opgeslagen, plus laatste back-
   const waar = (typeof IS_IPAD !== "undefined" && IS_IPAD) ? "Bestanden › Downloads" : "map Downloads";
   if (mentor){ const naam = u.mlink ? `jaarlijn-mentor-${(u.mklas || "klas").toLowerCase()}-….json` : "";
     return `Instellingen opgeslagen in deze browser · ${tijd}` + (u.mbackupNaam ? `<br><span class="small">Laatste back-up: <code>${esc(u.mbackupNaam)}</code> in ${waar} · ${fmtTs(u.mbackupOp)}</span>` : u.mlink ? `<br><span class="small">Back-up: je klaslink (Mijn klas)</span>` : ""); }
-  return `Opgeslagen op dit apparaat · ${tijd}` + (u.lastBackup ? `<br><span class="small">Laatste back-up: <code>${esc(u.lastBackupNaam || "jaarlijn-….json")}</code> in ${waar} · ${fmtTs(u.lastBackup)}</span>` : `<br><span class="small">Nog geen back-up: die komt bij je eerste les-PDF</span>`); }
+  return `Opgeslagen op dit apparaat · ${tijd}` + (u.lastBackup ? `<br><span class="small">Laatste back-up: <code>${esc(u.lastBackupNaam || "jaarlijn-….json")}</code> in ${waar} · ${fmtTs(u.lastBackup)}</span>` : `<br><span class="small">Nog geen back-up: die komt bij je eerste ${isLos() ? "document-PDF" : "les-PDF"}</span>`); }
 function save(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
@@ -639,7 +639,7 @@ function status(id){
   const extra = id==="actieplan" ? hasContent(S.doelenA) : id==="tussen" ? hasContent(S.doelenB) : false;
   return (hasContent(d) || extra) ? "bezig" : "leeg";
 }
-const STATUSTXT = { leeg:"nog niet begonnen", bezig:"bezig", klaar:"ingevuld", slot:"op slot", laat:"niet ingeleverd", samen:"samengevoegd" };
+const STATUSTXT = { leeg:"nog niet begonnen", bezig:"bezig", klaar:"ingevuld", slot:"op slot", laat:"nog in te halen", samen:"samengevoegd", over:"overgeslagen" };
 function nuId(){
   const today = new Date().toISOString().slice(0,10);
   const open = CONFIG.momenten.filter(m => zichtbaar(m.id) && status(m.id) !== "klaar");
@@ -727,7 +727,7 @@ function eindRapport(){ /* eindrapportage havo 4: wat de leerling meeneemt naar 
   return h; }
 
 function docHTML(id){ const L = S.leerling;
-  return `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>${esc(docTitel(id))} · ${esc(L.voornaam || "(geen naam)")}</h1><div class="pmeta">${[L.klas, L.profiel, CONFIG.school, CONFIG.schooljaar, "versie van " + fmtTs(Date.now())].filter(Boolean).map(esc).join(" · ")}</div>` + docInhoud(id) + (id === "studie" ? "" : controlestrook(id) + weeklog(id)); }
+  return `<img src="${LOGO}" alt="KSH" style="height:30px;margin-bottom:6pt"><h1>${esc(docTitel(id))} · ${esc(L.voornaam || "(geen naam)")}</h1><div class="pmeta">${[L.klas, L.profiel, CONFIG.school, CONFIG.schooljaar, "versie van " + fmtTs(Date.now())].filter(Boolean).map(esc).join(" · ")}</div>` + docInhoud(id) + (id === "studie" ? "" : controlestrook(id) + (isLos() ? "" : weeklog(id))); }
 function presHTML(id){ /* één dia per kop (h2 en h3), liggend, groot lettertype */
   const L = S.leerling, t = document.createElement("template"); t.innerHTML = docInhoud(id);
   const dias = [], nieuw = (kop) => { dias.push({ kop, body: [] }); };
@@ -745,11 +745,11 @@ function docKnoppen(id){ const mol = molVan(id);
 
 function klaarBox(id){
   const k = S.m[id] && S.m[id].klaar;
-  return `<div class="card soft klaarbox"><div><b>${k?"Afgerond op "+new Date(k).toLocaleDateString("nl-NL"):"Klaar met dit onderdeel?"}</b><div class="small">${k?"Je kunt nog steeds dingen aanpassen.":"Klik op Ik ben klaar. Inleveren doe je met de PDF van je les: daarin staat alles wat je hier invulde."}</div></div>
+  return `<div class="card soft klaarbox"><div><b>${k?"Afgerond op "+new Date(k).toLocaleDateString("nl-NL"):"Klaar met dit onderdeel?"}</b><div class="small">${k?"Je kunt nog steeds dingen aanpassen.":"Klik op Ik ben klaar. " + (isLos() ? "Maak daarna hieronder het document (PDF) en lever het in via Teams." : "Inleveren doe je met de PDF van je les: daarin staat alles wat je hier invulde.")}</div></div>
   <button class="btn ${k?"ghost":""}" data-act="klaar" data-id="${id}">${k?"Toch nog niet klaar":"Ik ben klaar"}</button></div>` + (k ? volgendeHalte(id) : "") + (MOM[id] ? docKnoppen(MOM[id].type === "mol" ? MOM[id].bron : id) : "");
 }
 function pager(id){
-  const i = CONFIG.momenten.findIndex(m => m.id === id), p = CONFIG.momenten[i-1], n = CONFIG.momenten[i+1];
+  const lijst = CONFIG.momenten.filter(m => zichtbaar(m.id) || m.id === id), i = lijst.findIndex(m => m.id === id), p = lijst[i-1], n = lijst[i+1];
   return `<div class="pager">${p?`<button class="btn ghost" data-go="${p.id}">← ${esc(p.titel)}</button>`:"<span></span>"}${n?`<button class="btn ghost" data-go="${n.id}">${esc(n.titel)} →</button>`:""}</div>`;
 }
 
@@ -1179,6 +1179,7 @@ const PAGES = {
       if (CFG().werkwijze === "half" && !S.leerling.groep){ S.leerling.groep = "1"; wijzig = true; }
       if (!S.vakken.length){ S.vakken = ["Nederlands", "Engels", "Wiskunde A"]; wijzig = true; }
       if (wijzig) save();
+      if (isLos()) return `<div class="note" style="margin-bottom:14px"><b>${ikon("start")} Losse onderdelen.</b> De leerling ziet geen weeklessen, alleen de onderdelen die je gekozen hebt, op volgorde van datum. Bij elk onderdeel maakt hij een document (PDF) om in te leveren. Jij kijkt mee als ‘${esc(S.leerling.voornaam)}’.</div>` + losOverzicht();
       return `<div class="note" style="margin-bottom:14px"><b>${ikon("start")} Wat de leerling hier eerst doet:</b> bij de eerste keer leest hij drie stappen (instellen, les van de week, PDF), en vult hij zijn voornaam, zijn groep en zijn vakken in. Pas daarna ziet hij de les van de week. Jij kijkt mee als ‘${esc(S.leerling.voornaam)}’ in groep ${esc(S.leerling.groep || "1")}; alles wat je hier invult, blijft los van echte leerlingen.</div>` + dezeWeek()
         + `<details class="card"><summary>Instellingen van de voorbeeldleerling aanpassen (naam, groep, vakken)</summary><div style="margin-top:12px">${PAGES.startInst()}</div></details>`;
     }
@@ -1188,8 +1189,10 @@ const PAGES = {
     <p class="lead">Dit jaar houd je zelf bij hoe het gaat met je vakken, je motivatie, je werkhouding en je organisatie. Zo werkt het:</p>
     <div class="card">${flow([
       ["Stel één keer in", "Je naam, je groep en je vakken. Twee minuten.", "start"],
-      ["Elke week één les", "Bij <b>Deze week</b> staat klaar wat je doet: in de klas of thuis, in 25 tot 30 minuten.", "bord"],
-      ["Sluit af met een PDF", "Onderaan elke les maak je een PDF als back-up. Twaalf keer per jaar lever je een document in via Teams; de tool zegt wanneer.", "pdf"]])}
+      ...(isLos() ? [["Werk aan je onderdelen", "Bij <b>Mijn onderdelen</b> staat wat je mentor voor jouw klas koos, met de datum waarop het af moet.", "bord"],
+      ["Lever in met een PDF", "Is een onderdeel af, dan maak je er een document van en lever je dat in via Teams.", "pdf"]]
+      : [["Elke week één les", "Bij <b>Deze week</b> staat klaar wat je doet: in de klas of thuis, in 25 tot 30 minuten.", "bord"],
+      ["Sluit af met een PDF", "Onderaan elke les maak je een PDF als back-up. Twaalf keer per jaar lever je een document in via Teams; de tool zegt wanneer.", "pdf"]])])}
       <p class="small" style="margin:14px 0 4px"><b>Zo ziet je jaar eruit:</b> vier periodes, vier toetsweken, en jij bent hier.</p>${jaarStrook(new Date().toISOString().slice(0,10), true)}</div>
     <div class="card soft"><h2>${ikon("schild")} Goed om te weten</h2>
       <p style="margin:0 0 8px">Alles wat je typt blijft op <b>dit apparaat, in deze browser</b>. Het gaat nergens naartoe; je mentor ziet alleen de PDF die jij inlevert.</p>
@@ -1197,8 +1200,8 @@ const PAGES = {
       <button class="btn groot" data-act="privacyOk">Aan de slag</button></div>`;
     h += backupWaarschuwing();
     if (!storageOk) h += `<div class="alert">Deze browser staat opslaan niet toe (misschien een privévenster). Open de pagina in een gewoon venster, of maak tussendoor steeds een back-up.</div>`;
-    if (opgezet) h += dezeWeek();
-    else if (S.ui.privacyOk) h += `<h1>Nog even instellen</h1>${routeDrie(1)}<p class="lead">Vul je naam in${CFG().werkwijze==="half" ? ", kies je groep" : ""} en vink je vakken aan. Daarna zie je hier elke week je les.</p>`;
+    if (opgezet) h += isLos() ? losOverzicht() : dezeWeek();
+    else if (S.ui.privacyOk) h += `<h1>Nog even instellen</h1>${routeDrie(1)}<p class="lead">Vul je naam in${CFG().werkwijze==="half" ? ", kies je groep" : ""} en vink je vakken aan. Daarna zie je hier ${isLos() ? "de onderdelen die je mentor koos" : "elke week je les"}.</p>`;
     const inst = PAGES.startInst();
     if (S.ui.privacyOk){ const n0 = huidigeLes(), L0 = LES.find(l => l.les === n0), half = CFG().werkwijze === "half";
       h += opgezet ? `<details class="card"><summary>Je naam, groep en vakken aanpassen</summary><div style="margin-top:12px">${inst}</div></details>`
@@ -1220,17 +1223,17 @@ const PAGES = {
     return h;
   },
   delen: () => `<h1>Opslaan en delen</h1><p class="lead">Je werk staat alleen op dit apparaat. Hier maak je een PDF voor je mentor en een back-up voor jezelf.</p>
-    <div class="card"><h2>PDF van een onderdeel</h2><p class="sub">Je wekelijkse PDF maak je bij <b>Jaarlijn</b>, onderaan elke les. Hier kun je ook een los onderdeel of alles samen als PDF maken (mét typ-informatie). Een nette versie voor een MOL-gesprek of je LOB-dossier, als document of presentatie, maak je onderaan het onderdeel zelf. ${esc(CONFIG.inleveren)} Kies bij het afdrukken <b>Opslaan als PDF</b> (klik op het vraagteken voor uitleg per apparaat). Hoe het met je gaat, komt er alleen in als je dat per onderdeel hebt aangevinkt.</p>
+    <div class="card"><h2>PDF van een onderdeel</h2><p class="sub">${isLos() ? "Het document om in te leveren maak je onderaan elk onderdeel." : "Je wekelijkse PDF maak je bij <b>Jaarlijn</b>, onderaan elke les."} Hier kun je ook een los onderdeel of alles samen als PDF maken (mét typ-informatie). Een nette versie voor een MOL-gesprek of je LOB-dossier, als document of presentatie, maak je onderaan het onderdeel zelf. ${esc(CONFIG.inleveren)} Kies bij het afdrukken <b>Opslaan als PDF</b> (klik op het vraagteken voor uitleg per apparaat). Hoe het met je gaat, komt er alleen in als je dat per onderdeel hebt aangevinkt.</p>
       <label class="f"><span class="lab">Wat wil je in de PDF?</span><select id="pdfSel"><option value="alles">Alles wat ik tot nu toe invulde</option>${CONFIG.momenten.filter(m => zichtbaar(m.id)).map(m=>`<option value="${m.id}">${esc(m.titel)} (week ${esc(m.week)})</option>`).join("")}${mod("sv") ? `<option value="studie">Studievaardigheden</option>` : ""}</select></label>
       <button class="btn" data-act="pdf">PDF maken</button> <button type="button" class="btn small ghost" data-hulp="pdfmaken">Hoe maak ik een PDF?</button></div>
-    <div class="card"><h2>Back-up</h2><p class="sub">Bij elke les-PDF maakt de tool automatisch een back-up. Zet die in je OneDrive van school, dan ben je nooit meer dan een week werk kwijt. Op een ander apparaat zet je hem hier terug. Let op: de back-up bevat álles, ook wat je privé hield. Deel hem dus niet.</p>
+    <div class="card"><h2>Back-up</h2><p class="sub">Bij elke ${isLos() ? "document-PDF" : "les-PDF"} maakt de tool automatisch een back-up. Zet die in je OneDrive van school, dan ben je nooit meer dan een week werk kwijt. Op een ander apparaat zet je hem hier terug. Let op: de back-up bevat álles, ook wat je privé hield. Deel hem dus niet.</p>
       ${backupInfo()}<div class="row" style="margin-top:10px"><button class="btn" data-act="backup">Back-up downloaden</button><button class="btn ghost" data-act="restore">Back-up terugzetten</button></div></div>
     <div class="card soft"><h2>${ikon("reageer")} Feedback aan de maker</h2><p class="sub">Werkt iets niet, of heb je een idee? Laat het weten; het programma wordt beter van wat jij tegenkomt.</p><button type="button" class="btn ghost" data-hulp="feedback">Feedback geven</button></div>
     <div class="card"><h2>Opnieuw beginnen</h2><p class="sub">Wist alles op dit apparaat. Maak eerst een back-up als je twijfelt.</p><button class="btn danger" data-act="wipe">Alles wissen</button></div>`
 };
 PAGES.startInst = () => `<div class="card"><h2>Over jou</h2><div class="grid2">${inp("leerling.voornaam","Voornaam","Komt op je PDF, zodat je mentor weet van wie hij is.")}${inp("leerling.klas","Klas","","text","bijvoorbeeld H4B")}</div>${inp("leerling.profiel","Profiel","","text","bijvoorbeeld Economie en Maatschappij")}
       ${CFG().werkwijze==="half" ? `<span class="lab">In welke groep zit je?</span><span class="hint">Je mentor vertelt je dit. De ene groep is om de week in de klas, de andere werkt dan thuis.</span>${radios("leerling.groep", [{v:"1",t:"Groep 1"},{v:"2",t:"Groep 2"}], "cols2")}` : ""}
-      ${S.cfg ? `<p class="small" style="margin:6px 0 0">Ingesteld door je mentor: ${esc([S.cfg.klas, S.cfg.werkwijze==="heel"?"hele klas elke week":"halve klas om de week", gates().length?"gesprek vóór les "+gates().join(", "):""].filter(Boolean).join(" · "))}</p>` : `<div class="alert" style="margin-top:10px"><b>Je opende de tool zonder de klaslink van je mentor.</b> Daardoor kloppen je klas, je lesdag en misschien je lessen niet. Vraag de link in Teams en open de tool daarmee; wat je hier al invulde, blijft staan.</div>`}</div>
+      ${S.cfg ? `<p class="small" style="margin:6px 0 0">Ingesteld door je mentor: ${esc([S.cfg.klas, isLos() ? "losse onderdelen: " + losGroepNamen(S.cfg.los).join(", ") : S.cfg.werkwijze==="heel"?"hele klas elke week":"halve klas om de week", gates().length?"gesprek vóór les "+gates().join(", "):""].filter(Boolean).join(" · "))}</p>` : `<div class="alert" style="margin-top:10px"><b>Je opende de tool zonder de klaslink van je mentor.</b> Daardoor kloppen je klas, je lesdag en misschien je lessen niet. Vraag de link in Teams en open de tool daarmee; wat je hier al invulde, blijft staan.</div>`}</div>
     <div class="card"><h2>Jouw vakken</h2><p class="sub">Nederlands en Engels staan al aan, die heeft iedereen. Vink de rest van je vakken aan.</p><div class="radios cols3">${Array.from(new Set([...CONFIG.vakken, ...S.vakken])).map(v => `<label class="opt"><input type="checkbox" data-vak="${esc(v)}" ${S.vakken.includes(v)?"checked":""}><span><b>${esc(v)}</b></span></label>`).join("")}</div>
       <div class="row"><input type="text" id="nieuwVak" placeholder="Ander vak toevoegen" style="flex:1;min-width:180px"><button class="btn ghost" data-act="addVak">Toevoegen</button></div></div>
     <div class="card soft"><h2>Zo lever je in</h2><p style="margin:0 0 8px">${inleverWeek() ? "Elke week sluit je een les af en lever je die in als PDF via Teams." : "Elke week sluit je een les af met een PDF: die bewaar je zelf, als extra back-up. Twaalf keer per jaar is het inleverweek: dan lever je het document van het onderdeel dat af is in via Teams, met daarin het weeklog van je lessen. In de lessenlijst en bovenaan de les zie je wanneer."} In elke PDF staat wanneer je hem maakte en hoe lang je aan elke opdracht hebt <b>getypt</b>. Pauzes tellen niet mee.</p><p style="margin:0">Kopiëren en plakken in de invulvelden staan uit: je typt alles zelf. Gebruik je spraakherkenning, dan kan dat gewoon. In de PDF staat dan dat die tekst ingesproken is.</p></div>`;
@@ -1657,6 +1660,7 @@ function leesKlaslink(){
       if (q.has("x")) S.cfg.mods = (q.get("x") || "").split(",").filter(Boolean);
       if (q.has("d")) S.cfg.dagen = (q.get("d") || "").split(",").map(Number).slice(0, 4);
       S.cfg.inleveren = q.get("i") === "w" ? "week" : "ijk";
+      if (q.get("p") === "los"){ S.cfg.prog = "los"; S.cfg.los = (q.get("o") || "").split(",").filter(c => LOSGROEP.some(g => g[0] === c)); S.cfg.werkwijze = "heel"; }
       if (S.cfg.klas && !S.leerling.klas) S.leerling.klas = S.cfg.klas;
       save();
     }
@@ -1666,7 +1670,24 @@ function CFG(){ return S.cfg || { klas:"", werkwijze:"half", gates:[], key:"" };
 /* basis en één extra: sv = studievaardigheden. Klasgenootfeedback (kg) hoort bij de basis; docentfeedback (df), oudermodule (ou) en gespreksslot zijn vervallen. */
 const MODS = [["sv","Studievaardigheden","Een eigen lijn: nulmeting met executieve functies, oefenrondes en een eindkeuze."]];
 function mod(c){ if (c === "ou" || c === "df") return false; if (c === "kg") return true; /* klasgenootfeedback hoort bij de basis; docent- en oudermodule zijn vervallen */ const cfg = S.cfg; if (!cfg) return false; if (!cfg.mods) return true; return cfg.mods.includes(c); }
-function zichtbaar(id){ const m = MOM[id]; return !m || !m.mod || mod(m.mod); }
+function zichtbaar(id){ const m = MOM[id]; if (m && isLos() && !losSet().has(id)) return false; return !m || !m.mod || mod(m.mod); }
+/* ---------- programma: volledige jaarlijn (weekles) of losse onderdelen ---------- */
+/* [code, naam, uitleg, onderdelen]. Wat een onderdeel nodig heeft (het gespreksstuk bij een MOL-gesprek, het toetsweekplan bij een terugblik) komt vanzelf mee. */
+const LOSGROEP = [
+  ["mol", "Voorbereiding MOL-gesprekken", "Drie gesprekken, elk met een spiekkaart. Het gespreksstuk komt vanzelf mee: het actieplan, de tussenbalans en toetsweekplan C.", ["mol1","mol2","mol3"]],
+  ["tw",  "Toetsweekplannen A tot en met D", "Per toetsweek: leerstof per vak, PTO of PTA, weging, hoe klaar je bent en je planning.", ["twA_voor","twB_voor","twC_voor","twD_voor"]],
+  ["tn",  "Terugblikken op toetsweek A, B en C", "Cijfers, wat werkte en wat je volgende keer anders doet. Het toetsweekplan komt vanzelf mee.", ["twA_na","twB_na","twC_na"]],
+  ["ap",  "Actieplan, tussenbalans en eindbalans", "Een meting en twee doelen aan het begin, bijstellen halverwege, afsluiten aan het eind van het jaar.", ["actieplan","tussen","eind"]],
+  ["sp",  "Spiegel", "Het eigen beeld naast de feedback van anderen.", ["spiegel"]],
+  ["lob", "LOB-dossier deel 1 tot en met 3", "Wie ben ik, wat past bij mij en mijn richting, met de eindpitch.", ["lob1","lob2","lob3"]]];
+function isLos(){ const c = S.cfg; return !!(c && c.prog === "los"); }
+function losIds(codes){ const s = new Set();
+  (codes || []).forEach(c => { const g = LOSGROEP.find(x => x[0] === c); if (g) g[3].forEach(id => s.add(id)); });
+  Array.from(s).forEach(id => { const m = MOM[id]; if (!m) return; if (m.type === "mol" && m.bron) s.add(m.bron); if (m.type === "toetsNa") s.add("tw" + m.tw + "_voor"); });
+  return CONFIG.momenten.map(m => m.id).filter(id => s.has(id)); }
+let LOSCACHE = { key:null, set:new Set() };
+function losSet(){ const codes = (S.cfg && S.cfg.los) || [], key = codes.join(","); if (LOSCACHE.key !== key) LOSCACHE = { key, set: new Set(losIds(codes)) }; return LOSCACHE.set; }
+function losGroepNamen(codes){ return (codes || []).map(c => (LOSGROEP.find(g => g[0] === c) || [])[1]).filter(Boolean); }
 function taakTekst(tk){ return tk ? tk.t + (tk.x || []).filter(e => mod(e.m)).map(e => " " + e.t).join("") : ""; }
 function taakOpen(tk){ return tk ? tk.open.concat(...(tk.x || []).filter(e => mod(e.m)).map(e => e.open || [])).filter(zichtbaar) : []; }
 /* ---------- lesdag per periode (uit de klaslink) ---------- */
@@ -1803,8 +1824,20 @@ function weekVoorbij(L){ const e = new Date(L.ma + "T12:00:00"); e.setDate(e.get
 function lesStatus(n){ const d = S.lessen[n], L = LES.find(l => l.les === n);
   if (adjOf(n) === "v") return "samen";
   if (d && d.pdf && d.pdf.length) return "klaar";
+  if (d && d.over) return "over";
   if (L && weekVoorbij(L)) return "laat";
   return hasContent(d) ? "bezig" : "leeg"; }
+/* ---------- inhalen: de leerling volgt het programma op volgorde ---------- */
+function lesAf(n){ const st = lesStatus(n); return st === "klaar" || st === "samen" || st === "over" || adjOf(n) === "s"; }
+function inhaalLes(nu){ /* de eerste les tot en met de les van deze week die nog niet af is */
+  for (const L of LES){ if (L.les >= nu) break; if (!lesAf(L.les)) return L.les; } return nu; }
+function achterLessen(nu){ return LES.filter(L => L.les < nu && !lesAf(L.les)).map(L => L.les); }
+function tijdVoorbij(n){ /* onderdelen in les n waarvan het moment al voorbij is: een toetsweek of een MOL-gesprek */
+  const today = new Date().toISOString().slice(0,10), uit = [];
+  lesTaken(n).forEach(x => taakOpen(x.taak).forEach(id => { const m = MOM[id]; if (!m) return;
+    if (m.type === "toetsVoor" && CONFIG.toetsweken[m.tw] && CONFIG.toetsweken[m.tw].tot < today) uit.push(`toetsweek ${m.tw} is al voorbij`);
+    if (m.type === "mol"){ const e = new Date(m.datum + "T12:00:00"); e.setDate(e.getDate() + 7); if (e.toISOString().slice(0,10) < today) uit.push(`MOL-gesprek ${m.nr} is al geweest`); } }));
+  return Array.from(new Set(uit)); }
 function vorigeSnap(n){ for (let k = n-1; k >= 1; k--){ const d = S.lessen[k]; if (d && d.snap) return d.snap; } return {}; }
 
 function gesprekKaart(g, volledig){
@@ -1893,6 +1926,9 @@ function lesView(n){
   h += L.dl ? `<span class="pill lob">deadline: ${esc(L.dl)}</span>` : "";
   h += isInleverWeek(n) ? `<span class="pill lob"><b>inleverweek</b>: ${inleverMomenten(n).map(id => esc(docTitel(id).split(" · gespreksstuk")[0])).join(" en ")}</span>` : "";
   h += `</div>`;
+  { const stn = lesStatus(n), dd = S.lessen[n] || {};
+    if (stn === "over") h += `<div class="card soft klaarbox"><div><b>Je hebt deze les overgeslagen</b> op ${fmtTs(dd.over)}, in overleg met je mentor.</div><button class="btn small ghost" data-act="overTerug" data-les="${n}">Toch maken</button></div>`;
+    else if (stn === "laat" && !MENTOR) h += `<details class="card soft"><summary>Zegt je mentor dat je deze les mag overslaan?</summary><div class="klaarbox" style="margin-top:10px"><div class="small">Doe dit alleen als je mentor het zegt. De les komt dan in je overzicht als ‘overgeslagen’ en de tool gaat verder met de volgende les.</div><button class="btn small" data-act="overslaan" data-les="${n}">Les ${n} overslaan</button></div></details>`; }
   if (lesSlot(n)) return h + slotKaart(n) + `<div class="pager"><button class="btn ghost" data-go="lessen">← Naar het overzicht</button></div>`;
   if (!MENTOR && !startKlaar()) return h + `<div class="card warn"><h2>${ikon("start")} Eerst even instellen</h2><p style="margin:0 0 12px">Vul eerst je naam${CFG().werkwijze === "half" ? ", je groep" : ""} en je vakken in. Daarna staat deze les goed voor jou klaar.</p><button class="btn" data-go="start">Naar Instellen</button></div>`;
   if (!(bg && n >= bg) && mode) h += lesRoute(n) + (n > 1 ? jaarKaart(n) : "");
@@ -1986,14 +2022,14 @@ function lesSpoor(n){ /* kleur en icoon van een les: naar het eerste onderdeel d
   return { cls:"", ik: m.type === "spiegel" ? "spiegel" : "doel" };
 }
 PAGES.lessen = (kaal) => {
-  const nu = huidigeLes(), bg = blokGate();
+  const nu = huidigeLes(), jij = MENTOR ? nu : inhaalLes(nu), bg = blokGate();
   let h = kaal ? `<h2 style="margin:18px 0 8px">Alle lessen</h2>` : `<h1>Lessen</h1><p class="lead">Elke week is er een les${CFG().werkwijze==="half"?", in de klas of thuis":""}. Elke les sluit je af met een PDF voor je mentor.</p>`;
   if (CFG().werkwijze === "half" && !S.leerling.groep) h += `<div class="alert">Kies eerst bij <button class="btn small ghost" data-go="start">Instellen</button> (tab Deze week) in welke groep je zit.</div>`;
   h += `<div class="tl">`;
   LES.forEach(L => { const { mode } = lesInfo(L), st = lesStatus(L.les), slot = bg && L.les >= bg && st !== "samen", aj = adjOf(L.les);
     if (gates().includes(L.les)) h += `<div class="ev"><span></span><span><b>Gesprek met je mentor</b> vóór les ${L.les}${gesprekVrij(L.les)?" · gehad":""}</span></div>`;
     const sp = lesSpoor(L.les);
-    h += `<button class="it ${sp.cls} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b><span class="spoorik ${sp.cls}">${ikon(sp.ik, "#fff")}</span>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}<small>${esc(lesDatumL(L.les))} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}${isInleverWeek(L.les)?` · <b>inleveren: ${inleverMomenten(L.les).map(id => esc(docTitel(id).split(" · gespreksstuk")[0])).join(", ")}</b>`:""}</small></span><span class="status ${slot||lesSlot(L.les)?"slot":st}">${slot?"op slot":lesSlot(L.les)?(lesSlot(L.les).type==="mentor"?"op slot":"vanaf "+fmtDate(lesSlot(L.les).vanaf)):st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
+    h += `<button class="it ${sp.cls} ${L.les===nu?"nu":""}" data-go="les:${L.les}"><span class="wk">week<b>${esc(L.wk)}</b></span><span><b><span class="spoorik ${sp.cls}">${ikon(sp.ik, "#fff")}</span>Les ${L.les} · ${esc(lesBlok(L))}</b>${L.les===nu?` <span class="pill" style="font-size:11px">deze week</span>`:""}${L.les===jij&&jij!==nu?` <span class="pill warm" style="font-size:11px">jouw volgende les</span>`:""}<small>${esc(lesDatumL(L.les))} · ${mode==="klas"?"in de klas":mode==="thuis"?"thuis":mode==="les"?"mentorles":"kies je groep"}${aj==="z"?" · zelfstandig":""}${isKort(L.les)&&aj!=="v"?" · korte les":""}${L.dl?" · deadline: "+esc(L.dl):""}${isInleverWeek(L.les)?` · <b>inleveren: ${inleverMomenten(L.les).map(id => esc(docTitel(id).split(" · gespreksstuk")[0])).join(", ")}</b>`:""}</small></span><span class="status ${slot||lesSlot(L.les)?"slot":st}">${slot?"op slot":lesSlot(L.les)?(lesSlot(L.les).type==="mentor"?"op slot":"vanaf "+fmtDate(lesSlot(L.les).vanaf)):st==="klaar"?"ingeleverd":st==="laat"?"niet ingeleverd":st==="samen"?"samen met les "+samenIn(L.les):STATUSTXT[st]}</span></button>`; });
   return h + `</div>`;
 };
 /* ---------- PDF: eigen kop- en voetregel via @page-marges (Chrome en Edge 131+); vervangt de datum, titel en link van de browser ---------- */
@@ -2048,24 +2084,30 @@ function snapshot(){ const o = {}; Object.entries(S.meta).forEach(([k,m]) => o[k
 function mentorSub(){ const s = location.hash.replace(/^#mentor\/?/, "") || "week"; return (typeof MALIAS !== "undefined" && MALIAS[s]) || s; }
 const MPAGES = {
   klaslink: () => { const hier = location.href.split(/[?#]/)[0], base = /^https?:/.test(hier) ? hier : CONFIG.toolAdres;
-    return `<h1>Klaslink maken</h1><p class="lead">Drie stappen: je klas, wat je aanzet, de link. Die link zet je in Teams; leerlingen die hem openen, krijgen vanzelf jouw instellingen.</p>
+    return `<h1>Klaslink maken</h1><p class="lead">Vier stappen: je klas, het programma, wat je aanzet, de link. Die link zet je in Teams; leerlingen die hem openen, krijgen vanzelf jouw instellingen.</p>
     <details class="small" style="margin:-6px 0 14px"><summary>Later iets veranderen, of op een ander apparaat werken?</summary><p style="margin:6px 0 0">Maak gewoon een nieuwe klaslink; het werk van leerlingen blijft staan. Dit formulier onthoudt je keuzes op dit apparaat. Werk je op een ander apparaat? Plak je klaslink hieronder bij <b>Duomentoraat</b> of bij <a href="#mentor/planning">Planning aanpassen</a> en klik op Laden.</p></details>
     <div class="card duo"><h2>${ikon("wissel")} Duomentoraat: deel je de klas met een collega?</h2><p class="small" style="margin:0 0 8px">Dan maakt <b>één</b> van jullie de klaslink. De ander plakt die link hier en klikt op Laden: het formulier neemt alle instellingen over en jullie zien allebei hetzelfde programma. Afspraak: wie later iets wijzigt, zet de nieuwe link in Teams en stuurt hem naar de ander.</p>
     <div class="row" style="gap:8px;align-items:stretch"><input type="url" id="duo-link" placeholder="Plak hier de klaslink van je duomentor" style="flex:1;min-width:200px" spellcheck="false"><button class="btn small ghost" data-act="duoLaad">Laden</button></div>${(S.ui && S.ui.mlink) ? `<p class="small" style="margin:8px 0 0">Op dit apparaat staat al een klaslink${S.ui.mlinkOp ? ` (${esc(fmtTs(S.ui.mlinkOp))})` : ""}. Laden vervangt die door de link van je duomentor.</p>` : ""}</div>
     <div class="card"><h2>1. Je klas</h2><label class="f"><span class="lab">Klas</span><input type="text" id="mk-klas" placeholder="bijvoorbeeld H4B" value="${esc((S.ui && S.ui.mklas) || "")}"></label>
-    <span class="lab">Hoe werk je?</span>
+    <div id="mk-volopt" ${(S.ui && S.ui.mprog) === "los" ? "hidden" : ""}><span class="lab">Hoe werk je?</span>
     <div class="radios cols2" role="radiogroup"><label class="opt"><input type="radio" name="mk-w" value="half" ${(S.ui && S.ui.mw) === "heel" ? "" : "checked"}><span><b>Halve klas om de week</b><small>De ene helft in de klas, de andere helft werkt thuis. Leerlingen kiezen groep 1 of 2.</small></span></label>
     <label class="opt"><input type="radio" name="mk-w" value="heel" ${(S.ui && S.ui.mw) === "heel" ? "checked" : ""}><span><b>Hele klas elke week</b><small>Iedereen volgt elke week dezelfde les.</small></span></label></div>
     <span class="lab">Op welke dag is je mentorles?</span><span class="hint">Per periode, want je rooster kan wisselen. Weet je het nog niet? Kies ‘nog onbekend’ en pas het later aan bij Planning aanpassen. De data in de lessen en jaarplanners volgen deze dag.</span>${dagKiezer("mk-dag", mentorDagen())}
     <span class="lab" style="margin-top:14px">Hoe leveren leerlingen in?</span>
     <div class="radios cols2" role="radiogroup"><label class="opt"><input type="radio" name="mk-i" value="ijk" ${(S.ui && S.ui.minl) === "week" ? "" : "checked"}><span><b>Bij de ijkmomenten</b><small>Twaalf keer per jaar het document van het onderdeel dat af is, met weeklog. Elke week maken leerlingen wel een les-PDF als back-up.</small></span></label>
-    <label class="opt"><input type="radio" name="mk-i" value="week" ${(S.ui && S.ui.minl) === "week" ? "checked" : ""}><span><b>Elke week</b><small>Elke les-PDF wordt ingeleverd via Teams. 32 opdrachten per jaar.</small></span></label></div></div>
-    <div class="card"><h2>2. Wat zet je aan?</h2>
+    <label class="opt"><input type="radio" name="mk-i" value="week" ${(S.ui && S.ui.minl) === "week" ? "checked" : ""}><span><b>Elke week</b><small>Elke les-PDF wordt ingeleverd via Teams. 32 opdrachten per jaar.</small></span></label></div></div></div>
+    <div class="card"><h2>2. Welk programma?</h2>
+    <div class="radios cols2" role="radiogroup"><label class="opt"><input type="radio" name="mk-p" value="vol" ${(S.ui && S.ui.mprog) === "los" ? "" : "checked"}><span><b>De hele jaarlijn</b><small>Elke week een les, 32 lessen. Leerlingen volgen de lessen op volgorde; wie een les mist, gaat daar verder.</small></span></label>
+    <label class="opt"><input type="radio" name="mk-p" value="los" ${(S.ui && S.ui.mprog) === "los" ? "checked" : ""}><span><b>Losse onderdelen</b><small>Geen weeklessen. Je kiest zelf welke onderdelen je gebruikt; leerlingen zien alleen die, met hun deadline.</small></span></label></div>
+    <div id="mk-losopt" ${(S.ui && S.ui.mprog) === "los" ? "" : "hidden"} style="margin-top:12px"><span class="lab">Welke onderdelen gebruik je?</span><span class="hint">Vink minstens één onderdeel aan. Wat een onderdeel nodig heeft, komt vanzelf mee.</span>
+    ${LOSGROEP.map(([c,t,u]) => `<label class="check"><input type="checkbox" class="mk-los" value="${c}" ${((S.ui && S.ui.mlos) || ["mol","tw"]).includes(c) ? "checked" : ""}><span><b>${esc(t)}</b><br><span class="small">${esc(u)}</span></span></label>`).join("")}
+    <p class="small" style="margin:8px 0 0">Zet in Teams per onderdeel een opdracht klaar met dezelfde datum als in de tool. Leerlingen leveren het document van het onderdeel in.</p></div></div>
+    <div class="card"><h2>3. Wat zet je aan?</h2>
     <div class="note"><b>Altijd aan, de basis:</b> de weekles met PDF, het actieplan, de toetsweekplannen en terugblikken, de spiegel, de tussenbalans, de eindbalans, het LOB-dossier en de voorbereiding van de MOL-gesprekken.</div>
     <p class="sub"><b>Advies:</b> begin met alleen de basis. Studievaardigheden is voor leerlingen die snel klaar zijn; je kunt het later alsnog aanzetten met een nieuwe klaslink.</p>
     ${MODS.map(([c,t,u]) => `<label class="check"><input type="checkbox" class="mk-mod" value="${c}" ${((S.ui && S.ui.mmods) || []).includes(c) ? "checked" : ""}><span><b>${esc(t)}</b><br><span class="small">${esc(u)}</span></span></label>`).join("")}
     </div>
-    <div class="card"><h2>3. Maak de link</h2><details class="small" style="margin-bottom:12px"><summary>Voor beheer: adres van de tool (laat staan)</summary><label class="f" style="margin-top:8px"><span class="lab">Adres van de tool</span><span class="hint">Voor alle mentoren hetzelfde.</span><input type="text" id="mk-base" value="${esc(base)}"></label></details>
+    <div class="card"><h2>4. Maak de link</h2><details class="small" style="margin-bottom:12px"><summary>Voor beheer: adres van de tool (laat staan)</summary><label class="f" style="margin-top:8px"><span class="lab">Adres van de tool</span><span class="hint">Voor alle mentoren hetzelfde.</span><input type="text" id="mk-base" value="${esc(base)}"></label></details>
     <button class="btn" data-act="mkLink">Maak klaslink</button><div id="mk-out" style="margin-top:12px">${S.ui && S.ui.mlink ? `<label class="f"><span class="lab">Je klaslink${S.ui.mlinkOp ? ` (gemaakt ${fmtTs(S.ui.mlinkOp)})` : ""}</span><textarea readonly rows="3" id="mk-url">${esc(S.ui.mlink)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Iets veranderd hierboven? Klik dan opnieuw op Maak klaslink en deel de nieuwe link.</span>` : ""}</div></div>${mentorInstellingen()}`; },
 };
 const gatesStd = [9, 17, 25];
@@ -2102,7 +2144,7 @@ function plLaad(raw0){
     if (!q.has("w") && !q.has("klas")) throw 0;
     const adj = Object.fromEntries((q.get("a") || "").split(",").map(x => x.match(/^(\d+)([kvzs])$/)).filter(Boolean).map(m => [Number(m[1]), m[2]]));
     PL = { url: raw, base: u.origin + u.pathname, q, adj }; S.ui.madj = Object.assign({}, adj); S.ui.mlink = raw; S.ui.mlinkOp = S.ui.mlinkOp || Date.now(); S.ui.mdagen = q.get("d") ? q.get("d").split(",").map(Number) : S.ui.mdagen; S.ui.mklas = q.get("klas") || S.ui.mklas; S.ui.mw = q.get("w") === "heel" ? "heel" : "half";
-    S.ui.mgates = q.get("k") ? (q.get("g") || "").split(",").map(Number).filter(Boolean) : []; if (q.has("x")) S.ui.mmods = (q.get("x") || "").split(",").filter(Boolean); S.ui.minl = q.get("i") === "w" ? "week" : "ijk"; save(); render();
+    S.ui.mgates = q.get("k") ? (q.get("g") || "").split(",").map(Number).filter(Boolean) : []; if (q.has("x")) S.ui.mmods = (q.get("x") || "").split(",").filter(Boolean); S.ui.minl = q.get("i") === "w" ? "week" : "ijk"; S.ui.mprog = q.get("p") === "los" ? "los" : "vol"; S.ui.mlos = (q.get("o") || "").split(",").filter(Boolean); save(); render();
   } catch(e){ toast("Dit is geen klaslink. Plak de link die nu in Teams staat."); }
 }
 function plMaak(){
@@ -2172,7 +2214,7 @@ function mentorPlanPdf(){
   $("#print").innerHTML = h;
   printMet({ landscape:true, titel:`Lessen per week - jaarlijn havo 4 - ${w==="heel"?"hele klas":"halve klas"}`, links:`Lessen per week · ${w==="heel"?"hele klas":"halve klas"}${(S.ui && S.ui.mklas) ? " · " + S.ui.mklas : ""}`, voet:"KSH College · mentorportaal jaarlijn havo 4" });
 }
-document.addEventListener("change", e => { if (e.target.name === "mw"){ S.ui.mwv = e.target.value; save(); render(); } }); /* alleen de weergave van het jaaroverzicht; de echte werkwijze zit in de klaslink */
+document.addEventListener("change", e => { if (e.target.name === "mk-p"){ const los = e.target.value === "los", a = $("#mk-losopt"), b = $("#mk-volopt"); if (a) a.hidden = !los; if (b) b.hidden = los; return; } if (e.target.name === "mw"){ S.ui.mwv = e.target.value; save(); render(); } }); /* alleen de weergave van het jaaroverzicht; de echte werkwijze zit in de klaslink */
 
 /* ---------- groepsvorming (alleen voor de mentor) ---------- */
 function gvVan(les, w){
@@ -2200,22 +2242,39 @@ function gvPdfHTML(){
 }
 /* ---------- leerling: deze week ---------- */
 function dezeWeek(){
-  const n = huidigeLes(), L = LES.find(l => l.les === n), info = lesInfo(L), aj = adjOf(n), st = lesStatus(n);
+  const nk = huidigeLes(), n = MENTOR ? nk : inhaalLes(nk), L = LES.find(l => l.les === n), info = lesInfo(L), aj = adjOf(n), st = lesStatus(n), achter = n < nk;
   const mode = aj === "z" && info.mode ? "zelf" : info.mode, tk = info.taak || L.thuis || L.klas;
   const today = new Date().toISOString().slice(0,10);
   const volgende = CONFIG.momenten.filter(m => zichtbaar(m.id) && m.datum >= today && status(m.id) !== "klaar")[0];
-  const laat = LES.filter(l => l.les < n && lesStatus(l.les) === "laat").slice(-3);
-  const bg = blokGate();
-  let h = `<h1>Deze week</h1><div class="card dw"><div class="small">week ${esc(L.wk)} · ${esc(lesDatumL(n))}${mode ? " · " + esc(MODETXT[mode].toLowerCase()) : ""}</div>
+  const bg = blokGate(), Lk = LES.find(l => l.les === nk), rest = achter ? achterLessen(nk) : [], voorbij = achter ? tijdVoorbij(n) : [];
+  let h = `<h1>Deze week</h1><div class="card dw">${achter ? `<div class="small"><b>Jouw volgende les</b> · oorspronkelijk week ${esc(L.wk)}</div>` : `<div class="small">week ${esc(L.wk)} · ${esc(lesDatumL(n))}${mode ? " · " + esc(MODETXT[mode].toLowerCase()) : ""}</div>`}
     <h2 style="margin:4px 0 8px">Les ${n} · ${esc(lesBlok(L))}</h2>
+    ${achter ? `<p class="note" style="margin:0 0 12px">Je gaat verder waar je gebleven was. De klas is deze week bij les ${nk} (${esc(lesBlok(Lk))}). Maak les ${n} af met een PDF, dan brengt de tool je vanzelf naar de volgende les${rest.length > 1 ? `. Daarna nog in te halen: ${rest.filter(k => k !== n).map(k => "les " + k).join(", ")}` : ""}.</p>` : ""}
     <p style="margin:0 0 12px">${isKort(n) ? "Korte les. " : ""}${esc(taakTekst(tk))}</p>${L.dl ? `<p class="small" style="margin:0 0 12px"><b>Deadline:</b> ${esc(L.dl)}</p>` : ""}
-    ${lesSlot(n) ? slotKaart(n) : `<button class="btn groot" data-go="les:${n}">${st === "klaar" ? "Bekijk de les (ingeleverd)" : "Open de les"}</button>`}</div>`;
-  if (laat.length) h += `<div class="alert" style="margin-bottom:12px">Nog niet ingeleverd: ${laat.map(l => `<button class="btn small ghost" data-go="les:${l.les}">les ${l.les}</button>`).join(" ")} Haal die eerst in.</div>`;
+    ${lesSlot(n) ? slotKaart(n) : `<button class="btn groot" data-go="les:${n}">${achter ? `Ga verder met les ${n}` : st === "klaar" ? "Bekijk de les (ingeleverd)" : "Open de les"}</button>`}${achter ? ` <button class="btn ghost" data-go="les:${nk}">Bekijk les ${nk} van deze week</button>` : ""}</div>`;
+  if (voorbij.length) h += `<div class="alert" style="margin-bottom:12px"><b>Let op:</b> ${esc(voorbij.join(" en "))}. Vraag je mentor of je deze les nog maakt. Zegt je mentor dat je hem mag overslaan? Dat geef je aan bovenaan in les ${n}.</div>`;
+  if (rest.length >= 3) h += `<div class="alert" style="margin-bottom:12px"><b>Je loopt ${rest.length} lessen achter.</b> Overleg met je mentor wat je inhaalt en wat je mag overslaan.</div>`;
   if (bg && bg >= n && n >= gateVenster(bg)) h += `<div class="note"><b>Gesprek met je mentor</b> vóór les ${bg}. Bereid het voor in de les.</div>`;
   if (volgende) h += `<div class="note"><b>Eerstvolgende deadline:</b> ${esc(volgende.titel)}, ${fmtDate(volgende.datum)}.</div>`;
   if (S.ui.lastBackup) h += backupInfo();
   h += weekStappen();
   if (mod("sv")){ const sh = svHuidig(); if (sh) h += `<div class="note">Klaar met je les? Werk aan <button class="btn small ghost" data-go="studie">Studievaardigheden</button> (nu: ${esc(sh.kort)}).</div>`; }
+  return h; }
+
+/* ---------- leerling: losse onderdelen ---------- */
+function losOverzicht(){
+  const today = new Date().toISOString().slice(0,10);
+  const ids = CONFIG.momenten.filter(m => zichtbaar(m.id)).slice().sort((a,b) => (a.datum || "").localeCompare(b.datum || "")).map(m => m.id);
+  if (!ids.length) return `<h1>Mijn onderdelen</h1><div class="card warn">Je mentor heeft nog geen onderdelen gekozen. Open de tool via de klaslink in Teams.</div>`;
+  const open = ids.filter(id => status(id) !== "klaar"), nu = open.find(id => MOM[id].datum >= today) || open[0];
+  let h = `<h1>Mijn onderdelen</h1><p class="lead">Je mentor koos deze onderdelen voor jouw klas. De datum is wanneer het uiterlijk af moet. Is een onderdeel af? Klik op <b>Ik ben klaar</b>, maak het document (PDF) en lever het in via Teams.</p>`;
+  if (nu){ const m = MOM[nu];
+    h += `<div class="card dw"><div class="small">Nu aan de beurt · uiterlijk af op ${fmtDate(m.datum)}${m.datum < today ? " (datum voorbij)" : ""}</div><h2 style="margin:4px 0 8px">${esc(m.titel)}</h2>${m.type === "mol" ? `<p style="margin:0 0 12px">Hierbij hoort je gespreksstuk: ${esc(MOM[m.bron].titel)}.</p>` : ""}<button class="btn groot" data-go="${nu}">${status(nu) === "bezig" ? "Ga verder" : "Begin"}</button></div>`; }
+  else h += `<div class="note"><b>${ikon("check")} Alles is af.</b> Goed gedaan. Je kunt altijd terug om iets aan te passen.</div>`;
+  h += `<div class="card"><h2>Alle onderdelen</h2>` + ids.map((id, i) => { const m = MOM[id], st = status(id), laat = st !== "klaar" && m.datum < today;
+    return `<div class="halte ${st === "klaar" ? "ok" : ""}"><span class="hnr">${st === "klaar" ? "✓" : i + 1}</span><div class="hbody"><b>${esc(m.titel)}</b><span class="small"> · uiterlijk ${fmtDate(m.datum)}</span><div class="row" style="margin-top:6px;gap:8px;align-items:center"><button class="btn small ${id === nu ? "" : "ghost"}" data-go="${id}">Open</button><span class="status ${laat ? "laat" : st}">${laat ? "datum voorbij" : STATUSTXT[st]}</span></div></div></div>`; }).join("") + `</div>`;
+  if (mod("sv")){ const sh = svHuidig(); if (sh) h += `<div class="note">Tijd over? Werk aan <button class="btn small ghost" data-go="studie">Studievaardigheden</button> (nu: ${esc(sh.kort)}).</div>`; }
+  h += backupInfo();
   return h; }
 
 /* ---------- mentor: deze week ---------- */
@@ -2267,7 +2326,13 @@ MPAGES.inleveren = () => {
       <div class="row" style="gap:8px"><button class="btn" data-act="inlKopieer">Kopieer voor Teams</button><button class="btn ghost" data-act="inlPrint">Print de lijst</button></div><textarea id="inl-tekst" readonly rows="6" style="margin-top:10px;font-size:13px">${esc(tekst)}</textarea></div>`;
 };
 
+function mentorLosWeek(){ const today = new Date().toISOString().slice(0,10), ids = losIds(S.ui.mlos).slice().sort((a,b) => MOM[a].datum.localeCompare(MOM[b].datum)), nu = ids.find(id => MOM[id].datum >= today), direct = new Set((S.ui.mlos || []).flatMap(c => (LOSGROEP.find(g => g[0] === c) || [,,,[]])[3]));
+  return `<h1>Deze week</h1><p class="lead">Je klas werkt met <b>losse onderdelen</b>: ${esc(losGroepNamen(S.ui.mlos).join(", "))}. Leerlingen zien geen weeklessen, alleen deze onderdelen op volgorde van datum. Een weekles erbij? Kies bij <a href="#mentor/klaslink">Klaslink maken</a> voor de hele jaarlijn.</p>
+  <div class="card"><h2>Jouw onderdelen</h2><table><thead><tr><th>Onderdeel</th><th>Week</th><th>Uiterlijk af</th></tr></thead><tbody>${ids.map(id => { const m = MOM[id]; return `<tr${id === nu ? ' style="font-weight:700"' : ""}><td>${esc(m.titel)}${id === nu ? " · nu aan de beurt" : ""}${!direct.has(id) ? `<br><span class="small">komt vanzelf mee: ${molVan(id) ? "gespreksstuk voor MOL-gesprek " + molVan(id).nr : "hoort bij de terugblik"}</span>` : ""}${m.gesprek ? `<br><span class="small">${esc(m.gesprek)}</span>` : ""}</td><td>${esc(m.week)}</td><td>${fmtDate(m.datum)}</td></tr>`; }).join("")}</tbody></table>
+  <p class="small" style="margin:10px 0 0">Zet in Teams per onderdeel een opdracht klaar met deze datum. Leerlingen leveren het document van het onderdeel in, met controlestrook: getypte tijd en laatst bewerkt.</p></div>
+  <div class="card soft"><h2>Zo ziet de leerling het</h2><p class="sub">Kijk mee in het leerlingprogramma. Kies bovenin ‘losse onderdelen’.</p><a class="btn" href="#mentor/voorbeeld">Bekijk als leerling</a></div>`; }
 MPAGES.week = () => {
+  if ((S.ui && S.ui.mprog) === "los" && (S.ui.mlos || []).length) return mentorLosWeek();
   const w = mWerkwijze(), rows = mentorRijen(w);
   let i0 = rijVanWeek(rows, isoWeek(new Date()));
   if (i0 < 0){ const vd = new Date() < new Date("2026-09-07") ? 0 : rows.length - 1; i0 = vd; }
@@ -2613,13 +2678,16 @@ function voorbeeldBalk(){
   const w = CFG().werkwijze;
   return `<span><b>Voorbeeld van het leerlingprogramma.</b> Wat je hier invult, wordt apart bewaard.</span>
     <label>Werkwijze <select id="pv-w"><option value="half" ${w==="half"?"selected":""}>halve klas</option><option value="heel" ${w==="heel"?"selected":""}>hele klas</option></select></label>
+    <label>Programma <select id="pv-p"><option value="vol" ${isLos() ? "" : "selected"}>hele jaarlijn</option><option value="los" ${isLos() ? "selected" : ""}>losse onderdelen</option></select></label>
     <label>Onderdelen <select id="pv-m"><option value="alles" ${S.cfg && S.cfg.mods ? "" : "selected"}>basis en alle extra’s</option><option value="basis" ${S.cfg && S.cfg.mods ? "selected" : ""}>alleen de basis</option></select></label>
     <a href="#mentor" class="btn small">← Terug naar het mentorportaal</a>`;
 }
 window.addEventListener("hashchange", () => { if (/^#mentor/.test(location.hash) !== MENTOR) location.reload(); else render(true); });
 document.addEventListener("change", e => { if (false){ const v = $("#mk-gsv"); if (v) v.hidden = !e.target.checked; }
+  if (e.target.id === "pv-p"){ const los = e.target.value === "los", mine = (S.ui && S.ui.mlos && S.ui.mlos.length) ? S.ui.mlos : LOSGROEP.map(g => g[0]);
+    S.cfg = Object.assign({}, CFG(), los ? { prog:"los", los: mine, werkwijze:"heel" } : { prog: undefined, los: undefined }); S.ui.tab = "start"; save(); render(true); }
   if (e.target.id === "pv-m"){ S.cfg = Object.assign({}, CFG(), { mods: e.target.value === "basis" ? [] : undefined }); save(); render(); }
-  if (e.target.id === "pv-w"){ S.cfg = { klas:"Voorbeeld", werkwijze:e.target.value, gates:[], key:"", mods: S.cfg ? S.cfg.mods : undefined }; save(); render(); } });
+  if (e.target.id === "pv-w"){ S.cfg = { klas:"Voorbeeld", werkwijze:e.target.value, gates:[], key:"", mods: S.cfg ? S.cfg.mods : undefined, prog: S.cfg ? S.cfg.prog : undefined, los: S.cfg ? S.cfg.los : undefined }; save(); render(); } });
 
 /* ---------- back-up en blijvende opslag ---------- */
 function maakBackup(extra){
@@ -2636,7 +2704,7 @@ const IS_SAFARI = /Safari/.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|
 const IS_IPAD = /iPad|iPhone/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 function backupInfo(){ /* laatste back-up: naam, tijdstip en waar hij staat */
   const waar = IS_IPAD ? "in de app Bestanden, map Downloads" : "in je map Downloads";
-  if (!S.ui.lastBackup) return `<div class="note klaarbox"><div>${ikon("cloud")} <b>Nog geen back-up gemaakt.</b> Bij elke les-PDF maakt de tool er automatisch een; hij komt ${waar} te staan.</div></div>`;
+  if (!S.ui.lastBackup) return `<div class="note klaarbox"><div>${ikon("cloud")} <b>Nog geen back-up gemaakt.</b> Bij elke ${isLos() ? "document-PDF" : "les-PDF"} maakt de tool er automatisch een; hij komt ${waar} te staan.</div></div>`;
   return `<div class="note klaarbox"><div>${ikon("cloud")} <b>Laatste back-up:</b> <code>${esc(S.ui.lastBackupNaam || "jaarlijn-….json")}</code><br><span class="small">Gemaakt op ${fmtTs(S.ui.lastBackup)}. Het bestand staat ${waar}. Zet het in je OneDrive van school; daar is het veilig als dit apparaat gewist wordt.</span></div></div>`; }
 function backupWaarschuwing(){
   const heeftWerk = hasContent(S.m) || hasContent(S.lessen) || hasContent(S.doelenA);
@@ -2648,16 +2716,16 @@ function backupWaarschuwing(){
 }
 
 function routeDrie(actief){ /* de drie stappen van de leerling: instellen, les van de week, PDF */
-  const st = [["Instellen","start"],["Les van de week","bord"],["PDF in Teams","pdf"]];
+  const st = [["Instellen","start"],[isLos() ? "Je onderdelen" : "Les van de week","bord"],["PDF in Teams","pdf"]];
   return `<ol class="drie">${st.map(([t,ik], i) => `<li class="${i+1 < actief ? "ok" : ""} ${i+1 === actief ? "nu" : ""}"><span class="hnr">${i+1 < actief ? "✓" : i+1}</span>${ikon(ik)}<span>${t}</span></li>`).join("")}</ol>`; }
 function herstelHint(){ const heeftWerk = hasContent(S.m) || hasContent(S.lessen) || hasContent(S.doelenA);
   return (!heeftWerk && S.ui.privacyOk) ? `<details class="small" style="margin:14px 0 0"><summary>Heb je al eerder in de tool gewerkt en is alles weg?</summary><div class="note klaarbox" style="margin-top:8px"><div>Zet dan je laatste back-up terug. Die staat in je OneDrive of in je map Downloads en heet <code>jaarlijn-jenaam-…json</code>.</div><button class="btn small ghost" data-act="restore">Back-up terugzetten</button></div></details>` : ""; }
 
 /* ---------- navigatie ---------- */
 function renderNav(){
-  const tabs = [["start","Deze week"],["jaarlijn","Jaarlijn"]].concat(mod("sv") ? [["studie","Studievaardigheden"]] : []).concat([["delen","Opslaan en delen"]]);
+  const tabs = (isLos() ? [["start","Mijn onderdelen"]] : [["start","Deze week"],["jaarlijn","Jaarlijn"]]).concat(mod("sv") ? [["studie","Studievaardigheden"]] : []).concat([["delen","Opslaan en delen"]]);
   const t = S.ui.tab, inMoment = MOM[t], inLes = String(t).startsWith("les:");
-  $("#nav").innerHTML = tabs.map(([id,l]) => `<button data-go="${id}" ${(t===id || (id==="jaarlijn" && (inLes || inMoment || (t==="studie" && S.ui.fromLes))))&&!(id==="studie"&&S.ui.fromLes)?'aria-current="page"':""}>${l}</button>`).join("");
+  $("#nav").innerHTML = tabs.map(([id,l]) => `<button data-go="${id}" ${(t===id || (id==="jaarlijn" && (inLes || inMoment || (t==="studie" && S.ui.fromLes))) || (id==="start" && isLos() && inMoment))&&!(id==="studie"&&S.ui.fromLes)?'aria-current="page"':""}>${l}</button>`).join("");
   const L = S.leerling; $("#who").textContent = [L.voornaam, L.klas, CONFIG.school].filter(Boolean).join(" · ");
 }
 function render(top){
@@ -2672,11 +2740,12 @@ function render(top){
   const rt = (MOM[t] && S.ui.fromLes && LES.find(l => l.les === S.ui.fromLes)) ? `<p class="small" style="margin:0 0 -6px">Les ${S.ui.fromLes} · <button class="btn small ghost" data-go="les:${S.ui.fromLes}">← naar de les</button></p>` + lesRoute(S.ui.fromLes, t) + overgeslagen(S.ui.fromLes, t) : "";
   if (String(t).startsWith("les:")){ const n = Number(t.slice(4)); $("#app").innerHTML = lesView(n); naLesRender(n); }
   else if (MOM[t] && momentGeblokkeerd(t)) $("#app").innerHTML = `<h1>${esc(MOM[t].titel)}</h1>` + gesprekKaart(blokGate(), true);
-  else $("#app").innerHTML = MOM[t] ? rt + TYPES[MOM[t].type](t) + pager(t) + back : t === "studie" ? back + PAGES.studie() + back : (PAGES[t] || PAGES.start)();
+  else if (MOM[t] && isLos() && !zichtbaar(t)) $("#app").innerHTML = `<h1>${esc(MOM[t].titel)}</h1><div class="card soft">Dit onderdeel gebruikt je mentor niet. <button class="btn small ghost" data-go="start">Naar mijn onderdelen</button></div>`;
+  else $("#app").innerHTML = MOM[t] ? (isLos() ? `<p class="small" style="margin:0 0 -6px"><button class="btn small ghost" data-go="start">← Mijn onderdelen</button></p>` : "") + rt + TYPES[MOM[t].type](t) + pager(t) + back : t === "studie" ? back + PAGES.studie() + back : (PAGES[t] || PAGES.start)();
   voegHulpToe(); zinCheckAlles();
   if (top) window.scrollTo({top:0});
 }
-function go(tab){ sluitHulp(); if (tab === "lessen" || tab === "lijn") tab = "jaarlijn"; if (String(tab).startsWith("studie:")){ stepIdx.studie = Number(tab.slice(7)); tab = "studie"; } if (!MOM[tab]) S.ui.fromLes = null; S.ui.tab = tab; save(); render(true); }
+function go(tab){ sluitHulp(); if (tab === "lessen" || tab === "lijn") tab = "jaarlijn"; if (isLos() && (tab === "jaarlijn" || String(tab).startsWith("les:"))) tab = "start"; if (String(tab).startsWith("studie:")){ stepIdx.studie = Number(tab.slice(7)); tab = "studie"; } if (!MOM[tab]) S.ui.fromLes = null; S.ui.tab = tab; save(); render(true); }
 
 /* ---------- events ---------- */
 function onField(e){
@@ -2731,7 +2800,11 @@ document.addEventListener("click", e => {
     location.href = `mailto:${MAKER_MAIL}?subject=${encodeURIComponent("Jaarlijn havo 4 · " + f.soort)}&body=${encodeURIComponent(f.body)}`; $("#fb-status").textContent = "Je mailprogramma opent met het bericht. Gebeurt er niets? Klik dan op Kopieer de tekst en mail het zelf."; return; }
   if (act === "docPdf" || act === "presPdf"){ const id = a.dataset.id, pres = act === "presPdf", L = S.leerling, naam = `${docTitel(id)} - ${L.voornaam || "leerling"}${L.klas ? " " + L.klas : ""} - ${new Date().toISOString().slice(0,10)}`;
     $("#print").innerHTML = pres ? presHTML(id) : docHTML(id);
-    printMet({ landscape: pres, titel: (pres ? "Presentatie " : "") + naam, links: `${docTitel(id)} · ${[L.voornaam || "", L.klas].filter(Boolean).join(" · ")}`, rechts: pres ? "" : `versie ${fmtTs(Date.now())}`, marge: pres ? "10mm 10mm 10mm" : undefined }); return; }
+    printMet({ landscape: pres, titel: (pres ? "Presentatie " : "") + naam, links: `${docTitel(id)} · ${[L.voornaam || "", L.klas].filter(Boolean).join(" · ")}`, rechts: pres ? "" : `versie ${fmtTs(Date.now())}`, marge: pres ? "10mm 10mm 10mm" : undefined });
+    if (isLos() && !pres && !MENTOR){ maakBackup(id); toast("Er staat ook een back-up in je Downloads. Zet die in je OneDrive."); } return; }
+  if (act === "overslaan"){ const n = Number(a.dataset.les); if (!confirm(`Les ${n} overslaan? Doe dit alleen als je mentor het zegt.`)) return;
+    S.lessen[n] = S.lessen[n] || {}; S.lessen[n].over = Date.now(); save(); toast(`Les ${n} is overgeslagen.`); go("start"); return; }
+  if (act === "overTerug"){ const n = Number(a.dataset.les); if (S.lessen[n]) S.lessen[n].over = null; save(); render(); return; }
   if (act === "heropen"){ const n = Number(a.dataset.les); if (!confirm("Les heropenen? Maak daarna een nieuwe PDF en lever die opnieuw in. In de PDF staat dat je de les hebt heropend.")) return;
     S.lessen[n].locked = false; S.lessen[n].heropend = (S.lessen[n].heropend || []).concat(Date.now()); save(); render(); }
   if (act === "ontgrendel"){ const g = Number(a.dataset.g), inv = ($("#vrij-"+g).value || "").trim(), gs = S.gesprek[g] || {};
@@ -2739,15 +2812,19 @@ document.addEventListener("click", e => {
     else toast("Deze code klopt niet. Vraag je mentor om de vrijgavecode."); }
   if (act === "mkLink"){ const klas = $("#mk-klas").value.trim(), w = (document.querySelector('input[name="mk-w"]:checked')||{}).value || "half";
     const mods = Array.from(document.querySelectorAll(".mk-mod:checked")).map(x => x.value), gsAan = false;
+    const prog = (document.querySelector('input[name="mk-p"]:checked') || {}).value || "vol", los = Array.from(document.querySelectorAll(".mk-los:checked")).map(x => x.value);
     const mist = [];
     if (!klas) mist.push($("#mk-klas"));
-    if (!Number(($("#mk-dag-0") || {}).value || 0)) mist.push(document.querySelector(".dagkies"));
+    if (prog === "los" && !los.length){ markeer([$("#mk-losopt")], "Vink minstens één onderdeel aan."); return; }
+    if (prog !== "los" && !Number(($("#mk-dag-0") || {}).value || 0)) mist.push(document.querySelector(".dagkies"));
     if (gsAan){ if (!/^\d{4,8}$/.test($("#mk-pin").value.trim())) mist.push($("#mk-pin")); if (!$("#mk-g").value.split(",").map(x => parseInt(x,10)).filter(x => x > 1 && x <= 31).length) mist.push($("#mk-g")); }
     if (mist.length){ markeer(mist, !klas ? "Vul je klas in, bijvoorbeeld H4E." : mist[0] === $("#mk-pin") ? "Kies een pincode van 4 tot 8 cijfers." : mist[0] === $("#mk-g") ? "Vul minstens één lesnummer in voor het gespreksslot." : "Kies de lesdag van periode 1; de andere periodes mogen ‘nog onbekend’ blijven."); return; }
     const q = new URLSearchParams({ klas, w });
     if (gsAan){ const pin = $("#mk-pin").value.trim(), g = $("#mk-g").value.split(",").map(x => parseInt(x,10)).filter(x => x > 1 && x <= 31);
       q.set("g", g.join(",")); q.set("k", sleutelUitPin(pin)); }
     q.set("x", mods.join(","));
+    if (prog === "los"){ q.set("w", "heel"); q.set("p", "los"); q.set("o", los.join(",")); }
+    S.ui.mprog = prog; S.ui.mlos = los;
     const madj = (S.ui && S.ui.madj) || {}, aa = Object.keys(madj).map(Number).sort((x,y) => x-y).filter(n => madj[n]).map(n => n + madj[n]).join(","); if (aa) q.set("a", aa);
     const dagen = leesDagKiezer("mk-dag"); if (dagen.some(Boolean)) q.set("d", dagen.join(","));
     const inl = (document.querySelector('input[name="mk-i"]:checked') || {}).value || "ijk"; S.ui.minl = inl; if (inl === "week") q.set("i", "w");
@@ -2757,10 +2834,10 @@ document.addEventListener("click", e => {
     S.ui.mmods = mods; S.ui.mw = w;
     const url = b0 + "?" + q.toString().replace(/%2C/g, ","); S.ui.mlink = url; S.ui.mlinkOp = Date.now(); save();
     { const e = $("#m-eerst"); if (e) e.remove(); const mi = $("#m-inst"); if (mi) mi.outerHTML = mentorInstellingen(); renderMentorNav(); }
-    $("#mk-out").innerHTML = `<label class="f"><span class="lab">Klaslink${mods.length || gsAan ? " (basis plus " + [...mods.map(c => MODS.find(m => m[0] === c)[1].toLowerCase()), gsAan ? "gespreksslot" : ""].filter(Boolean).join(", ") + ")" : " (basis)"}</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Test de link zelf in een privévenster voordat je hem in Teams zet.</span><div class="note" style="margin-top:12px"><b>${ikon("check")} Je klas is ingesteld.</b> Zet de link in Teams en ga dan naar <a href="#mentor/week">Deze week</a>: daar staat je eerste les klaar.</div>`; const ic = $("#m-inst"); if (ic) ic.outerHTML = mentorInstellingen(); renderMentorNav(); }
+    $("#mk-out").innerHTML = `<label class="f"><span class="lab">Klaslink${prog === "los" ? " (losse onderdelen: " + losGroepNamen(los).join(", ") + (mods.length ? ", plus studievaardigheden" : "") + ")" : mods.length || gsAan ? " (basis plus " + [...mods.map(c => MODS.find(m => m[0] === c)[1].toLowerCase()), gsAan ? "gespreksslot" : ""].filter(Boolean).join(", ") + ")" : " (basis)"}</span><textarea readonly rows="3" id="mk-url">${esc(url)}</textarea></label><button class="btn small ghost" data-act="copyLink">Kopieer link</button> <span class="small">Test de link zelf in een privévenster voordat je hem in Teams zet.</span><div class="note" style="margin-top:12px"><b>${ikon("check")} Je klas is ingesteld.</b> Zet de link in Teams en ga dan naar <a href="#mentor/week">Deze week</a>: daar staat ${prog === "los" ? "het overzicht van je onderdelen" : "je eerste les klaar"}.</div>`; const ic = $("#m-inst"); if (ic) ic.outerHTML = mentorInstellingen(); renderMentorNav(); }
 function renderMentorNav(){ if (MENTOR) { const cur = mentorSub(); $("#nav").innerHTML = MGROEP.map(([id,t,subs]) => `<a href="#mentor/${id}" class="tabbtn" ${subs.includes(cur)?'aria-current="page"':""}>${t}</a>`).join(""); } }
   if (act === "copyLinkOnth"){ const v = (S.ui && S.ui.mlink) || ""; if (!v){ toast("Nog geen klaslink gemaakt."); return; } if (navigator.clipboard) navigator.clipboard.writeText(v).then(() => toast("Link gekopieerd.")); else { const t = document.createElement("textarea"); t.value = v; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); toast("Link gekopieerd."); } return; }
-  if (act === "mentorBackup"){ const u = S.ui || {}, data = { jaarlijnMentor: 2, op: Date.now(), mklas: u.mklas, mw: u.mw, mdagen: u.mdagen, mmods: u.mmods, mgates: u.mgates, madj: u.madj, mlink: u.mlink, mlinkOp: u.mlinkOp, minl: u.minl };
+  if (act === "mentorBackup"){ const u = S.ui || {}, data = { jaarlijnMentor: 2, op: Date.now(), mklas: u.mklas, mw: u.mw, mdagen: u.mdagen, mmods: u.mmods, mgates: u.mgates, madj: u.madj, mlink: u.mlink, mlinkOp: u.mlinkOp, minl: u.minl, mprog: u.mprog, mlos: u.mlos };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" }), url = URL.createObjectURL(blob), a2 = document.createElement("a");
     a2.href = url; a2.download = `jaarlijn-mentor-${(u.mklas || "klas").toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a2); a2.click(); a2.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
     S.ui.mbackupNaam = a2.download; S.ui.mbackupOp = Date.now(); save();
@@ -2798,7 +2875,7 @@ $("#importFile").addEventListener("change", e => {
   r.onload = () => {
     try { const data = JSON.parse(r.result);
       if (data && data.jaarlijnMentor === 2){ if (!MENTOR) throw new Error("mentorbestand");
-        ["mklas","mw","mdagen","mmods","mgates","madj","mlink","mlinkOp","minl"].forEach(k => { S.ui[k] = data[k]; }); save(); render(true); toast("Mentorinstellingen teruggezet."); e.target.value = ""; return; }
+        ["mklas","mw","mdagen","mmods","mgates","madj","mlink","mlinkOp","minl","mprog","mlos"].forEach(k => { S.ui[k] = data[k]; }); save(); render(true); toast("Mentorinstellingen teruggezet."); e.target.value = ""; return; }
       if (!data || data.versie !== 2 || !data.leerling) throw new Error("geen jaarlijn");
       if (!confirm("Je huidige gegevens op dit apparaat worden vervangen door de back-up. Doorgaan?")) return;
       S = Object.assign(blank(), data); save(); render(true); alert("Back-up teruggezet.");
